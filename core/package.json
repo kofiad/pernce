@@ -1,0 +1,26 @@
+{
+  "name": "@pernce/core",
+  "version": "2026.10.4",
+  "private": true,
+  "description": "Framework-free money logic shared by the Pernce web and mobile apps.",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kofiad/pernce.git",
+    "directory": "core"
+  },
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
+  },
+  "scripts": {
+    "test": "tsx --test src/*.test.ts",
+    "build": "tsup",
+    "stage-publish": "node scripts/stage-publish.mjs"
+  },
+  "devDependencies": {
+    "tsup": "^8.5.1",
+    "tsx": "^4.23.15"
+  }
+}

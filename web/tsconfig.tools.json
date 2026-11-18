@@ -1,0 +1,10 @@
+{
+  // Dev-only code: the local Node server, the drizzle-kit config, db
+  // scripts, tests and the Worker config. Kept out of the main tsconfig
+  // so `pnpm run build` can type-check the server with the production-only
+  // install Vercel does (these files import devDependencies). CI checks both.
+  "extends": "./tsconfig.json",
+  "compilerOptions": { "types": ["node", "@cloudflare/workers-types"] },
+  "include": ["src/**/*.ts", "drizzle.config.ts", "scripts/**/*.ts", "test/**/*.ts"],
+  "exclude": ["node_modules"]
+}

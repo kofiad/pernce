@@ -1,0 +1,164 @@
+# Cuts a Pernce release from a CalVer tag (vYYYY.MM.PATCH):
+#   1. verify   - ci.yml against the tag, plus version/CHANGELOG checks
+#   2. release  - GitHub Release with the tag's CHANGELOG.md section
+#   3. core     - publishes @kofiad/pernce-core to GitHub Packages and
+#                 attaches the tarball to the release
+#   4. mobile   - EAS builds attached to the release: an Android APK from the
+#                 "production-apk" profile and an iOS simulator build from
+#                 "preview". Skipped until the EXPO_TOKEN secret exists.
+#
+# Re-run for an existing tag with "Run workflow" (workflow_dispatch).
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing tag to release, e.g. v2026.10.0
+        required: true
+
+concurrency:
+  group: release-${{ github.event.inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  TAG: ${{ github.event.inputs.tag || github.ref_name }}
+  # Sets init.defaultBranch for actions/checkout's `git init`, which
+  # otherwise prints git's "Using 'master' as the name…" hint in every job.
+  GIT_CONFIG_COUNT: 1
+  GIT_CONFIG_KEY_0: init.defaultBranch
+  GIT_CONFIG_VALUE_0: main
+
+jobs:
+  verify:
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+    with:
+      tag: ${{ github.event.inputs.tag || github.ref_name }}
+
+  release:
+    needs: verify
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.TAG }}
+      - name: Create or update the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          node scripts/release-notes.mjs "$TAG" > notes.md
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            gh release edit "$TAG" --notes-file notes.md
+          else
+            gh release create "$TAG" --verify-tag --title "Pernce ${TAG#v}" --notes-file notes.md
+          fi
+
+  core:
+    needs: release
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.TAG }}
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+          registry-url: https://npm.pkg.github.com
+          scope: "@kofiad"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run core:build
+      - run: pnpm --filter @pernce/core run stage-publish
+      - name: Publish to GitHub Packages
+        env:
+          NODE_AUTH_TOKEN: ${{ github.token }}
+        run: |
+          name=$(node -p 'require("./core/dist/package.json").name')
+          version=$(node -p 'require("./core/dist/package.json").version')
+          if npm view "$name@$version" version > /dev/null 2>&1; then
+            echo "::notice::$name@$version is already published; skipping."
+          else
+            npm publish ./core/dist
+          fi
+      - name: Attach the tarball to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          npm pack ./core/dist --pack-destination .
+          gh release upload "$TAG" kofiad-pernce-core-*.tgz --clobber
+
+  mobile:
+    needs: release
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+    steps:
+      - name: Check for EXPO_TOKEN
+        id: token
+        run: |
+          if [ -z "$EXPO_TOKEN" ]; then
+            echo "::notice::EXPO_TOKEN isn't set, so no mobile builds were attached. See the Releases section of README.md."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v7
+        if: steps.token.outputs.skip != 'true'
+        with:
+          ref: ${{ env.TAG }}
+      - uses: pnpm/action-setup@v4
+        if: steps.token.outputs.skip != 'true'
+        with:
+          package_json_file: mobile/package.json
+      - uses: actions/setup-node@v7
+        if: steps.token.outputs.skip != 'true'
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: mobile/pnpm-lock.yaml
+      - name: Build with EAS
+        if: steps.token.outputs.skip != 'true'
+        working-directory: mobile
+        run: |
+          if ! node -e 'process.exit(require("./app.json").expo.extra?.eas?.projectId ? 0 : 1)'; then
+            echo "::error::mobile/app.json has no EAS projectId. Run 'pnpm dlx eas-cli@latest init' in mobile/ and commit it."
+            exit 1
+          fi
+          pnpm install --frozen-lockfile
+          # eas-cli authenticates with EXPO_TOKEN from the job env. Install it
+          # once up front so the two parallel dlx calls don't race on the cache.
+          pnpm dlx eas-cli@latest --version
+          # Both builds run on EAS at once; wait on each to keep its exit status.
+          pnpm dlx eas-cli@latest build --platform android --profile production-apk --non-interactive --wait --json > android.json &
+          android=$!
+          pnpm dlx eas-cli@latest build --platform ios --profile preview --non-interactive --wait --json > ios.json &
+          ios=$!
+          wait "$android"
+          wait "$ios"
+          node -e 'console.log(JSON.stringify([...require("./android.json"), ...require("./ios.json")]))' > builds.json
+      - name: Attach builds to the release
+        if: steps.token.outputs.skip != 'true'
+        working-directory: mobile
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="${TAG#v}"
+          node -e '
+            for (const b of require("./builds.json")) {
+              const ext = b.platform === "ANDROID" ? "android.apk" : "ios-simulator.tar.gz";
+              console.log(`${b.artifacts.buildUrl} ${ext}`);
+            }' | while read -r url suffix; do
+            file="pernce-$version-$suffix"
+            curl -fsSL "$url" -o "$file"
+            gh release upload "$TAG" "$file" --clobber
+          done

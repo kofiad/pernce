@@ -1,0 +1,14 @@
+packages:
+  - core
+  - web
+# Packages whose install scripts may run.
+allowBuilds:
+  esbuild: true
+  workerd: true
+# README.md, "Keeping builds warning-free".
+overrides:
+  esbuild: ^0.28.2
+# Advisories accepted on purpose (README.md, "Keeping builds warning-free").
+auditConfig:
+  ignoreGhsas:
+    - GHSA-fc5q-39xc-vjpf

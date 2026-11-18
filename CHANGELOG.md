@@ -1,0 +1,415 @@
+# Changelog
+
+Pernce uses calendar versioning: `YYYY.MM.PATCH`, tagged `vYYYY.MM.PATCH`.
+The web app, `@pernce/core`, and the mobile app share one version and are
+released together (`pnpm run version:set <version>` bumps all of them).
+
+Releases 2026.10.0 to 2026.10.4 were made before Pernce was open-sourced,
+from a private repository; their notes are kept below, but their tags and
+release pages are not public.
+
+## [Unreleased]
+
+### Added
+
+- Pernce is open source under the Apache License 2.0 (`LICENSE`, `NOTICE`),
+  with a contributing guide, a code of conduct, a security policy (private
+  reports through GitHub), a trademark note on the Pernce name and icon, and
+  issue and PR templates. Every package declares `Apache-2.0`, and the
+  published `@kofiad/pernce-core` tarball now includes `LICENSE` and
+  `NOTICE`.
+- Every active ISO 4217 currency (about 150, ZAR included) can be used for
+  accounts and as the base currency. The currency picker is searchable by
+  code or name, with the original set and ZAR pinned on top; names not in
+  the app's catalogue come from the phone's own language data. Amounts keep
+  two decimals in every currency. The server starts tracking the new
+  currencies' rates on its next daily cron run.
+- The account form warns when the chosen currency has no exchange rate, a
+  rate more than a week old, or a rate that is often unreliable (e.g. VES,
+  SYP), with a link to set your own rate.
+
+- Public web app and API on Cloudflare (built, not deployed): the store
+  (offline-only) web build is exported into `web/public-store/`
+  (`pnpm run build:store-app`) and served as Workers static assets at
+  pernce.com (`web/wrangler.app.jsonc`, with the SPA fallback and the
+  cross-origin isolation headers); the same server also runs as a Cloudflare
+  Worker with D1, Cron Triggers and CORS for the app's origin
+  (`web/wrangler.jsonc`, `pnpm run dev:worker`, `pnpm run build:worker`) for
+  api.pernce.com once sync goes public.
+- Web exports now rename Expo's `assets/node_modules/...` folders to
+  `assets/vendor/...`: hosts skip directories named `node_modules`, so the
+  fonts and package images would have been missing from the deployed app.
+- Tests: HTTP tests of every server route, CORS, cron auth and the app
+  shell (`pnpm run test:web`), and the sync checks also run on a local
+  Cloudflare D1 (`pnpm run db:verify:d1`). CI runs both, the Worker's
+  dry-run build, and both web exports.
+
+### Fixed
+
+- Bulgarian lev (BGN, now the euro) and Netherlands Antillean guilder (ANG,
+  now XCG) are replaced in the currency list; the server's daily rate run
+  now removes currencies that are no longer listed.
+- After an update that changes the supported currencies, sync pulls all
+  records again once, so changes skipped by an older build (e.g. a ZAR
+  account) are applied.
+
+### Changed
+
+- **Breaking for phone installs: the app's native ID is now
+  `com.pernce.app`** (was `com.kofiad.perance`). Phones treat it as a new
+  app, so the update installs next to the old one instead of over it. Move
+  your data once: in the old app, Settings → Your data → Export backup; in
+  the new one, set up your profile, then Import JSON backup (or, with sync,
+  sign in and let it pull). Then delete the old app. To keep upgrading an
+  old copy in place, build it with `APP_ID=com.kofiad.perance`.
+- Forks can build under their own identity without editing `app.json`:
+  `APP_ID`, `EAS_OWNER` and `EAS_PROJECT_ID` (shell or `mobile/.env.local`,
+  see `mobile/.env.example`) override the bundle ID and package, the Expo
+  owner and the EAS project, and a malformed value stops the build.
+- Sync builds no longer default to the maintainer's server on phones. Set
+  `SYNC_URL` for a build (in the shell or `mobile/.env.local`, see
+  `mobile/.env.example`); without it, the sign-in screen asks for the sync
+  server's address. The web build still syncs with the origin that serves
+  it, phones already signed in keep their server, and a `SYNC_URL` that
+  isn't an `http(s)` address now stops the build.
+- New colours: Pernce's brand colour is now emerald, used on the app icon,
+  the add button, the active tab and charts, with a refreshed set of
+  neutrals and category colours. Your accounts, categories and budgets
+  keep their colour choices (they now show in the new shades); custom
+  colours are unchanged. The design guide (`docs/design/pernce_design.md`)
+  is rewritten around the app itself.
+- Development: the server (`web/`) no longer uses Next.js. It is one Hono
+  app that runs on Node (the personal Vercel instance, now with Vercel's
+  zero-config Hono support) and on Cloudflare Workers, with the same API
+  (routes, status codes, auth). `pnpm run dev` starts a Node server that
+  also serves `web/public/`. `WEB_APP_ORIGINS` is now `ALLOWED_ORIGINS` (the
+  old name still works), trailing-slash API paths no longer redirect, and
+  without `SMTP_USER`/`SMTP_PASSWORD` only `NODE_ENV=development` (what
+  `pnpm run dev` sets) prints sign-up codes; every other run answers 503.
+  See `docs/web-deployment.md` ("Vercel redeploy notes") for the one-time
+  checks after the first deploy.
+- **Breaking: the project is renamed from Perance to Pernce** (GitHub issue
+  #22), everywhere: UI text, packages (`@perance/*` is now `@pernce/*`), the
+  published core package (`@kofiad/perance-core` is now
+  `@kofiad/pernce-core`), the mobile database file, design docs and web
+  internals. Consequences:
+  - The phone app upgrades in place and keeps its local data. Its native
+    ID (iOS bundle ID, Android package `com.kofiad.perance`) and its
+    database file (`perance.db`, used whenever it exists; fresh installs
+    use `pernce.db`) deliberately keep the old spelling, because changing
+    them would make a second, empty app; neither is ever shown. Scheme and
+    EAS slug are `pernce`. Backups from before the rename
+    (`perance-mobile-backup`) still import, and the web app copies its saved
+    data from the old storage name on first load.
+  - The sync key-derivation labels changed, so existing sync accounts can't
+    be used any more and the server's sync tables must be emptied. After
+    upgrading, a device that was signed in shows as signed out (local data
+    stays); register sync again.
+  - Follow the owner upgrade procedure in `docs/web-deployment.md`
+    ("Upgrading to the Pernce rename"), with a backup export as a precaution.
+  - Install the core library as `@kofiad/pernce-core`; the old name gets no
+    further releases.
+  - EAS: run `eas init` once in `mobile/` to create the new project and set
+    `extra.eas.projectId` (the old one was removed from `app.json`).
+- XOF and XAF amounts have two decimals (e.g. XOF 1,500.50), like every
+  other currency. Updating converts each device's existing amounts once;
+  sync payloads and JSON backups from older builds are read as whole francs
+  and converted too. Backups now say version 2. Update every device:
+  an older build reads synced CFA amounts 100× too high.
+- Development: the repo uses pnpm instead of npm (root workspace for
+  `core/` and `web/`, a separate pnpm project for `mobile/`). CI, the
+  Vercel build and the release workflow install with pnpm; overrides and
+  install-script approvals moved to `pnpm-workspace.yaml`. Mobile now links
+  core with `link:../core`, so core edits show up without a reinstall.
+- The app is now called Pernce wherever you see its name (app name,
+  screens, sync emails, export file names). Bundle ID, storage, backup
+  format and sync are unchanged, so existing installs and backups carry on
+  (the full rename is #22).
+- Web: the database is now SQLite (Turso/libSQL) instead of Postgres, so
+  the same code can later run on Cloudflare D1. Money is stored as integer
+  minor units in each currency's precision, and writes that must be
+  all-or-nothing use batches instead of transactions. Amounts with more
+  decimal places than their currency has (e.g. 12.5 XOF) are now rejected.
+  The old Postgres migrations are replaced by a fresh baseline; JSON
+  backups from the Postgres version still restore.
+- Web: the Next.js pages, the web login and the server-side money tables
+  are gone. `web/` is now the server only (sync API, `/api/fx`, crons), and
+  its other paths serve the web app: the mobile app's web build
+  (personal variant), with the same data as the phone and every mobile
+  feature.
+- Mobile: a personal build (`APP_VARIANT=personal`, `npm run
+  ios:device:personal`) brings sync back, against the owner's server. The
+  store build stays offline-only and leaves sync's native modules out of
+  the binary.
+- Web: one Vercel project and one URL. The server's build also builds the
+  web app and serves it from <https://pernce.vercel.app> (deep links
+  included), so the app syncs with its own origin and production needs no
+  CORS (`WEB_APP_ORIGINS` is now only for the app's dev server). The
+  separate `pernce-app` project and <https://pernce-app.vercel.app> are
+  retired; data in a browser there doesn't move over, so sign in to sync
+  again on the new address.
+- Mobile: Expo SDK 58 (React Native 0.88, React 19.3). The web app is
+  pinned to single-page output (`web.output: "single"`; 58 defaults to
+  server output). The expo-sqlite 57 patch for truncated web results is
+  gone. The iOS device script builds with Expo's precompiled modules again.
+  `expo-build-properties` is gone: its only setting, iOS scene support, is
+  built in from 58.
+- Mobile, web: large histories no longer hit expo-sqlite's 1 MB cap on a
+  synchronous web call. The upload queue and the JSON and CSV exports read
+  200 rows at a time, and the Sync screen counts pending changes instead of
+  loading them.
+
+### Fixed
+
+- Mobile: the on-screen keyboard no longer covers the field you're typing
+  in, on full screens, sheets and dialogs (iOS, Android and the web app).
+- Web: in Safari the app froze on load and sync stopped ("Couldn't sync —
+  Failed to run the query 'begin'"), so changes from other devices never
+  arrived. Safari deadlocked writes to the database in the browser's file
+  storage (OPFS). The database now runs in memory and is saved to
+  IndexedDB shortly after each change (300 ms; when the page is hidden, at
+  once). The first start moves an existing web database over and removes
+  the old copy; if that copy was left mid-write, the app starts empty and
+  you sign in to sync again. If the old copy is still open in another
+  window (e.g. one that froze), the app says so: quit the browser and
+  open Pernce again.
+- Web: one tab at a time. A second Pernce tab says it's open elsewhere and
+  takes over when the first one closes.
+- Mobile, web: "Sync operation timeout" on web. expo-sqlite gave each
+  synchronous call about 16 ms before giving up, which SDK 58 hit during
+  onboarding and sign-in; it now waits up to 10 seconds, and after a
+  timeout the app fails at once ("The database stopped responding. Reload
+  the page.") instead of freezing for each call that follows.
+- Mobile, web: sync errors show their real cause instead of only the
+  outer message, and Settings shows "Couldn't sync" (red) while syncing
+  fails instead of the last good sync time; the Sync screen says since
+  when and how many times. A sync that failed half way through saving
+  downloaded changes no longer blocks every later one.
+- Web: the Vercel build no longer warns that `@perance/core` has no
+  modules directory and installs everything a second time.
+- Mobile, iOS: the personal build compiles on React Native 0.88 with a fix
+  for `react-native-libsodium`, which still used the removed
+  `RCTCxxBridge` (upstream PR #109).
+- Mobile: transactions, accounts, categories and budgets created in the
+  same millisecond list in the same order on every device (ties are
+  broken by id).
+- Mobile: the store build no longer thinks it has sync. Expo turns a null
+  in the app config's `extra` into `{}`, which read as a sync server, so
+  the store build offered "Sign in to sync" without the code to back it.
+  Whether sync is on now comes from the build variant.
+- Mobile: switching `APP_VARIANT` or `SYNC_URL` between builds no longer
+  reuses the other variant's app config from Metro's cache.
+
+## [2026.10.4] - 2026-10-02
+
+A mobile-only release: French, an appearance setting, and a new tab bar
+with Budgets and Trends together under Insights. No web or core changes.
+
+### Packages
+
+| Package | Where | Artifact |
+|---|---|---|
+| `@perance/web` | `web/` | Not deployed (Vercel and Neon taken down 2026-10-02, see `docs/web-deployment.md`); no changes |
+| `@perance/core` | `core/` | Published to GitHub Packages as `@kofiad/perance-core@2026.10.4` (no code changes), tarball attached to this release |
+| `@perance/mobile` | `mobile/` | Android APK (EAS `production` build) and iOS simulator build (EAS `preview`) attached to this release |
+
+### Added
+
+- Mobile: Settings → Appearance picks System, Light or Dark for the app.
+- Mobile: Settings → Language switches the app between English and
+  French. It follows the phone's language until you pick one, and a
+  first run in French names the default categories in French.
+- Mobile: Trends on a one-month span charts this month day by day: running
+  totals of income and spending, and net worth per day. Longer spans chart
+  per month. Dragging along a chart shows each point's values, with a
+  haptic tick per point (`expo-haptics`).
+
+### Changed
+
+- Mobile: the tab bar is a floating dock (`tab-dock` in
+  `docs/design/perance_design.md`) with four tabs: Home, Accounts,
+  Activity and Insights. Insights holds Budgets and Trends (formerly
+  Analytics) under one header and reopens whichever was open last.
+- Mobile: the add button lives in the dock and opens Quick add from every
+  tab, replacing the floating add button on Home, Activity and Budgets.
+  With no accounts yet it opens the new-account form instead.
+
+## [2026.10.3] - 2026-10-02
+
+The offline mobile app, redesigned, for people to use and test. Sync is
+not in this release: it will be an optional paid add-on, offered once
+people want it, since it comes with server hosting costs.
+
+### Packages
+
+| Package | Where | Artifact |
+|---|---|---|
+| `@perance/web` | `web/` | Deployed to Vercel from `main`; new app icon, no other changes |
+| `@perance/core` | `core/` | Published to GitHub Packages as `@kofiad/perance-core@2026.10.3`, tarball attached to this release |
+| `@perance/mobile` | `mobile/` | Android APK (EAS `production` build) and iOS simulator build (EAS `preview`) attached to this release |
+
+### Added
+
+- Mobile: a "Quick add" home-screen shortcut, and Face ID for the app lock.
+- Mobile: account pages chart the balance over six months, and Activity
+  and Analytics total the selected period's income and spending in the
+  base currency, transfer fees included.
+- CI: a `mobile` job runs the app's typecheck, lint and tests.
+
+### Changed
+
+- Mobile: every screen follows the redesigned artboard
+  (`docs/design/perance-artboard.html`, M01–M32), in dark and light: the
+  app now follows the system appearance (`expo-system-ui` on Android).
+  Quick add has its own keypad, the transfer form shows the exchange rate
+  it implies, and destructive actions confirm in the artboard's alert.
+- Mobile: app lock has a "Lock after" setting (immediately, 1 or 5
+  minutes; 1 minute by default).
+- Mobile: onboarding is offline-only (name, base currency, app lock), and
+  Settings has no Sync group. The sync client written for phase 4
+  (`mobile/src/sync/`) is kept and tested but not wired into the app, and
+  its native modules (`react-native-libsodium`, `expo-secure-store`,
+  `expo-background-task`, `expo-task-manager`) are no longer installed.
+  `mobile/README.md` ("Sync") says how to bring it back.
+- Mobile: categories are no longer reordered from their list; the
+  artboard's Categories screen has no reorder control.
+- Mobile: the app needs its own development build
+  (`npx expo run:android|ios`) instead of Expo Go, for the home-screen
+  shortcut (`expo-quick-actions`).
+- Web: the app icon is the new SVG mark from `docs/design/icons/`.
+
+### Fixed
+
+- Mobile: the iOS app no longer crashes at launch on iOS 27 when built
+  with Xcode 27. It now uses the UIScene life cycle, via
+  `expo-build-properties` `ios.enableSceneSupport` (drop it on SDK 58,
+  where it's the default).
+
+## [2026.10.2] - 2026-10-01
+
+A mobile-only release: a production Android APK, built on the animation
+libraries Expo SDK 57 supports. No web or core changes.
+
+### Packages
+
+| Package | Where | Artifact |
+|---|---|---|
+| `@perance/web` | `web/` | Deployed to Vercel from `main`; no changes |
+| `@perance/core` | `core/` | Published to GitHub Packages as `@kofiad/perance-core@2026.10.2` (no code changes), tarball attached to this release |
+| `@perance/mobile` | `mobile/` | Android APK (EAS `production` build) and iOS simulator build (EAS `preview`) attached to this release |
+
+### Fixed
+
+- Mobile: `react-native-reanimated` and `react-native-worklets` are pinned
+  to the versions Expo SDK 57 supports (4.5 and 0.10). 2026.10.1 was
+  built with reanimated 4.7 and worklets 0.13, outside that range.
+
+### Changed
+
+- The Android APK attached to each release is now a `production` EAS
+  build (new `production-apk` profile) with an auto-incremented
+  versionCode, instead of a `preview` build. The iOS simulator build is
+  unchanged.
+
+## [2026.10.1] - 2026-10-01
+
+The mobile app now works fully offline, and the web app hosts its
+end-to-end encrypted sync server. Upgrade promptly: this release patches a
+critical Next.js RCE.
+
+### Packages
+
+| Package | Where | Artifact |
+|---|---|---|
+| `@perance/web` | `web/` | Deployed to Vercel from `main`; run `npm run db:migrate` |
+| `@perance/core` | `core/` | Published to GitHub Packages as `@kofiad/perance-core@2026.10.1`, tarball attached to this release |
+| `@perance/mobile` | `mobile/` | Android APK and iOS simulator build attached to this release (EAS `preview` profile) |
+
+### Added
+
+- **Mobile sync server (phase 3).** An end-to-end encrypted record store
+  in the web app for the mobile app to sync through. The server never sees
+  plaintext.
+  - Self-serve sign-up with an emailed code (Gmail SMTP), sign-in with an
+    Argon2-derived auth key, rotating refresh tokens with replay
+    detection, password reset, wrapped-key storage and account deletion.
+  - `push`/`pull` with last-writer-wins by HLC and a per-user cursor.
+  - Abuse limits: rate limits, a per-user storage quota, a user cap.
+  - Public `GET /api/fx`, plus a daily cleanup cron.
+  - New tables only (`sync_users`, `sync_records`, `sync_sessions`,
+    `email_tokens`); the web app's own tables are unchanged. Run
+    `npm run db:migrate`.
+- **Mobile app phase 2: offline-only.** Everything works on the phone with
+  no account and no network.
+  - Local SQLite ledger (Drizzle, bundled migrations) with sync-ready rows.
+  - Onboarding, accounts, activity with filters, quick add, and
+    cross-currency transfers with fees.
+  - Budgets with an FX-estimate flag, editable per-user categories,
+    analytics, and settings.
+  - Direct FX fetch with manual overrides.
+  - JSON and CSV import/export, including importing a web backup.
+  - App lock.
+- **`@perance/core`:**
+  - amount-input helpers for each currency's precision, and `formatAmount`
+  - a hybrid logical clock
+  - FX API URLs and parsing, shared with the web cron
+  - the artboard icon set, shared with the web app
+  - a `round` option on `resolveTransactionInput`
+  - the sync wire protocol (`sync.ts`): record and response types, limits,
+    KDF defaults, HLC validation
+
+### Security
+
+- Next.js 16.3.5 → 16.3.8 (and `eslint-config-next`) for
+  GHSA-vcvr-r3jv-pc5j, a critical RCE in `next/og` `ImageResponse`, which
+  `web/src/app/icon.tsx` uses. Also clears a high-severity
+  `brace-expansion` advisory and moderate `esbuild` dev-server advisories
+  (dev tooling now resolves esbuild 0.28.2). `npm audit`: 0 findings.
+
+### Changed
+
+- Warning-free builds: npm `allowScripts` approvals for esbuild,
+  unrs-resolver and fsevents; Vercel installs production dependencies
+  only; release workflow on Node 24 actions, pinned to `ubuntu-24.04`.
+
+## [2026.10.0] - 2026-09-30
+
+First tagged release, and the first with a mobile app on the way.
+
+### Packages
+
+| Package | Where | Artifact |
+|---|---|---|
+| `@perance/web` | `web/` | Deployed to Vercel from `main` |
+| `@perance/core` | `core/` | Published to GitHub Packages as `@kofiad/perance-core@2026.10.0`, tarball attached to this release |
+| `@perance/mobile` | `mobile/` | Android APK and iOS simulator build attached to this release (EAS `preview` profile) |
+
+### Added
+
+- **Mobile app (preview).** An Expo SDK 57 app for iOS and Android in
+  `mobile/`, built on the shared core. This release is a scaffold that
+  runs real core code on device; the offline ledger, sync, and store
+  builds follow the plan in `docs/mobile-scope.md`.
+- **`@perance/core`.** Framework-free money logic shared by web and
+  mobile: currencies and FX conversion, per-currency minor units
+  (XOF/XAF have no decimals), formatting, CSV, default categories,
+  transaction validation, balance deltas, report math, and design tokens.
+  Covered by `npm test`.
+- Cross-currency transfers with amount received / rate and fees.
+- Expense categories split into essential vs discretionary, plus
+  reworked income categories and seed data.
+- Budgets improvements and stricter session checks on every page.
+- Transaction currency validation and rate-limited login.
+- JSON backup and CSV export/import, change-password in Settings,
+  cash-flow runway, and new account accent colors.
+- Multi-user accounts with scrypt-hashed passwords and signed sessions.
+
+### Changed
+
+- **Repo layout.** The repo is now organised by app: `web/` (Next.js),
+  `core/` (shared library), `mobile/` (Expo), with design references under
+  `docs/design/`. Root `npm run …` scripts still work and forward to
+  `web/`. On Vercel, set the project's Root Directory to `web`.
+- Postgres connection pooling tuned for serverless.
+
+[Unreleased]: https://github.com/kofiad/pernce/commits/main

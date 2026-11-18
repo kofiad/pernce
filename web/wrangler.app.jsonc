@@ -1,0 +1,32 @@
+// The public web app (https://pernce.com): the STORE build of mobile/'s web
+// export (offline-only, no sync), served as Workers static assets. No Worker
+// script: assets only. Build it with `pnpm run build:store-app` (into
+// public-store/), then `pnpm run deploy:store-app`. Not the API: that is
+// wrangler.jsonc (api.pernce.com), not deployed yet. See docs/web-deployment.md,
+// "Owner checklist".
+//
+// There is deliberately NO "account_id" here: a login can see several
+// Cloudflare accounts, and a deploy must never silently pick the wrong one.
+// After `wrangler login`, run `wrangler whoami`, check it lists your personal
+// account, and `export CLOUDFLARE_ACCOUNT_ID=<that account's id>` before any
+// deploy (or add "account_id" here yourself). pernce.com's zone must be in
+// that same account for the custom domain below to attach.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "pernce-app",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./public-store",
+    // Unknown paths get index.html with 200: deep links like /settings are
+    // client-side routes (expo-router).
+    "not_found_handling": "single-page-application"
+    // The cross-origin isolation headers come from public-store/_headers
+    // (cloudflare/_headers, copied in by build:store-app).
+  },
+  // Attaches pernce.com as a Custom Domain on deploy (creates the DNS record
+  // and certificate). Needs the zone in your Cloudflare account and no
+  // existing DNS record on the apex. www.pernce.com is NOT handled here: an
+  // assets-only Worker can't redirect by hostname, so use the Redirect Rule
+  // in docs/web-deployment.md.
+  "routes": [{ "pattern": "pernce.com", "custom_domain": true }]
+}

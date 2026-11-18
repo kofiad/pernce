@@ -1,0 +1,109 @@
+# Checks every PR and push to main. release.yml reuses it (workflow_call)
+# to verify a tag before releasing it.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_call:
+    inputs:
+      tag:
+        description: Release tag to check out and verify, e.g. v2026.10.0
+        type: string
+        required: true
+
+concurrency:
+  group: ci-${{ inputs.tag || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  # Sets init.defaultBranch for actions/checkout's `git init`, which
+  # otherwise prints git's "Using 'master' as the name…" hint.
+  GIT_CONFIG_COUNT: 1
+  GIT_CONFIG_KEY_0: init.defaultBranch
+  GIT_CONFIG_VALUE_0: main
+  # wrangler (dry-run build, local D1) prints a telemetry notice otherwise.
+  WRANGLER_SEND_METRICS: "false"
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.tag || github.sha }}
+      # Installs the pnpm version in package.json's packageManager.
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Versions match the tag
+        if: inputs.tag
+        run: node scripts/version.mjs check "${{ inputs.tag }}"
+      - name: CHANGELOG has a section for the tag
+        if: inputs.tag
+        run: node scripts/release-notes.mjs "${{ inputs.tag }}" > /dev/null
+      - run: pnpm audit
+      - run: pnpm test
+      - run: pnpm run lint
+      - run: pnpm --filter @pernce/web run typecheck
+      # The server's build as Vercel runs it (type-check of src/).
+      - run: pnpm --filter @pernce/web run build
+      # HTTP tests of the Hono app (in-memory libSQL) and of the Worker's
+      # handlers over a local D1.
+      - run: pnpm --filter @pernce/web test
+      - run: pnpm run db:verify
+      # The same sync checks on a local Cloudflare D1 (workerd, no login).
+      - run: pnpm --filter @pernce/web run db:verify:d1
+      # The API Worker's bundle, as `wrangler deploy` would upload it (no
+      # login, nothing deployed).
+      - run: pnpm --filter @pernce/web run build:worker
+      - run: pnpm run core:build
+
+  # mobile/ isn't in the pnpm workspace (its own React version, docs/mobile-scope.md
+  # §4), so it installs and checks on its own. Its tests include the sync
+  # client's multi-device merge tests against an in-memory server.
+  mobile:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.tag || github.sha }}
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: mobile/package.json
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: mobile/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run typecheck
+      - run: pnpm run lint
+      - run: pnpm test
+      # Both web exports build, and the store one (the public app at
+      # pernce.com) is the offline-only variant: no sync in its config.
+      - name: Web exports (personal and store)
+        run: |
+          APP_VARIANT=personal pnpm exec expo export --platform web --output-dir ../web/public
+          node scripts/pwa.mjs ../web/public
+          node ../web/scripts/build-store-app.mjs
+          if ! grep -rlq '\\"variant\\":\\"store\\"' ../web/public-store/_expo; then
+            echo "store export lacks the store variant marker"; exit 1
+          fi
+          if grep -rlq '\\"variant\\":\\"personal\\"' ../web/public-store/_expo; then
+            echo "personal variant in store export"; exit 1
+          fi
+          if [ ! -f ../web/public-store/_headers ]; then
+            echo "store export has no _headers"; exit 1
+          fi

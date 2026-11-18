@@ -1,0 +1,55 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+node_modules/
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# the web app, exported into web/public/ by `pnpm run build:app`
+/web/public/
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+!.env.example
+
+# leftover from the sandbox this was built in - safe to delete
+.trash
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+
+# @pernce/core publish build (see core/scripts/stage-publish.mjs)
+/core/dist
+
+# Local SQLite database for web development (DATABASE_URL=file:local.db)
+web/local.db*
+
+# wrangler: local D1 state, build output, local secrets
+/web/.wrangler/
+/web/dist-worker/
+/web/public-store/
+web/.dev.vars
+
+# Vercel function bundle (pnpm --filter @pernce/web build)
+/web/server.mjs

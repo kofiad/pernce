@@ -1,0 +1,5 @@
+# The Vercel project pernce (Root Directory web/) also builds the web app
+# from mobile/, so neither package is excluded here.
+.env
+.env.local
+.env.*.local

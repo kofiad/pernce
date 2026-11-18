@@ -1,0 +1,13 @@
+# mobile/ is its own pnpm project, not part of the root workspace (its own
+# React version; docs/mobile-scope.md §4).
+# Packages whose install scripts may run.
+allowBuilds:
+  esbuild: true
+  react-native-libsodium: true
+  unrs-resolver: true
+# README.md, "Keeping builds warning-free".
+overrides:
+  esbuild: ^0.28.2
+  expo-quick-actions>@expo/image-utils: ^0.12.5
+  xcode>uuid: ^11.1.1
+  "@expo/cli>zod": ^4.6.6

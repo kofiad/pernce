@@ -1,0 +1,50 @@
+// The public API Worker (api.pernce.com): src/worker.ts, the same Hono app as
+// the Vercel instance, with D1 instead of libSQL and Cron Triggers instead
+// of Vercel Cron. BUILT AND TESTED BUT NOT DEPLOYED: see docs/web-deployment.md,
+// "Owner checklist", for what to do when sync goes public.
+//
+// There is deliberately NO "account_id" here: a login can see several
+// Cloudflare accounts, and a deploy must never silently pick the wrong one.
+// After `wrangler login`, run `wrangler whoami`, check it lists your personal
+// account, and `export CLOUDFLARE_ACCOUNT_ID=<that account's id>` before any
+// deploy or `wrangler d1 create` (or add "account_id" here yourself).
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "pernce-api",
+  "main": "src/worker.ts",
+  // Keep at or before the installed workerd's build date (wrangler warns
+  // otherwise). nodejs_compat gives node:crypto (scrypt, HMAC) and the
+  // other Node modules the server uses.
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": { "enabled": true },
+  // Same two schedules as web/vercel.json's crons (UTC). scheduled() in
+  // src/worker.ts matches on these exact strings (src/cron.ts).
+  "triggers": { "crons": ["0 6 * * *", "30 6 * * *"] },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "pernce",
+      // PLACEHOLDER: `wrangler d1 create pernce` prints the real id. Deploy
+      // fails until it is replaced. Local development (`wrangler dev`,
+      // `pnpm run db:migrate:d1:local`, tests) ignores it.
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      // drizzle-kit's migration files are plain SQL named NNNN_name.sql,
+      // which is what `wrangler d1 migrations apply` reads.
+      "migrations_dir": "drizzle"
+    }
+  ],
+  "vars": {
+    // Origins allowed to call the API from a browser, comma-separated.
+    // Add http://localhost:8081 only to test against the app's dev server.
+    "ALLOWED_ORIGINS": "https://pernce.com",
+    // Sign-up cap. The personal Vercel instance uses 1; set what the public
+    // service should allow.
+    "SYNC_MAX_USERS": "100"
+  }
+  // Secrets, set with `wrangler secret put <NAME>` (never in this file):
+  // SESSION_SECRET, SMTP_USER, SMTP_PASSWORD. CRON_SECRET only if the
+  // /api/cron/* routes should be callable by hand: the Cron Triggers call
+  // scheduled() directly and need no secret.
+  // Local development reads secrets from web/.dev.vars (see .dev.vars.example).
+}

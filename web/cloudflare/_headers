@@ -1,0 +1,12 @@
+# Workers static assets headers for the public web app (pernce.com):
+# https://developers.cloudflare.com/workers/static-assets/headers/
+#
+# expo-sqlite's synchronous API on web needs SharedArrayBuffer, which
+# browsers only allow on cross-origin isolated pages. require-corp rather
+# than credentialless: Safari only supports require-corp. Same headers as
+# web/vercel.json and src/middleware/appShell.ts. This is a static-assets-only
+# Worker with no API paths, so every path gets them (index.html is also what
+# unknown paths are answered with, single-page-application fallback).
+/*
+  Cross-Origin-Embedder-Policy: require-corp
+  Cross-Origin-Opener-Policy: same-origin

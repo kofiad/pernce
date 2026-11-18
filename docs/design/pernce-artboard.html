@@ -1,0 +1,1496 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pernce Artboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<!--
+  Pernce artboard — every web and mobile screen, each in dark and light.
+  Tokens and component shapes are ported from pernce_design.md (the docs
+  win if they ever disagree). Screens are generated from the templates in
+  the <script> below: one template per screen, rendered once per mode. The
+  mode only swaps the semantic variables in `.t-dark` / `.t-light`, so the
+  token mapping table on the Foundations page is the whole difference
+  between the two.
+
+  Canvas: drag or scroll to pan, ⌘/Ctrl + scroll (or pinch) to zoom,
+  Shift+1 fit page, Shift+2 zoom to selection, Shift+0 100%, 1/2/3 switch
+  pages, D / L / B show dark / light / both.
+-->
+<style>
+/* ===================== Design tokens (pernce_design.md) ===================== */
+:root{
+  --primary:#0b7a62; --primary-bright:#14a37f; --primary-deep:#085c4a; --on-primary:#fff;
+  --ink:#161b1a; --body:#1d2422; --charcoal:#363e3c; --mute-c:#4e5957; --ash:#5b6563; --stone-c:#8b9694; --faint:#c7cecc;
+  --canvas-light:#fff; --canvas-dark:#000; --surface-soft:#f2f5f4; --surface-deep:#0a0c0c; --surface-elevated:#151a19; --surface-tint:rgba(255,255,255,.08);
+  --hairline-light:#dde3e1; --hairline-dark:rgba(255,255,255,.12); --divider-soft:rgba(255,255,255,.06);
+  --teal:#0e8f8a; --blue-link:#2a63c7; --light-blue:#2b7fd4; --light-green:#3f8c2c; --green-text:#22661b;
+  --yellow:#a68700; --warning:#df7a06; --pink:#d6325f; --danger:#d63a3a; --deep-red:#8f1b22; --brown:#8c6656; --slate:#5e6a7e;
+  --r-sm:8px; --r-md:12px; --r-lg:20px; --r-xl:28px; --r-full:9999px;
+  --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+
+  /* studio chrome (not part of the product) */
+  --ui-bg:#ffffff; --ui-panel:#ffffff; --ui-line:#e6e6e6; --ui-text:#1e1e1e; --ui-mute:#6b6b6b; --ui-hover:#f2f2f2;
+  --ui-canvas:#e5e5e5; --ui-sel:#0d99ff; --ui-sec:rgba(255,255,255,.55); --ui-sec-line:rgba(0,0,0,.06);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ui-bg:#2c2c2c; --ui-panel:#2c2c2c; --ui-line:#3d3d3d; --ui-text:#f0f0f0; --ui-mute:#a0a0a0; --ui-hover:#383838;
+    --ui-canvas:#1e1e1e; --ui-sec:rgba(255,255,255,.035); --ui-sec-line:rgba(255,255,255,.06);
+  }
+}
+:root[data-theme="dark"]{
+  --ui-bg:#2c2c2c; --ui-panel:#2c2c2c; --ui-line:#3d3d3d; --ui-text:#f0f0f0; --ui-mute:#a0a0a0; --ui-hover:#383838;
+  --ui-canvas:#1e1e1e; --ui-sec:rgba(255,255,255,.035); --ui-sec-line:rgba(255,255,255,.06);
+}
+
+/* ===================== Semantic modes — the ONLY dark/light difference ===================== */
+.t-dark{
+  --bg:#000; --bg-2:#151a19; --card:#151a19; --card-b:transparent; --inset:#0a0c0c;
+  --text:#fff; --mute:rgba(255,255,255,.72); --stone:#8b9694;
+  --divider:rgba(255,255,255,.06); --hair:rgba(255,255,255,.12);
+  --chip:rgba(255,255,255,.08); --chip-t:#fff; --chip-on:#fff; --chip-on-t:#161b1a;
+  --btn:#fff; --btn-t:#000; --out:#fff; --soft:rgba(255,255,255,.08); --soft-t:#fff;
+  --field:#151a19; --field-b:rgba(255,255,255,.12); --ph:#8b9694;
+  --track:rgba(255,255,255,.1); --pos:#3f8c2c; --pos-t:#5fb04a; --neg:#d63a3a; --neg-t:#ff6f6f;
+  --link:#5c9df0; --brand:#14a37f; --nav-active:#151a19; --backdrop:#151a19; --sheet:#000;
+  --grid:rgba(255,255,255,.08); --muted-bar:#363e3c; --hover:rgba(255,255,255,.06);
+  color-scheme:dark;
+}
+.t-light{
+  --bg:#fff; --bg-2:#f2f5f4; --card:#fff; --card-b:#dde3e1; --inset:#f2f5f4;
+  --text:#161b1a; --mute:#4e5957; --stone:#5b6563;
+  --divider:#dde3e1; --hair:#dde3e1;
+  --chip:#f2f5f4; --chip-t:#161b1a; --chip-on:#161b1a; --chip-on-t:#fff;
+  --btn:#000; --btn-t:#fff; --out:#161b1a; --soft:#f2f5f4; --soft-t:#161b1a;
+  --field:#fff; --field-b:#dde3e1; --ph:#8b9694;
+  --track:rgba(0,0,0,.08); --pos:#3f8c2c; --pos-t:#22661b; --neg:#d63a3a; --neg-t:#8f1b22;
+  --link:#2a63c7; --brand:#0b7a62; --nav-active:#f2f5f4; --backdrop:#c7cecc; --sheet:#fff;
+  --grid:#dde3e1; --muted-bar:#c7cecc; --hover:rgba(0,0,0,.04);
+  color-scheme:light;
+}
+
+/* ===================== Studio chrome ===================== */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--ui-canvas);color:var(--ui-text);font-family:var(--font);font-size:12px;overflow:hidden;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit}
+.studio{display:grid;grid-template-columns:248px 1fr 264px;grid-template-rows:48px 1fr;height:100vh}
+.topbar{grid-column:1/-1;display:flex;align-items:center;gap:12px;padding:0 12px;background:var(--ui-bg);border-bottom:1px solid var(--ui-line);z-index:5}
+.brandmark{width:24px;height:24px;border-radius:7px;background:var(--primary);display:grid;place-items:center;color:#fff;font-weight:700;font-size:13px}
+.file{display:flex;flex-direction:column;line-height:1.2}
+.file b{font-size:13px;font-weight:600}.file span{color:var(--ui-mute);font-size:11px}
+.tb-spacer{flex:1}
+.tb-seg{display:flex;background:var(--ui-hover);border-radius:8px;padding:2px}
+.tb-seg button{border:0;background:transparent;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500;color:var(--ui-mute)}
+.tb-seg button[aria-pressed="true"]{background:var(--ui-bg);color:var(--ui-text);box-shadow:0 0 0 1px var(--ui-line)}
+.tb-btn{border:1px solid var(--ui-line);background:var(--ui-bg);border-radius:8px;height:30px;padding:0 10px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.tb-btn:hover{background:var(--ui-hover)}
+.zoom{min-width:58px;justify-content:center;font-variant-numeric:tabular-nums}
+.panel{background:var(--ui-panel);border-right:1px solid var(--ui-line);overflow:auto;z-index:4}
+.panel.right{border-right:0;border-left:1px solid var(--ui-line)}
+.p-sec{padding:12px 8px;border-bottom:1px solid var(--ui-line)}
+.p-h{font-size:11px;font-weight:600;padding:4px 8px 8px;color:var(--ui-text)}
+.p-item{display:flex;align-items:center;gap:8px;width:100%;text-align:left;border:0;background:transparent;padding:6px 8px;border-radius:6px;cursor:pointer;font-size:12px;color:var(--ui-text)}
+.p-item:hover{background:var(--ui-hover)}
+.p-item[aria-current="true"]{background:var(--ui-hover);font-weight:600}
+.p-item .k{margin-left:auto;color:var(--ui-mute);font-size:11px}
+.p-group{color:var(--ui-mute);font-size:11px;font-weight:600;padding:10px 8px 4px;display:flex;gap:6px;align-items:center}
+.p-item.layer{padding-left:22px}
+.p-item.layer.sel{background:rgba(13,153,255,.14)}
+.dotm{width:9px;height:9px;border-radius:3px;flex-shrink:0;border:1px solid var(--ui-line)}
+.insp{padding:14px 16px}
+.insp h3{margin:0 0 2px;font-size:13px}
+.insp .sub{color:var(--ui-mute);margin-bottom:14px}
+.kv{display:grid;grid-template-columns:72px 1fr;gap:8px 10px;margin-bottom:16px}
+.kv dt{color:var(--ui-mute)}.kv dd{margin:0;word-break:break-word}
+.kv code{font-family:var(--mono);font-size:11px}
+.insp p{color:var(--ui-mute);line-height:1.55;margin:0 0 10px}
+.hint{font-size:11px;color:var(--ui-mute);line-height:1.7}
+.hint kbd{font-family:var(--mono);font-size:10px;border:1px solid var(--ui-line);border-radius:4px;padding:0 4px;background:var(--ui-hover)}
+.viewport{position:relative;overflow:hidden;cursor:grab;touch-action:none}
+.viewport.panning{cursor:grabbing}
+.world{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
+.page{display:none;flex-direction:column;gap:360px;padding:400px}
+.page.on{display:flex}
+.sec{position:relative;background:var(--ui-sec);border:1px solid var(--ui-sec-line);border-radius:6px;padding:180px 96px 96px;width:max-content}
+.sec-t{position:absolute;left:0;bottom:100%;margin-bottom:calc(10px / var(--k,1));font-size:max(40px, calc(14px / var(--k,1)));font-weight:600;white-space:nowrap;color:var(--ui-text)}
+.sec-d{position:absolute;left:96px;top:48px;font-size:18px;color:var(--ui-mute);max-width:1100px;line-height:1.5}
+.row-frames{display:flex;gap:160px;align-items:flex-start}
+.pair{display:flex;gap:64px;align-items:flex-start}
+.pair.v{flex-direction:column;gap:140px}
+.fw{position:relative}
+.fl{position:absolute;left:0;bottom:100%;margin-bottom:calc(6px / max(var(--k,1), .3));display:flex;gap:calc(6px / max(var(--k,1), .3));align-items:center;font-size:calc(11px / max(var(--k,1), .3));white-space:nowrap;color:var(--ui-mute);pointer-events:auto;cursor:pointer}
+.fl b{color:var(--ui-text);font-weight:500}
+.fw.sel > .frame{outline:calc(2px / var(--k,1)) solid var(--ui-sel)}
+.fw.sel > .fl b{color:var(--ui-sel)}
+.frame{position:relative;overflow:hidden;font-family:var(--font);background:var(--bg);color:var(--text);font-size:16px;line-height:1.5;letter-spacing:.24px;box-shadow:0 0 0 1px rgba(0,0,0,.06)}
+body.hide-dark .fw[data-mode="dark"], body.hide-light .fw[data-mode="light"]{display:none}
+@media (max-width:900px){.studio{grid-template-columns:1fr}.panel{display:none}.viewport{grid-column:1}}
+
+/* ===================== Product type scale (Inter; 500 with negative tracking for display sizes) ===================== */
+.frame .d-xl{font-size:80px;font-weight:500;line-height:1;letter-spacing:-.8px}
+.frame .d-lg{font-size:48px;font-weight:500;line-height:1.21;letter-spacing:-.48px}
+.frame .d-md{font-size:40px;font-weight:500;line-height:1.2;letter-spacing:-.4px}
+.frame .h-lg{font-size:32px;font-weight:500;line-height:1.19;letter-spacing:-.32px}
+.frame .h-md{font-size:24px;font-weight:500;line-height:1.33;letter-spacing:0}
+.frame .h-sm{font-size:20px;font-weight:500;line-height:1.4;letter-spacing:0}
+.frame .b-lg{font-size:18px;line-height:1.56;letter-spacing:-.09px}
+.frame .b{font-size:16px;line-height:1.5;letter-spacing:.24px}
+.frame .bb{font-size:16px;font-weight:600;line-height:1.5;letter-spacing:.16px}
+.frame .sm{font-size:14px;line-height:1.43;letter-spacing:0}
+.frame .smb{font-size:14px;font-weight:600;line-height:1.43;letter-spacing:0}
+.frame .cap{font-size:13px;line-height:1.4;letter-spacing:0}
+.frame .mono{font-family:var(--mono);letter-spacing:0}
+.frame h1,.frame h2,.frame h3,.frame p{margin:0}
+.mute{color:var(--mute)}.stone{color:var(--stone)}.pos{color:var(--pos-t)}.neg{color:var(--neg-t)}.link{color:var(--link);font-weight:600}
+.num{font-variant-numeric:tabular-nums}
+
+/* ===================== Product components ===================== */
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.rs{display:flex;align-items:center;gap:12px}
+.col{display:flex;flex-direction:column}
+.grow{flex:1;min-width:0}
+.i{width:20px;height:20px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;display:block}
+.i.s{width:16px;height:16px;stroke-width:1.9}.i.xs{width:13px;height:13px;stroke-width:2.1}.i.l{width:28px;height:28px;stroke-width:1.6}.i.xl{width:40px;height:40px;stroke-width:1.4}
+.av{width:42px;height:42px;border-radius:var(--r-full);display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:13px;flex-shrink:0;letter-spacing:0}
+.av.sm{width:36px;height:36px;font-size:12px}.av.lg{width:56px;height:56px;font-size:18px}.av.xs{width:24px;height:24px;font-size:10px}
+.ib{width:44px;height:44px;border-radius:var(--r-full);display:inline-flex;align-items:center;justify-content:center;background:var(--soft);color:var(--soft-t);flex-shrink:0;border:0}
+.ib.sm{width:36px;height:36px}
+.ib.brand{background:var(--primary);color:#fff}
+.card{background:var(--card);border:1px solid var(--card-b);border-radius:var(--r-lg);padding:20px}
+.card.p32{padding:32px}
+.card.inset{background:var(--inset);border-color:transparent}
+.chip{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 16px;border-radius:var(--r-full);font-size:14px;font-weight:600;white-space:nowrap;flex-shrink:0;background:var(--chip);color:var(--chip-t);letter-spacing:0}
+.chip.on{background:var(--chip-on);color:var(--chip-on-t)}
+.chip.ghost{background:transparent;border:1px solid var(--hair);color:var(--mute)}
+.chips{display:flex;gap:8px;overflow:hidden}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:var(--r-full);font-size:13px;line-height:1.4;background:var(--chip);color:var(--chip-t);white-space:nowrap;letter-spacing:0}
+.badge.brand{background:var(--primary);color:#fff}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 28px;border-radius:var(--r-full);font-size:16px;font-weight:600;letter-spacing:.24px;border:1px solid transparent;width:100%;white-space:nowrap}
+.btn.auto{width:auto;display:inline-flex}
+.btn.sm{height:36px;padding:0 16px;font-size:14px;letter-spacing:0}
+.btn.p{background:var(--btn);color:var(--btn-t)}
+.btn.o{background:transparent;border-color:var(--out);color:var(--text)}
+.btn.s{background:var(--soft);color:var(--soft-t)}
+.btn.brand{background:var(--primary);color:#fff}
+.btn.danger{background:transparent;color:var(--neg-t);border-color:var(--hair)}
+.btn.txt{background:transparent;color:var(--text);height:44px}
+.lbl{font-size:12px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;color:var(--stone);margin:28px 0 8px}
+.fl-l{display:block;font-size:13px;font-weight:600;color:var(--mute);margin:0 0 8px;letter-spacing:0}
+.in{height:56px;border-radius:var(--r-md);background:var(--field);border:1px solid var(--field-b);padding:0 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:16px;color:var(--text)}
+.in.pl{color:var(--ph)}
+.in.focus{border-color:var(--text);box-shadow:0 0 0 1px var(--text)}
+.in.err{border-color:var(--neg)}
+.help{font-size:13px;color:var(--stone);margin-top:8px;letter-spacing:0}
+.help.err{color:var(--neg-t)}
+.field{margin-bottom:20px}
+.seg{display:flex;background:var(--chip);border-radius:var(--r-full);padding:4px;gap:4px}
+.seg span{flex:1;text-align:center;height:40px;display:flex;align-items:center;justify-content:center;border-radius:var(--r-full);font-size:14px;font-weight:600;color:var(--mute);letter-spacing:0}
+.seg span.on{background:var(--chip-on);color:var(--chip-on-t)}
+.tg{width:51px;height:31px;border-radius:var(--r-full);background:var(--track);position:relative;flex-shrink:0}
+.tg::after{content:"";position:absolute;top:3px;left:3px;width:25px;height:25px;border-radius:50%;background:var(--stone)}
+.tg.on{background:var(--text)}.tg.on::after{left:23px;background:var(--bg)}
+.prog{height:8px;border-radius:var(--r-full);background:var(--track);overflow:hidden}
+.prog > i{display:block;height:100%;border-radius:var(--r-full)}
+.tx{display:flex;align-items:center;gap:12px;min-height:64px;border-bottom:1px solid var(--divider)}
+.tx:last-child{border-bottom:0}
+.tx-n{font-size:15px;font-weight:500;letter-spacing:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tx-s{font-size:13px;color:var(--stone);letter-spacing:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tx-a{text-align:right;font-size:15px;font-weight:600;letter-spacing:0;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tx-a .tx-s{font-weight:400}
+.li{display:flex;align-items:center;gap:12px;min-height:56px;border-bottom:1px solid var(--divider);font-size:15px;letter-spacing:0}
+.li:last-child{border-bottom:0}
+.li .v{margin-left:auto;color:var(--stone);display:flex;align-items:center;gap:6px;font-size:15px}
+.group{background:var(--card);border:1px solid var(--card-b);border-radius:var(--r-lg);padding:0 16px}
+.catc{display:flex;flex-direction:column;align-items:center;gap:6px;width:66px;flex-shrink:0}
+.catc span{font-size:12px;color:var(--mute);text-align:center;letter-spacing:0}
+.catc.on .av{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--text)}
+.catc.on span{color:var(--text);font-weight:600}
+.swatches{display:flex;gap:12px;flex-wrap:wrap}
+.sw{width:36px;height:36px;border-radius:50%}
+.sw.on{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--text)}
+.kpi .cap{color:var(--mute)}
+.legend{display:flex;flex-direction:column;gap:10px}
+.legend .row{font-size:14px;letter-spacing:0}
+.legend .row.on{font-weight:600}.legend .row.dim{opacity:.4}
+.dnut{position:relative;flex-shrink:0}
+.dnut .ctr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:0 20%;text-align:center;line-height:1.3}
+.dnut .ctr>*{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;padding:48px 24px}
+.empty .ring{width:72px;height:72px;border-radius:50%;background:var(--chip);display:grid;place-items:center;color:var(--mute)}
+.note{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--mute);letter-spacing:0;line-height:1.45}
+.code6{display:flex;gap:8px}
+.code6 span{flex:1;height:60px;border-radius:var(--r-md);background:var(--field);border:1px solid var(--field-b);display:grid;place-items:center;font-size:24px;font-weight:500}
+.code6 span.on{border-color:var(--text);box-shadow:0 0 0 1px var(--text)}
+.rkey{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.rkey span{font-family:var(--mono);font-size:15px;text-align:center;padding:12px 0;border-radius:var(--r-sm);background:var(--inset);letter-spacing:.5px}
+.chart-axis{font-size:12px;color:var(--stone);letter-spacing:0}
+/* trend(): the scrub readout floats above the plot, centred on the finger, inverted like a toast */
+.trend{position:relative}
+.readout{position:absolute;width:196px;background:var(--text);color:var(--bg);border-radius:var(--r-md);padding:8px 10px;font-size:12px;line-height:1.35;letter-spacing:0;box-shadow:0 6px 20px rgba(0,0,0,.18);z-index:2}
+.readout .rt{opacity:.72;margin-bottom:4px}
+.readout .rr{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.readout .rr+.rr{margin-top:2px}
+.readout i{width:10px;height:3px;border-radius:2px;flex-shrink:0}
+.readout b{font-weight:600;font-variant-numeric:tabular-nums}
+.readout span{opacity:.72}
+.lkey{width:12px;height:2.5px;border-radius:2px;display:inline-block}
+
+/* ---- mobile shell ---- */
+.ph{width:390px;min-height:844px;display:flex;flex-direction:column}
+.sbar{height:54px;display:flex;align-items:center;justify-content:space-between;padding:6px 32px 0 40px;font-size:16px;font-weight:600;flex-shrink:0;letter-spacing:0}
+.sbar svg{display:block}
+.pb{flex:1;padding:8px 20px 40px;display:flex;flex-direction:column}
+.ph.tabbed .pb{padding-bottom:172px}
+.navh{display:flex;align-items:center;justify-content:space-between;height:52px;margin:0 -8px 4px}
+.navh .t{font-size:17px;font-weight:600;letter-spacing:0}
+.tabbar{position:absolute;left:12px;right:12px;bottom:30px;display:flex;gap:8px;align-items:center}
+.tabbar nav{flex:1;height:64px;background:var(--card);border:1px solid var(--hair);border-radius:var(--r-full);display:flex;align-items:center;padding:0 6px}
+.tabbar .add{width:64px;height:64px;border-radius:50%;background:var(--primary);color:#fff;display:grid;place-items:center;flex-shrink:0}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--stone);font-size:11px;font-weight:600;line-height:14px;letter-spacing:0}
+.tab .ind{width:52px;height:30px;border-radius:var(--r-full);display:grid;place-items:center}
+.tab.on{color:var(--text)}.tab.on .ind{background:color-mix(in srgb,var(--brand) 18%,transparent);color:var(--brand)}
+.homeind{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:134px;height:5px;border-radius:3px;background:var(--text);opacity:.9}
+.ph.sheet{background:var(--backdrop)}
+.ph.sheet .sheetc{flex:1;margin-top:10px;background:var(--sheet);border-radius:var(--r-lg) var(--r-lg) 0 0;display:flex;flex-direction:column;border-top:1px solid var(--hair)}
+.grab{width:36px;height:5px;border-radius:3px;background:var(--stone);opacity:.5;margin:8px auto 0}
+.sheeth{display:flex;align-items:center;justify-content:space-between;padding:12px 12px 8px 20px}
+.amount{text-align:center;padding:12px 0 8px}
+.amount .d-md{font-variant-numeric:tabular-nums}
+.hs{display:flex;gap:10px;overflow:hidden;margin:0 -20px;padding:0 20px}
+.acard{width:172px;flex-shrink:0}
+.qa{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.qa > div{display:flex;flex-direction:column;align-items:center;gap:8px;font-size:12px;font-weight:500;letter-spacing:0;color:var(--mute)}
+.qa .ib{width:52px;height:52px}
+/* .addm: the add menu's 3-column grid of 52px plates over 12px labels (the .qa shape) */
+.addm{display:grid;grid-template-columns:repeat(3,1fr);gap:20px 8px}
+.addm > div{display:flex;flex-direction:column;align-items:center;gap:8px;font-size:13px;font-weight:600;letter-spacing:0;color:var(--text);text-align:center}
+.addm .ib{width:56px;height:56px}
+/* .sw.custom: the last swatch, a hue ring around a plus; filled with the custom colour once one is picked */
+.sw.custom{background:conic-gradient(red,#ff0,lime,cyan,blue,#f0f,red);display:grid;place-items:center;position:relative}
+.sw.custom::before{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--bg)}
+.sw.custom .i{position:relative;color:var(--text)}
+/* .wheel: hue by angle, saturation by radius; brightness is the slider under it */
+.wheel{width:248px;height:248px;border-radius:50%;margin:8px auto 24px;position:relative;background:radial-gradient(circle closest-side,#fff,rgba(255,255,255,0) 100%),conic-gradient(from 90deg,red,#f0f,blue,cyan,lime,#ff0,red)}
+.wheel .knob,.slider .knob{position:absolute;width:28px;height:28px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25),0 2px 6px rgba(0,0,0,.3);transform:translate(-50%,-50%)}
+.slider{height:28px;border-radius:var(--r-full);position:relative;margin-bottom:24px}
+.slider .knob{top:50%}
+/* .icg: icon grid, 6 columns of 44px plates; .on is chip-on */
+.icg{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+.icg .ib.on{background:var(--chip-on);color:var(--chip-on-t)}
+.ph-sheet{position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;flex-direction:column;justify-content:flex-end}
+.sheetp{background:var(--sheet);border-radius:var(--r-lg) var(--r-lg) 0 0;border-top:1px solid var(--hair);padding:0 20px 42px}
+.ph-alert{position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:40px}
+.alertbox{background:var(--bg-2);border-radius:var(--r-lg);padding:24px;width:100%;text-align:center;border:1px solid var(--card-b)}
+
+/* ---- web shell: the app in a browser at 768px and wider (pernce_design.md, Responsive Behavior) ---- */
+.web{width:1440px;min-height:960px;display:grid;grid-template-columns:240px 1fr;position:relative}
+.web.md{width:768px;min-height:1024px;grid-template-columns:72px 1fr}
+.side{border-right:1px solid var(--hair);padding:24px 16px;display:flex;flex-direction:column;gap:4px}
+.side > .btn{margin-bottom:20px}
+.logo{display:flex;align-items:center;gap:10px;padding:0 12px 24px;font-size:20px;font-weight:600;letter-spacing:-.2px}
+.logo .m{width:32px;height:32px;border-radius:9px;background:var(--primary);color:#fff;display:grid;place-items:center;font-size:16px;font-weight:700}
+/* .sb: a sidebar item; .on is the dock's active tab stretched to a row (--brand at 18%, icon in --brand, label in --text) */
+.sb{display:flex;align-items:center;gap:12px;height:44px;padding:0 14px;border-radius:var(--r-full);color:var(--stone);font-size:15px;font-weight:600;letter-spacing:0}
+.sb.on{background:color-mix(in srgb,var(--brand) 18%,transparent);color:var(--text)}.sb.on .i{color:var(--brand)}
+.side .who{margin-top:auto;display:flex;align-items:center;gap:10px;height:56px;padding:0 10px;border-radius:var(--r-full);font-size:14px;letter-spacing:0}
+.side .who.on{background:color-mix(in srgb,var(--brand) 18%,transparent)}
+/* .rail: 72px, the dock's tabs stacked; add button on top, profile at the bottom */
+.rail{border-right:1px solid var(--hair);padding:20px 0 24px;display:flex;flex-direction:column;align-items:center;gap:16px}
+.rail .add{width:48px;height:48px;border-radius:50%;background:var(--primary);color:#fff;display:grid;place-items:center;margin-bottom:12px}
+.rail .tab{flex:none;width:72px}
+.rail .who{margin-top:auto;padding:4px;border-radius:50%}
+.rail .who.on{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--brand)}
+.wm{padding:40px 48px 64px;min-width:0}
+.web.md .wm{padding:32px 32px 48px}
+.wnarrow{max-width:720px;margin:0 auto}
+.wtop{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;gap:16px;min-height:48px}
+.crumb{font-size:14px;color:var(--stone);display:flex;align-items:center;gap:6px;margin-bottom:8px;letter-spacing:0}
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.g4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px}
+.g-main{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:24px}
+/* .g-side: a detail page; the list grows, the summary column stays 360 */
+.g-side{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:24px;align-items:start}
+.tbl{width:100%;border-collapse:collapse;font-size:14px;letter-spacing:0}
+.tbl th{text-align:left;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--stone);padding:0 12px 12px;border-bottom:1px solid var(--hair)}
+.tbl td{padding:14px 12px;border-bottom:1px solid var(--divider);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:0}
+.tbl .r{text-align:right}
+.tbl .dayrow td{padding:20px 12px 8px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--stone);border-bottom:0}
+.search{height:44px;border-radius:var(--r-full);background:var(--chip);display:flex;align-items:center;gap:10px;padding:0 16px;color:var(--stone);font-size:14px;width:320px;letter-spacing:0}
+/* pointer and keyboard states (web only): .hov is the hover fill, .kf the keyboard focus ring */
+.hov,.tbl tr.hov td{box-shadow:inset 0 0 0 9999px var(--hover)}
+.tx.hov,.li.hov{margin:0 -16px;padding:0 16px;border-radius:var(--r-md)}
+.kf{outline:2px solid var(--brand);outline-offset:2px}
+/* dialogs: the wide-screen form of sheets (forms 560, choices 440), over a 50% black dim */
+.wdim{position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:3}
+.dlg{background:var(--sheet);border:1px solid var(--hair);border-radius:var(--r-lg);width:560px;max-height:88%;display:flex;flex-direction:column;overflow:hidden}
+.dlg.sm{width:440px}
+.dlg-h{display:flex;align-items:center;justify-content:space-between;padding:20px 20px 4px 28px;flex-shrink:0}
+.dlg-b{padding:16px 28px 8px;overflow:hidden;display:flex;flex-direction:column}
+.dlg-f{display:flex;align-items:center;gap:12px;justify-content:flex-end;padding:16px 28px 24px;border-top:1px solid var(--divider);flex-shrink:0;margin-top:auto}
+/* .pop: the add menu as a popover under the Add button; no dim, closes on outside click */
+.pop{position:absolute;background:var(--sheet);border:1px solid var(--hair);border-radius:var(--r-lg);padding:20px 12px 16px;width:320px;z-index:3}
+/* first run: storytelling band beside the form */
+.wsplit{width:1440px;height:960px;display:grid;grid-template-columns:1fr 1fr}
+.wsplit .band{background:var(--inset);padding:64px;display:flex;flex-direction:column;justify-content:space-between}
+.wsplit .formside{display:flex;align-items:center;justify-content:center;padding:64px}
+
+/* ---- foundations ---- */
+.fd{width:1440px;padding:64px}
+.swg{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:16px}
+.swc{border-radius:var(--r-md);overflow:hidden;border:1px solid var(--hair)}
+.swc .c{height:80px}
+.swc .m{padding:10px 12px;font-size:12px;letter-spacing:0;line-height:1.5}
+.swc .m b{display:block;font-size:13px}
+.maptbl td,.maptbl th{padding:10px 12px}
+.maptbl .sw2{display:inline-block;width:18px;height:18px;border-radius:5px;vertical-align:middle;margin-right:8px;border:1px solid rgba(128,128,128,.35)}
+.typerow{display:grid;grid-template-columns:180px 1fr 220px;gap:24px;align-items:baseline;padding:16px 0;border-bottom:1px solid var(--divider)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3.5 11.5 12 4l8.5 7.5"/><path d="M5.5 10v9a1 1 0 0 0 1 1h4v-5.5h3V20h4a1 1 0 0 0 1-1v-9"/></symbol>
+    <symbol id="i-wallet" viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="13" rx="3"/><path d="M2.5 10.5h19M15 15h4"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M4 6h3M10.5 6H20M4 12h3M10.5 12H20M4 18h3M10.5 18H20"/></symbol>
+    <symbol id="i-pie" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5V12l7 4"/></symbol>
+    <symbol id="i-bar" viewBox="0 0 24 24"><path d="M5 20V11M11.5 20V5M18 20v-8M2.5 20h19"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.3" cy="10.3" r="6.3"/><path d="M20 20l-4.6-4.6"/></symbol>
+    <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 6h16M7.5 12h9M10.5 18h3"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="i-cr" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+    <symbol id="i-cl" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+    <symbol id="i-cd" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3.5" y="5.5" width="17" height="15" rx="2.2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="M6 17 17 6M9 6h8v8"/></symbol>
+    <symbol id="i-dl" viewBox="0 0 24 24"><path d="M17 6 6 17M6 9v8h8"/></symbol>
+    <symbol id="i-swap" viewBox="0 0 24 24"><path d="M4 8h13M13.5 4 17 8l-3.5 4M20 16H7M10.5 12 7 16l3.5 4"/></symbol>
+    <symbol id="i-food" viewBox="0 0 24 24"><path d="M7.5 3v6a1.6 1.6 0 0 0 3.2 0V3M9.1 9v12M16.5 3c2.1 1.3 2.1 5.6 0 7.7l-1 .9V21"/></symbol>
+    <symbol id="i-car" viewBox="0 0 24 24"><path d="M4 16.5 5.4 11a2 2 0 0 1 1.9-1.5h9.4a2 2 0 0 1 1.9 1.5l1.4 5.5"/><rect x="3" y="16.5" width="18" height="4" rx="1.6"/></symbol>
+    <symbol id="i-bag" viewBox="0 0 24 24"><path d="M6.2 8h11.6l-1 12.5H7.2L6.2 8z"/><path d="M9 8V6.2a3 3 0 0 1 6 0V8"/></symbol>
+    <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2 4.5 14h6l-1 8 9-12h-6l1-8z"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8.3 15.5 12 10 15.7V8.3z"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7.2-4.5-9.6-9.1A5 5 0 0 1 12 6a5 5 0 0 1 9.6 4.9C19.2 15.5 12 20 12 20z"/></symbol>
+    <symbol id="i-coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v10M9.6 14.8c0 1.3 1.1 1.9 2.4 1.9s2.4-.6 2.4-1.8c0-1.2-1-1.6-2.4-2-1.4-.4-2.4-.8-2.4-2 0-1.1 1.1-1.7 2.4-1.7s2.3.5 2.3 1.6"/></symbol>
+    <symbol id="i-brief" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8.5 7V5.5a1.5 1.5 0 0 1 1.5-1.5h4a1.5 1.5 0 0 1 1.5 1.5V7M3 12.5h18"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></symbol>
+    <symbol id="i-face" viewBox="0 0 24 24"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2M9 9.5v1M15 9.5v1M12 9.5V13h-1M9.5 16c1.5 1 3.5 1 5 0"/></symbol>
+    <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18.5h10.5a4 4 0 0 0 .6-8 6 6 0 0 0-11.6 1.6A3.3 3.3 0 0 0 7 18.5z"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.7-3.5M4 5v4h4M4 13a8 8 0 0 0 14.7 3.5M20 19v-4h-4"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v11M7 10.5l5 5 5-5M4.5 20h15"/></symbol>
+    <symbol id="i-upl" viewBox="0 0 24 24"><path d="M12 15.5V4.5M7 9l5-5 5 5M4.5 20h15"/></symbol>
+    <symbol id="i-tag" viewBox="0 0 24 24"><path d="M3.5 12.2V4.5a1 1 0 0 1 1-1h7.7l8.3 8.3a1.4 1.4 0 0 1 0 2l-6.2 6.2a1.4 1.4 0 0 1-2 0z"/><circle cx="8" cy="8" r="1.4"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.4 3.5 5.3 3.5 8.5s-1.1 6.1-3.5 8.5c-2.4-2.4-3.5-5.3-3.5-8.5s1.1-6.1 3.5-8.5z"/></symbol>
+    <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="M11 12l8.5-8.5M16 7l2.5 2.5M18 5l2 2"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="m3.5 7 8.5 6 8.5-6"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c1.2-3.6 4-5.3 7.5-5.3s6.3 1.7 7.5 5.3"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4.5 7h15M9.5 7V5h5v2M6.5 7l1 13h9l1-13M10 11v5M14 11v5"/></symbol>
+    <symbol id="i-archive" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="4.5" rx="1"/><path d="M5 9v9.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9M10 13h4"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5.5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18.5" cy="12" r="1.2"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3.5 5 6v5.5c0 4.5 3 7.7 7 9 4-1.3 7-4.5 7-9V6z"/><path d="m9 12 2.2 2.2L15.5 10"/></symbol>
+    <symbol id="i-out" viewBox="0 0 24 24"><path d="M14 4.5h4a1.5 1.5 0 0 1 1.5 1.5v12a1.5 1.5 0 0 1-1.5 1.5h-4M10 16l4-4-4-4M14 12H4"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="11" height="11" rx="2"/><path d="M15.5 8.5V6a1.5 1.5 0 0 0-1.5-1.5H6A1.5 1.5 0 0 0 4.5 6v8A1.5 1.5 0 0 0 6 15.5h2.5"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5M12 7.8v.2"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4 2.8 19.5h18.4z"/><path d="M12 10v4.5M12 17v.2"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M6 3.5h8l4 4v13H6z"/><path d="M14 3.5v4h4M9 13h6M9 16.5h6"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+    <symbol id="i-fit" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></symbol>
+    <symbol id="i-mode" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></symbol>
+    <symbol id="i-lang" viewBox="0 0 24 24"><path d="M3.5 6h10M8.5 3.5V6M6 6c.8 3 2.8 5.4 5.5 6.6M11 6c-.8 3.2-3 5.8-6.5 7.2M12.5 20.5l4-9 4 9M13.8 17.5h5.4"/></symbol>
+  </defs>
+</svg>
+
+<div class="studio">
+  <header class="topbar">
+    <div class="brandmark" aria-hidden="true">P</div>
+    <div class="file"><b>Pernce — Product design</b><span>docs/design · source: pernce_design.md</span></div>
+    <div class="tb-spacer"></div>
+    <div class="tb-seg" role="group" aria-label="Show modes">
+      <button type="button" data-show="both" aria-pressed="true">Both</button>
+      <button type="button" data-show="dark" aria-pressed="false">Dark</button>
+      <button type="button" data-show="light" aria-pressed="false">Light</button>
+    </div>
+    <button type="button" class="tb-btn" id="zout" aria-label="Zoom out">−</button>
+    <button type="button" class="tb-btn zoom" id="zlabel" aria-label="Reset zoom to 100%">100%</button>
+    <button type="button" class="tb-btn" id="zin" aria-label="Zoom in">+</button>
+    <button type="button" class="tb-btn" id="zfit"><svg class="i s"><use href="#i-fit"/></svg>Fit</button>
+    <button type="button" class="tb-btn" id="uitheme" aria-label="Toggle studio theme"><svg class="i s"><use href="#i-sun"/></svg></button>
+  </header>
+  <nav class="panel" aria-label="Pages and layers">
+    <div class="p-sec">
+      <div class="p-h">Pages</div>
+      <div id="pages"></div>
+    </div>
+    <div class="p-sec" style="border-bottom:0">
+      <div class="p-h">Layers</div>
+      <div id="layers"></div>
+    </div>
+  </nav>
+  <main class="viewport" id="vp" aria-label="Canvas">
+    <div class="world" id="world"></div>
+  </main>
+  <aside class="panel right" aria-label="Inspector">
+    <div class="insp" id="insp"></div>
+  </aside>
+</div>
+
+<script>
+/* =========================================================================
+   Helpers
+   ========================================================================= */
+const I = (n, c = '') => `<svg class="i ${c}" aria-hidden="true"><use href="#i-${n}"/></svg>`;
+const av = (bg, inner, size = '') => `<span class="av ${size}" style="background:${bg}">${inner}</span>`;
+const C = { teal:'#0e8f8a', lblue:'#2b7fd4', lgreen:'#3f8c2c', yellow:'#a68700', warn:'#df7a06', pink:'#d6325f', danger:'#d63a3a', brown:'#8c6656', primary:'#0b7a62', slate:'#5e6a7e', violet:'#7046cc', cyan:'#0f7f9c' };
+const CAT = {
+  food:{c:C.warn,i:'food',n:'Food & Dining'}, transport:{c:C.lblue,i:'car',n:'Transport'},
+  shopping:{c:C.pink,i:'bag',n:'Shopping'}, bills:{c:C.teal,i:'bolt',n:'Bills & Utilities'},
+  fun:{c:C.yellow,i:'play',n:'Entertainment'}, health:{c:C.brown,i:'heart',n:'Health'},
+  income:{c:C.lgreen,i:'coin',n:'Freelance'}, salary:{c:C.lgreen,i:'brief',n:'Salary'},
+  transfer:{c:C.slate,i:'swap',n:'Transfer'}
+};
+const ACC = [
+  {n:'Chase Checking', ab:'CH', c:C.lblue, type:'Bank', cur:'USD', bal:'$3,120.40', base:'$3,120.40'},
+  {n:'Ecobank', ab:'EB', c:C.teal, type:'Bank', cur:'XOF', bal:'XOF 850,000.00', base:'$1,513.00'},
+  {n:'Wise Multi-currency', ab:'WS', c:C.pink, type:'Bank', cur:'CAD', bal:'CAD 1,275.00', base:'$933.43'},
+  {n:'MTN MoMo', ab:'MM', c:C.yellow, type:'Mobile money', cur:'GHS', bal:'GHS 4,250.00', base:'$291.13'},
+  {n:'Orange Money', ab:'OM', c:C.warn, type:'Mobile money', cur:'XAF', bal:'XAF 128,000.00', base:'$227.84'},
+  {n:'Vanguard Brokerage', ab:'VG', c:C.primary, type:'Investment', cur:'USD', bal:'$12,480.15', base:'$12,480.15', note:'+3.2% YTD'}
+];
+const TX = [
+  {day:'Today · Sep 14', n:'Osu Night Market', c:'food', acc:'MTN MoMo', amt:'−GHS 42.50', base:'≈ $2.91'},
+  {day:'Today · Sep 14', n:'Freelance payment', c:'income', acc:'Chase Checking', amt:'+$450.00', pos:true},
+  {day:'Yesterday · Sep 13', n:'Uber', c:'transport', acc:'Chase Checking', amt:'−$18.40'},
+  {day:'Yesterday · Sep 13', n:'Electricity (ECG)', c:'bills', acc:'MTN MoMo', amt:'−GHS 210.00', base:'≈ $14.39'},
+  {day:'Sep 12', n:'Chase → MTN MoMo', c:'transfer', acc:'Transfer · fee $2.00', amt:'$300.00', base:'→ GHS 4,380.00'},
+  {day:'Sep 12', n:'Amazon', c:'shopping', acc:'Wise Multi-currency', amt:'−CAD 64.99', base:'≈ $47.58'},
+  {day:'Sep 11', n:'Netflix', c:'fun', acc:'Chase Checking', amt:'−$15.99'},
+  {day:'Sep 10', n:'Pharmacie du Plateau', c:'health', acc:'Ecobank', amt:'−XOF 12,500.00', base:'≈ $22.25'},
+  {day:'Sep 10', n:'Salary', c:'salary', acc:'Chase Checking', amt:'+$1,690.00', pos:true}
+];
+const BUD = [
+  {c:'food', spent:'GHS 1,542.50', lim:'2,000', pct:77, state:'near', left:'GHS 457.50 left'},
+  {c:'transport', spent:'$210', lim:'$300', pct:70, state:'ok', left:'$90 left'},
+  {c:'shopping', spent:'$340', lim:'$250', pct:100, state:'over', left:'Over by $90'},
+  {c:'bills', spent:'GHS 210', lim:'400', pct:52, state:'ok', left:'GHS 190 left'},
+  {c:'fun', spent:'$28', lim:'$60', pct:47, state:'ok', left:'$32 left'}
+];
+const CUR = [['USD','$16,533.55'],['XOF','850,000.00'],['CAD','1,275.00'],['GHS','4,250.00'],['XAF','128,000.00']];
+
+const catAv = (k, size = 'sm') => av(CAT[k].c, I(CAT[k].i, size === 'sm' ? 's' : ''), size);
+const chip = (t, on, extra = '') => `<span class="chip ${on ? 'on' : ''}">${t}${extra}</span>`;
+const btn = (t, k = 'p', icon = '', cls = '') => `<span class="btn ${k} ${cls}">${icon ? I(icon, 's') : ''}${t}</span>`;
+const field = (label, val, o = {}) => `<div class="field">${label ? `<label class="fl-l">${label}</label>` : ''}<div class="in ${o.ph ? 'pl' : ''} ${o.focus ? 'focus' : ''} ${o.err ? 'err' : ''}">${o.lead || ''}<span class="grow" ${o.mono ? 'style="font-family:var(--mono)"' : ''}>${val}</span>${o.trail || ''}</div>${o.help ? `<div class="help ${o.err ? 'err' : ''}">${o.help}</div>` : ''}</div>`;
+const select = (label, val, lead) => field(label, val, {lead, trail: I('cd', 's')});
+const seg = (opts, on) => `<div class="seg">${opts.map((o, i) => `<span class="${i === on ? 'on' : ''}">${o}</span>`).join('')}</div>`;
+const prog = (pct, col) => `<div class="prog"><i style="width:${Math.min(pct, 100)}%;background:${col}"></i></div>`;
+const lbl = (t, s = '') => `<div class="lbl" style="${s}">${t}</div>`;
+const status = (state, t) => {
+  const col = state === 'over' ? 'var(--neg)' : state === 'near' ? C.warn : 'var(--pos)';
+  return `<span class="rs cap" style="gap:6px;color:var(--mute)"><span class="dot" style="background:${col}"></span>${t}</span>`;
+};
+const budColor = b => b.state === 'over' ? C.danger : CAT[b.c].c;
+
+function txRow(t) {
+  const k = CAT[t.c];
+  return `<div class="tx">${catAv(t.c)}<div class="grow"><div class="tx-n">${t.n}</div><div class="tx-s">${t.c === 'transfer' ? t.acc : `${k.n} · ${t.acc}`}</div></div><div class="tx-a ${t.pos ? 'pos' : ''}">${t.amt}${t.base ? `<div class="tx-s">${t.base}</div>` : ''}</div></div>`;
+}
+function txGrouped(list) {
+  let out = '', d = '';
+  list.forEach(t => { if (t.day !== d) { out += lbl(t.day.toUpperCase(), d ? '' : 'margin-top:8px'); d = t.day; } out += txRow(t); });
+  return out;
+}
+function accRow(a) {
+  return `<div class="tx">${av(a.c, a.ab, 'sm')}<div class="grow"><div class="tx-n">${a.n}</div><div class="tx-s" ${a.note ? 'style="color:var(--pos-t)"' : ''}>${a.note || `${a.type} · ${a.cur}`}</div></div><div class="tx-a">${a.bal}${a.cur !== 'USD' ? `<div class="tx-s">≈ ${a.base}</div>` : ''}</div></div>`;
+}
+function budCard(b) {
+  const k = CAT[b.c];
+  return `<div class="card" style="${b.state === 'over' ? 'border-color:var(--neg)' : ''}">
+    <div class="row" style="margin-bottom:12px">${'<span class="rs">' + catAv(b.c) + `<span class="smb">${k.n}</span></span>`}<span class="cap num mute">${b.spent} / ${b.lim}</span></div>
+    ${prog(b.pct, budColor(b))}
+    <div class="row" style="margin-top:10px">${status(b.state, b.state === 'over' ? b.left : b.state === 'near' ? `Near limit · ${b.left}` : `On track · ${b.left}`)}<span class="cap stone num">${b.pct}%</span></div>
+  </div>`;
+}
+
+/* charts */
+/* donut(): `sel` (an index into segs) is the picked slice: the others dim
+   to 30% and the hole shows its name, amount and share, with a "View" link
+   to its spending (none for Other or Uncategorized). */
+function donut(segs, size = 132, sw = 16, sel = null) {
+  const r = (size - sw) / 2, cx = size / 2, Cc = 2 * Math.PI * r; let off = 0;
+  const arcs = segs.map((s, i) => { const len = Cc * s.v / 100; const a = `<circle cx="${cx}" cy="${cx}" r="${r}" fill="none" stroke="${s.c}" stroke-width="${sw}" stroke-dasharray="${Math.max(len - 2, 0)} ${Cc}" stroke-dashoffset="${-off}"${sel !== null && i !== sel ? ' opacity=".3"' : ''}/>`; off += len; return a; }).join('');
+  const svg = `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" aria-hidden="true"><g transform="rotate(-90 ${cx} ${cx})">${arcs}</g></svg>`;
+  if (sel === null) return svg;
+  const k = segs[sel];
+  return `<div class="dnut" style="width:${size}px;height:${size}px">${svg}<div class="ctr"><span class="cap mute">${k.n}</span><span class="${size > 150 ? 'h-sm' : 'bb'} num">${SPEND_AMT[sel]}</span><span class="cap"><span class="mute num">${k.v}%</span>${k.n === 'Other' ? '' : ` · <span class="link">View</span>`}</span></div></div>`;
+}
+const SPEND = [{n:'Food & Dining',v:34,c:C.warn},{n:'Transport',v:22,c:C.lblue},{n:'Shopping',v:18,c:C.pink},{n:'Bills & Utilities',v:14,c:C.teal},{n:'Entertainment',v:8,c:C.yellow},{n:'Health',v:4,c:C.brown}];
+const SPEND_AMT = ['$505.58', '$327.14', '$267.66', '$208.18', '$118.96', '$59.48'];
+const legend = (amts, sel = null) => `<div class="legend grow">${SPEND.map((s, i) => `<div class="row${sel === null ? '' : i === sel ? ' on' : ' dim'}"><span class="rs" style="gap:8px"><span class="dot" style="background:${s.c}"></span>${s.n}</span><span class="num mute">${amts ? amts[i] + ' · ' : ''}${s.v}%</span></div>`).join('')}</div>`;
+function bars(w, h) {
+  const d = [[1.9,1.4],[2.2,1.6],[2.0,1.7],[2.5,1.6],[2.3,1.8],[2.14,1.49]], m = 2.8, n = d.length;
+  const gw = w / n, bw = Math.min(18, gw / 3.2);
+  let s = `<svg width="100%" height="${h + 22}" viewBox="0 0 ${w} ${h + 22}" preserveAspectRatio="none" aria-hidden="true">`;
+  [0, .5, 1].forEach(f => s += `<line x1="0" x2="${w}" y1="${h - h * f + .5}" y2="${h - h * f + .5}" stroke="var(--grid)"/>`);
+  d.forEach((p, i) => { const x = i * gw + gw / 2; const h1 = h * p[0] / m, h2 = h * p[1] / m;
+    s += `<rect x="${x - bw - 2}" y="${h - h1}" width="${bw}" height="${h1}" rx="3" fill="${C.primary}"/><rect x="${x + 2}" y="${h - h2}" width="${bw}" height="${h2}" rx="3" fill="var(--muted-bar)"/>`;
+    s += `<text x="${x}" y="${h + 17}" text-anchor="middle" font-size="12" fill="var(--stone)" font-family="Inter">${['Apr','May','Jun','Jul','Aug','Sep'][i]}</text>`; });
+  return s + '</svg>';
+}
+function line(w, h, pts = [70, 62, 64, 50, 42, 28, 14], fill = true) {
+  const n = pts.length, xs = pts.map((_, i) => i * w / (n - 1)), ys = pts.map(p => p * h / 90);
+  const poly = xs.map((x, i) => `${x.toFixed(1)},${ys[i].toFixed(1)}`).join(' ');
+  return `<svg width="100%" height="${h}" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true">${[.25,.5,.75].map(f => `<line x1="0" x2="${w}" y1="${h * f}" y2="${h * f}" stroke="var(--grid)"/>`).join('')}${fill ? `<polygon points="0,${h} ${poly} ${w},${h}" fill="${C.primary}" opacity=".12"/>` : ''}<polyline points="${poly}" fill="none" stroke="${C.primary}" stroke-width="2.5" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><circle cx="${xs[n-1]}" cy="${ys[n-1]}" r="4" fill="${C.primary}"/></svg>`;
+}
+const exposure = () => `<div style="display:flex;height:12px;border-radius:9999px;overflow:hidden;gap:2px;margin-bottom:14px"><i style="width:85%;background:${C.primary}"></i><i style="width:8%;background:${C.teal}"></i><i style="width:5%;background:${C.pink}"></i><i style="width:1.2%;background:${C.yellow}"></i><i style="width:1%;background:${C.warn}"></i></div>
+  <div class="legend">${[['USD','$16,533.55',85,C.primary],['XOF','$1,513.00',8,C.teal],['CAD','$933.43',5,C.pink],['GHS','$291.13',1.6,C.yellow],['XAF','$227.84',1.2,C.warn]].map(r => `<div class="row"><span class="rs" style="gap:8px"><span class="dot" style="background:${r[3]}"></span>${r[0]}</span><span class="num mute">${r[1]} · ${r[2]}%</span></div>`).join('')}</div>`;
+
+/* trend(): line chart for change over time (Money in vs out, Net worth).
+   Gridlines sit on round values, labelled short ($1k) in a 40px right
+   gutter so labels never cover data; day or month labels underneath.
+   One series: 2.5px brand line, fading fill, dot on the latest point.
+   Several: 2px lines, legend with line keys. The axis starts at 0 unless
+   `fit` (net worth); the fill fades out so it doesn't imply a zero base.
+   `slots` > points leaves the rest of a part-finished month empty.
+   `at` draws the scrub state: crosshair, ringed dots and the readout. */
+const short = v => (v < 0 ? '−' : '') + '$' + (Math.abs(v) >= 1e3 ? +(Math.abs(v) / 1e3).toFixed(Math.abs(v) >= 1e4 ? 0 : 1) + 'k' : Math.round(Math.abs(v)));
+const money = v => (v < 0 ? '−' : '') + '$' + Math.abs(v).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+function niceTicks(lo, hi, n = 3) {
+  if (hi <= lo) hi = lo + 1;
+  const raw = (hi - lo) / n, p = 10 ** Math.floor(Math.log10(raw)), f = raw / p;
+  const step = (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * p, out = [];
+  for (let v = Math.floor(lo / step) * step; v <= Math.ceil(hi / step) * step + step / 2; v += step) out.push(v);
+  return out;
+}
+function trend(w, o) {
+  const h = o.h || 140, T = 8, pw = w - 40, n = o.series[0].v.length, slots = o.slots || n, one = o.series.length === 1;
+  const x = i => 4 + i * (pw - 8) / (slots - 1);
+  const all = o.series.flatMap(s => s.v), ticks = niceTicks(o.fit ? Math.min(...all) : 0, Math.max(...all));
+  const y0 = ticks[0], y1 = ticks[ticks.length - 1], y = v => T + h - (v - y0) / (y1 - y0) * h;
+  const P = vs => vs.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`);
+  let s = `<svg width="${w}" height="${T + h + 24}" viewBox="0 0 ${w} ${T + h + 24}" style="display:block;width:100%;height:auto;overflow:visible" aria-hidden="true">`;
+  ticks.forEach(t => { const gy = Math.round(y(t)) + .5; s += `<line x1="0" x2="${pw}" y1="${gy}" y2="${gy}" stroke="var(--grid)"/><text x="${w}" y="${gy + 4}" text-anchor="end" font-size="11" fill="var(--stone)" font-family="Inter" style="font-variant-numeric:tabular-nums">${short(t)}</text>`; });
+  o.axis.forEach(([i, t]) => { const ax = x(i), a = ax < 14 ? 'start' : ax > pw - 14 ? 'end' : 'middle'; s += `<text x="${a === 'start' ? 0 : a === 'end' ? pw : ax}" y="${T + h + 18}" text-anchor="${a}" font-size="12" fill="var(--stone)" font-family="Inter">${t}</text>`; });
+  if (one) { const p = P(o.series[0].v); s += `<defs><linearGradient id="trend-fill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="${C.primary}" stop-opacity=".16"/><stop offset="1" stop-color="${C.primary}" stop-opacity="0"/></linearGradient></defs><path d="M${p.join('L')}L${x(n - 1)},${T + h}L${x(0)},${T + h}Z" fill="url(#trend-fill)"/>`; }
+  o.series.forEach(sr => s += `<polyline points="${P(sr.v).join(' ')}" fill="none" stroke="${sr.c}" stroke-width="${one ? 2.5 : 2}" stroke-linejoin="round" stroke-linecap="round"/>`);
+  if (one && o.at == null) s += `<circle cx="${x(n - 1)}" cy="${y(o.series[0].v[n - 1])}" r="4" fill="${C.primary}" stroke="var(--card)" stroke-width="2"/>`;
+  let tip = '';
+  if (o.at != null) {
+    const i = o.at, cx = x(i);
+    s += `<line x1="${cx}" x2="${cx}" y1="${T}" y2="${T + h}" stroke="var(--text)" stroke-opacity=".35"/>`;
+    o.series.forEach(sr => s += `<circle cx="${cx}" cy="${y(sr.v[i])}" r="4" fill="${sr.c}" stroke="var(--card)" stroke-width="2"/>`);
+    const rows = o.series.map(sr => `<div class="rr"><i style="background:${sr.c}"></i><b>${money(sr.v[i])}</b><span>${sr.n}</span></div>`).join('')
+      + (o.extra ? o.extra(i) : []).map(([v, t]) => `<div class="rr"><b>${v}</b><span>${t}</span></div>`).join('');
+    tip = `<div class="readout" style="left:${Math.max(0, Math.min(cx - 98, w - 196)).toFixed(0)}px;bottom:${h + 32}px"><div class="rt">${o.title(i)}</div>${rows}</div>`;
+  }
+  return `<div class="trend">${s}</svg>${tip}</div>`;
+}
+/* Sep 1–14 as running totals, from the sample transactions above. */
+const run = ev => { let t = 0; return Array.from({length: 14}, (_, i) => t += ev[i + 1] || 0); };
+const MTD_IN = run({10: 1690, 14: 450});
+const MTD_OUT = run({1: 60, 2: 180, 3: 100, 4: 106, 5: 75, 6: 95.75, 7: 145.61, 8: 130, 9: 117.42, 10: 118.25, 11: 89.99, 12: 92.58, 13: 96.3, 14: 80.1});
+const MTD_NW = MTD_IN.map((v, i) => 17791.82 + v - MTD_OUT[i] + [12, -8, 5, 18, -6, 9, -14, 3, 11, -5, 7, -9, 4, 0][i]);
+const SEP_AXIS = [[0, 'Sep 1'], [7, '8'], [14, '15'], [21, '22'], [28, '29']];
+
+/* =========================================================================
+   Mobile shell
+   ========================================================================= */
+const sbarIcons = `<svg width="72" height="14" viewBox="0 0 72 14" aria-hidden="true" fill="currentColor"><rect x="0" y="9" width="3" height="4" rx="1"/><rect x="5" y="6.5" width="3" height="6.5" rx="1"/><rect x="10" y="4" width="3" height="9" rx="1"/><rect x="15" y="1.5" width="3" height="11.5" rx="1"/><path d="M31 3.2a9 9 0 0 1 11 0l-1.4 1.6a6.8 6.8 0 0 0-8.2 0zM33.4 6a5.4 5.4 0 0 1 6.2 0l-1.5 1.6a3.2 3.2 0 0 0-3.2 0zM36.5 9l1.6 1.8-1.6 1.6-1.6-1.6z"/><rect x="47.5" y="1.5" width="21" height="11" rx="3.2" fill="none" stroke="currentColor" opacity=".45"/><rect x="49.5" y="3.5" width="15" height="7" rx="1.8"/><rect x="69.5" y="5" width="1.6" height="4" rx=".8" opacity=".45"/></svg>`;
+const TABS = [['home','Home'],['wallet','Accounts'],['list','Activity'],['pie','Insights']];
+/* .tabbar: the floating dock. Four tabs in a capsule, add button beside it (opens the add menu, M14). */
+const tabbar = on => `<div class="tabbar"><nav>${TABS.map(([i, t]) => `<span class="tab ${t === on ? 'on' : ''}"><span class="ind">${I(i)}</span>${t}</span>`).join('')}</nav><span class="add" aria-label="Add">${I('plus', 'l')}</span></div>`;
+function phone(body, o = {}) {
+  const sb = `<div class="sbar"><span>9:41</span>${sbarIcons}</div>`;
+  if (o.sheet) return `<div class="ph sheet">${sb}<div class="sheetc"><div class="grab"></div><div class="sheeth"><span class="h-md">${o.sheet}</span><span class="ib sm" aria-label="Close">${I('x', 's')}</span></div><div class="pb" style="padding-top:12px">${body}</div></div><span class="homeind"></span>${o.overlay || ''}</div>`;
+  return `<div class="ph ${o.tab ? 'tabbed' : ''}">${sb}<div class="pb">${body}</div>${o.tab ? tabbar(o.tab) : ''}<span class="homeind"></span>${o.overlay || ''}</div>`;
+}
+const navh = (title, right = '') => `<div class="navh"><span class="ib sm" style="background:transparent" aria-label="Back">${I('cl')}</span><span class="t">${title}</span><span style="min-width:44px;display:flex;justify-content:flex-end">${right}</span></div>`;
+const insh = (on, right = '') => `${pageh('Insights', right)}<div style="margin:-8px 0 20px">${seg(['Budgets', 'Trends'], on)}</div>`;
+const pageh = (title, right = '', gear = true) => `<div class="row" style="margin:8px 0 20px"><h1 class="h-lg">${title}</h1><span class="rs" style="gap:8px">${right}${gear ? `<span class="ib sm" aria-label="Settings">${I('gear', 's')}</span>` : ''}</span></div>`;
+
+/* =========================================================================
+   Mobile screens
+   ========================================================================= */
+const M = [];
+const ms = (sec, id, name, src, notes, render) => M.push({sec, id, name, src, notes, render});
+
+/* ---- Onboarding & security ---- */
+ms('Onboarding & security', 'M01', 'Onboarding — welcome', 'mobile/src/app/onboarding.tsx',
+  'First run. Offline is the default path; sync is opt-in. Base currency drives every converted total.',
+  () => phone(`
+  <div style="width:48px;height:48px;border-radius:14px;background:var(--primary);display:grid;place-items:center;color:#fff;font-size:24px;font-weight:700;margin-top:24px">P</div>
+  <h1 class="d-lg" style="margin:32px 0 12px;line-height:1.05">Every account.<br>Every currency.</h1>
+  <p class="b-lg mute" style="margin-bottom:32px">Pernce keeps your money on this phone. Syncing between devices is optional and end-to-end encrypted.</p>
+  ${field('Your name (optional)', 'Ama', {ph: true})}
+  ${select('Base currency', 'USD — US dollar', `<span class="badge" style="padding:2px 8px">$</span>`)}
+  <div class="help" style="margin:-12px 0 24px">Totals, budgets and analytics convert into this.</div>
+  <div class="col" style="gap:12px;margin-top:auto">${btn('Use offline')}${btn('Create a sync account', 'o')}${btn('Sign in to sync', 'txt')}</div>`));
+
+ms('Onboarding & security', 'M02', 'Onboarding — app lock', 'mobile/src/app/onboarding.tsx',
+  'Optional step after the welcome. The toggle asks the OS to confirm before it turns on.',
+  () => phone(`
+  ${navh('', '<span class="cap stone">2 of 2</span>')}
+  <div class="ib" style="width:72px;height:72px;margin-top:24px">${I('face', 'xl')}</div>
+  <h1 class="h-lg" style="margin:28px 0 12px">App lock</h1>
+  <p class="b mute" style="margin-bottom:28px">Ask for Face ID, fingerprint or your device passcode when opening Pernce.</p>
+  <div class="group"><div class="li">${I('lock', 's')}<span>Require Face ID</span><span class="v"><span class="tg on"></span></span></div><div class="li">${I('refresh', 's')}<span>Lock after</span><span class="v">Immediately ${I('cr', 'xs')}</span></div></div>
+  <div class="note" style="margin-top:16px">${I('info', 's')}<span>You can change this any time in Settings → Security.</span></div>
+  <div class="col" style="gap:12px;margin-top:auto">${btn('Continue')}${btn('Not now', 'txt')}</div>`));
+
+ms('Onboarding & security', 'M03', 'Lock screen', 'mobile/src/components/LockGate.tsx',
+  'Shown over everything when app lock is on and the app returns from background.',
+  () => phone(`
+  <div class="col" style="flex:1;align-items:center;justify-content:center;text-align:center;gap:16px">
+    <div style="width:64px;height:64px;border-radius:18px;background:var(--primary);display:grid;place-items:center;color:#fff;font-size:30px;font-weight:700">P</div>
+    <h1 class="h-md" style="margin-top:16px">Pernce is locked</h1>
+    <p class="sm mute">Unlock with Face ID to see your balances.</p>
+  </div>
+  <div class="col" style="gap:12px">${btn('Unlock', 'p', 'face')}</div>`));
+
+ms('Onboarding & security', 'M04', 'Delete local data — confirm', 'mobile/src/app/settings.tsx',
+  'Destructive confirmations use the system alert pattern; the destructive action is red text, never a red surface.',
+  () => phone(`${pageh('Settings', '', false)}<div class="group">${['Name','Base currency','Categories','Exchange rates'].map(t => `<div class="li"><span>${t}</span><span class="v">${I('cr', 'xs')}</span></div>`).join('')}</div>`, {overlay: `<div class="ph-alert"><div class="alertbox"><div class="ib" style="margin:0 auto 16px;color:var(--neg-t)">${I('trash')}</div><h2 class="h-sm" style="margin-bottom:8px">Delete all local data?</h2><p class="sm mute" style="margin-bottom:24px">Accounts, transactions and budgets on this phone are erased. Your synced copy, if any, is untouched.</p><div class="col" style="gap:10px">${btn('Delete everything', 'danger')}${btn('Cancel', 's')}</div></div></div>`}));
+
+/* ---- Tabs ---- */
+const homeBody = () => `
+  <div class="row" style="margin:8px 0 24px"><div class="h-sm">Ama</div><span aria-label="Settings">${av(C.primary, 'A', 'sm')}</span></div>
+  <div class="cap mute">Total net worth</div>
+  <div class="d-md num" style="margin:4px 0 6px">$18,444.82</div>
+  <div class="rs" style="gap:8px;margin-bottom:20px"><span class="rs pos smb" style="gap:4px">${I('up', 'xs')}+$482.10 (2.7%)</span><span class="cap mute">this month</span></div>
+  <div class="hs" style="margin-bottom:24px">${CUR.map(c => chip(`<span class="stone">${c[0]}</span> ${c[1]}`)).join('')}</div>
+  <div class="qa" style="margin-bottom:8px">${[['plus','Add'],['swap','Transfer'],['pie','Budgets'],['bar','Trends']].map(q => `<div><span class="ib">${I(q[0])}</span>${q[1]}</div>`).join('')}</div>
+  <div class="row" style="margin:28px 0 12px"><h2 class="bb">Accounts</h2><span class="link sm rs" style="gap:2px">See all${I('cr', 'xs')}</span></div>
+  <div class="hs">${ACC.slice(3, 4).concat(ACC[0], ACC[5]).map(a => `<div class="card acard">${av(a.c, a.ab, 'sm')}<div class="cap mute" style="margin-top:16px">${a.n}</div><div class="bb num">${a.bal}</div></div>`).join('')}</div>
+  <div class="card" style="margin-top:24px"><div class="row" style="margin-bottom:12px"><span class="bb">Budgets</span>${status('near', '1 near limit · 1 over')}</div>
+    <div class="row cap mute" style="margin-bottom:6px"><span>Food &amp; Dining</span><span class="num">77%</span></div>${prog(77, C.warn)}
+    <div class="row cap mute" style="margin:14px 0 6px"><span>Shopping</span><span class="num neg">Over by $90</span></div>${prog(100, C.danger)}</div>
+  <div class="row" style="margin:28px 0 4px"><h2 class="bb">Recent activity</h2><span class="link sm rs" style="gap:2px">See all${I('cr', 'xs')}</span></div>
+  ${TX.slice(0, 4).map(txRow).join('')}`;
+ms('Tabs', 'M05', 'Home', 'mobile/src/app/(tabs)/index.tsx',
+  'Net worth in base currency, holdings per currency, quick actions, accounts rail, budget health, recent activity. The header is the name alone (no greeting) with the profile avatar, which opens Settings in place of the gear the other tabs carry.',
+  () => phone(homeBody(), {tab: 'Home'}));
+
+ms('Tabs', 'M06', 'Accounts', 'mobile/src/app/(tabs)/accounts.tsx',
+  'Grouped by account type. Non-base balances show their converted value underneath. Every tab header ends in a gear that opens Settings (M06, M07, M08, M09, M10); Home's avatar does the same job.',
+  () => phone(`
+  ${pageh('Accounts', `<span class="ib sm brand" aria-label="Add account">${I('plus', 's')}</span>`)}
+  <div class="card" style="margin-bottom:8px"><div class="row"><div><div class="cap mute">Total across 6 accounts</div><div class="h-md num">$18,444.82</div></div>${chip('USD', true, I('cd', 'xs'))}</div></div>
+  ${lbl('Bank accounts')}${ACC.slice(0, 3).map(accRow).join('')}
+  ${lbl('Mobile money')}${ACC.slice(3, 5).map(accRow).join('')}
+  ${lbl('Investments')}${accRow(ACC[5])}
+  ${lbl('Archived')}<div class="tx" style="opacity:.6">${av(C.brown, 'BB', 'sm')}<div class="grow"><div class="tx-n">Barclays (old)</div><div class="tx-s">Bank · GBP · Archived</div></div><div class="tx-a">£0.00</div></div>`, {tab: 'Accounts'}));
+
+ms('Tabs', 'M07', 'Activity', 'mobile/src/app/(tabs)/activity.tsx',
+  'Day-grouped ledger. Filter chips combine (type × period × currency); totals reflect the filters.',
+  () => phone(`
+  ${pageh('Activity', `<span class="ib sm" aria-label="Search">${I('search', 's')}</span><span class="ib sm" aria-label="Filters">${I('filter', 's')}</span>`)}
+  <div class="hs" style="margin-bottom:16px">${chip('This month', true, I('cd', 'xs'))}${chip('All types')}${chip('Income')}${chip('Expenses')}${chip('Transfers')}</div>
+  <div class="card" style="margin-bottom:4px"><div class="row">${[['Money in','$2,140.00','pos'],['Money out','$1,486.72',''],['Net','+$653.28','pos']].map(k => `<div class="kpi"><div class="cap">${k[0]}</div><div class="bb num ${k[2]}">${k[1]}</div></div>`).join('')}</div></div>
+  ${txGrouped(TX)}`, {tab: 'Activity'}));
+
+const TX_TRANSPORT = [
+  {day:'Yesterday · Sep 13', n:'Uber', c:'transport', acc:'Chase Checking', amt:'−$18.40'},
+  {day:'Sep 9', n:'Bolt', c:'transport', acc:'MTN MoMo', amt:'−GHS 38.00', base:'≈ $2.60'},
+  {day:'Sep 6', n:'Shell', c:'transport', acc:'Chase Checking', amt:'−$41.20'},
+  {day:'Sep 2', n:'Monthly bus pass', c:'transport', acc:'Chase Checking', amt:'−$65.00'}
+];
+ms('Tabs', 'M07b', 'Activity — one category', 'mobile/src/app/(tabs)/activity.tsx',
+  'Opened from a picked slice (M10b): the category leads the chips as a selected chip with ×, and the period is the one Insights showed (a range Activity has no preset for, e.g. Last 3 months, keeps its own label). Totals and rows cover that category only. × drops the category and the period sheet replaces the period; otherwise both stay, like the other filters.',
+  () => phone(`
+  ${pageh('Activity', `<span class="ib sm" aria-label="Search">${I('search', 's')}</span><span class="ib sm" aria-label="Filters">${I('filter', 's')}</span>`)}
+  <div class="hs" style="margin-bottom:16px">${chip('Transport', true, I('x', 'xs'))}${chip('This month', true, I('cd', 'xs'))}${chip('All types')}${chip('Income')}${chip('Expenses')}</div>
+  <div class="card" style="margin-bottom:4px"><div class="row">${[['Money in','$0.00',''],['Money out','$327.14',''],['Net','−$327.14','neg']].map(k => `<div class="kpi"><div class="cap">${k[0]}</div><div class="bb num ${k[2]}">${k[1]}</div></div>`).join('')}</div></div>
+  ${txGrouped(TX_TRANSPORT)}`, {tab: 'Activity'}));
+
+ms('Tabs', 'M08', 'Activity — empty', 'mobile/src/app/(tabs)/activity.tsx',
+  'Empty state when there are no accounts yet: one clear next step.',
+  () => phone(`
+  ${pageh('Activity')}
+  <div class="empty" style="flex:1;justify-content:center"><div class="ring">${I('list', 'l')}</div><h2 class="h-sm">No transactions yet</h2><p class="sm mute" style="max-width:260px">Add an account first, then record transactions against it.</p><span class="btn p auto" style="margin-top:8px">${I('plus', 's')}Add account</span></div>`, {tab: 'Activity'}));
+
+ms('Tabs', 'M09', 'Insights — Budgets', 'mobile/src/app/(tabs)/insights.tsx',
+  'Insights merges Budgets and Trends behind a segmented control; the last segment used is remembered. Budgets: monthly periods. Over-budget cards take a danger hairline; status is dot + text, never colour alone. New budget (+) shows on this segment only. A card shows the budget\'s own colour and icon (its category\'s until changed) and opens M09a.',
+  () => phone(`
+  ${insh(0, `<span class="ib sm brand" aria-label="New budget">${I('plus', 's')}</span>`)}
+  <div class="row" style="margin-bottom:16px"><span class="ib sm" aria-label="Previous month">${I('cl', 's')}</span><span class="smb">September 2026</span><span class="ib sm" aria-label="Next month">${I('cr', 's')}</span></div>
+  <div class="card" style="margin-bottom:16px"><div class="row" style="margin-bottom:6px"><span class="bb">5 budgets</span>${status('over', '1 over budget')}</div><div class="cap mute">16 days left in this period</div></div>
+  <div class="col" style="gap:12px">${BUD.map(budCard).join('')}</div>`, {tab: 'Insights'}));
+
+ms('Tabs', 'M09a', 'Budget detail', 'mobile/src/app/budgets/[categoryId].tsx',
+  'Tapping a budget card opens this. The summary card is the M09 card at full width; under it, every expense in the budget\'s category that month, newest first, in its own currency with the converted value under it when that differs from the budget\'s. The month row steps through months for the same category; a month with no budget keeps the list and offers "Set budget". Edit (top right) opens M20.',
+  () => phone(`
+  ${navh('Shopping', `<span class="ib sm" style="background:transparent" aria-label="Edit budget">${I('edit')}</span>`)}
+  <div class="row" style="margin-bottom:16px"><span class="ib sm" aria-label="Previous month">${I('cl', 's')}</span><span class="smb">September 2026</span><span class="ib sm" aria-label="Next month">${I('cr', 's')}</span></div>
+  <div class="card" style="border-color:var(--neg);margin-bottom:8px">
+    <div class="col" style="align-items:center;text-align:center;gap:4px;margin-bottom:16px">${catAv('shopping', 'lg')}<div class="d-md num" style="margin-top:10px">$340.00</div><div class="sm stone num">spent of $250.00</div></div>
+    ${prog(100, C.danger)}
+    <div class="row" style="margin-top:10px">${status('over', 'Over by $90')}<span class="cap stone num">136%</span></div>
+  </div>
+  ${lbl('4 transactions')}${[
+    {n:'Amazon', c:'shopping', acc:'Wise Multi-currency', amt:'−CAD 64.99', base:'≈ $47.58'},
+    {n:'Zara', c:'shopping', acc:'Chase Checking', amt:'−$129.00'},
+    {n:'Accra Mall', c:'shopping', acc:'MTN MoMo', amt:'−GHS 1,200.00', base:'≈ $82.20'},
+    {n:'Melcom', c:'shopping', acc:'Chase Checking', amt:'−$81.22'}].map(txRow).join('')}
+  <div class="col" style="gap:12px;margin-top:20px">${btn('Show more', 's')}</div>`));
+
+/* M10 / M10a share one body; `at` is the scrubbed day (M10a). */
+function analytics(at, sel = null) {
+  const last = MTD_NW.length - 1, net = MTD_IN[last] - MTD_OUT[last], chg = (MTD_NW[last] - MTD_NW[0]) / MTD_NW[0] * 100;
+  const day = i => `${i + 1} Sep`, upTo = i => i ? `1–${i + 1} Sep` : '1 Sep';
+  return phone(`
+  ${insh(1)}
+  <div class="hs" style="margin-bottom:16px">${chip('This month', true)}${chip('Last 3 months')}${chip('Last 6 months')}${chip('This year')}</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px">${[['Money in','$2,140','pos'],['Money out','$1,487',''],['Saved','30.5%','']].map(k => `<div class="card kpi" style="padding:14px"><div class="cap">${k[0]}</div><div class="bb num ${k[2]}">${k[1]}</div></div>`).join('')}</div>
+  <div class="card" style="margin-bottom:16px"><h3 class="bb" style="margin-bottom:16px">Where your money went</h3><div class="rs" style="gap:20px;align-items:center">${donut(SPEND, 120, 14, sel)}${legend(null, sel)}</div></div>
+  <div class="card" style="margin-bottom:16px"><div class="row"><h3 class="bb">Money in vs money out</h3><span class="smb num ${net >= 0 ? 'pos' : 'neg'}">${net >= 0 ? '+' : '−'}$${Math.round(Math.abs(net)).toLocaleString('en-US')} net</span></div><div class="cap mute" style="margin:2px 0 12px">Running total, 1–14 Sep</div>
+    ${trend(310, {series: [{n: 'In', c: C.primary, v: MTD_IN}, {n: 'Out', c: 'var(--stone)', v: MTD_OUT}], slots: 30, axis: SEP_AXIS, at, title: upTo, extra: i => [[(MTD_IN[i] >= MTD_OUT[i] ? '+' : '') + money(MTD_IN[i] - MTD_OUT[i]), 'Net']]})}
+    <div class="rs cap mute" style="gap:16px;margin-top:8px"><span class="rs" style="gap:6px"><i class="lkey" style="background:${C.primary}"></i>In</span><span class="rs" style="gap:6px"><i class="lkey" style="background:var(--stone)"></i>Out</span></div></div>
+  <div class="card" style="margin-bottom:16px"><div class="row"><h3 class="bb">Net worth</h3><span class="smb num ${chg >= 0 ? 'pos' : 'neg'}">${chg >= 0 ? '+' : '−'}${Math.abs(chg).toFixed(1)}%</span></div><div class="cap mute" style="margin:2px 0 12px">Daily, 1–14 Sep</div>
+    ${trend(310, {series: [{n: 'Net worth', c: C.primary, v: MTD_NW}], fit: true, slots: 30, axis: SEP_AXIS, title: day})}</div>
+  <div class="card" style="margin-bottom:16px"><h3 class="bb" style="margin-bottom:4px">Currencies you hold</h3><div class="cap mute" style="margin-bottom:14px">Share of your net worth in each currency</div>${exposure()}</div>
+  <div class="card"><h3 class="bb" style="margin-bottom:4px">Monthly pace</h3><div class="h-md num" style="margin:6px 0">$1,487 <span class="sm mute">/ month</span></div><p class="sm mute">At this pace your current balance would still last 5+ years.</p></div>`, {tab: 'Insights'});
+}
+ms('Tabs', 'M10', 'Insights — Trends', 'mobile/src/app/(tabs)/insights.tsx',
+  'The Trends segment (formerly the Analytics tab). Everything here is computed live from transactions; nothing is stored. Money in vs out and Net worth are trend lines (trend()) with a value axis; the range chip sets their points: This month is day by day (running totals for in/out, the axis spans the whole month), longer ranges one point per month. Spending stays a donut. Press and drag a trend for exact figures (M10a).',
+  () => analytics());
+
+ms('Tabs', 'M10a', 'Insights — Trends, scrubbing', 'mobile/src/app/(tabs)/insights.tsx',
+  'Press and drag on a trend: the readout snaps to the nearest point and floats above the plot, centred on the finger, listing every series there (value bold, name muted) plus Net. Horizontal drags scrub, vertical drags still scroll; a selection haptic ticks on each new point. Lifting the finger hides it.',
+  () => analytics(9));
+
+ms('Tabs', 'M10b', 'Insights — Trends, slice picked', 'mobile/src/app/(tabs)/insights.tsx',
+  'Tap a slice or its legend row: the other slices and rows dim, and the hole shows the category, what it took in the range and its share. Tap the hole (View) to open its spending in Activity (M07b); tap the same slice, row or anywhere else on the card to let go. A selection haptic ticks on each pick. Other (several categories) and Uncategorized have no View.',
+  () => analytics(undefined, 1));
+
+/* The look pickers shared by accounts, categories, budgets and the profile.
+   colourRow: the preset swatches, then .sw.custom (opens M22a); a custom
+   pick fills that last swatch and rings it. iconRow: eleven suggestions and
+   a "More" plate (opens M22b, the full icon pack); `lead` is an extra first
+   plate (an account's initials). A picked pack icon not among the
+   suggestions takes the first slot, so the choice is always visible. */
+const PRESETS = [C.yellow, C.lblue, C.pink, C.teal, C.warn, C.primary, C.brown, C.violet];
+const colourRow = (on, o = {}) => `<label class="fl-l">Colour</label><div class="swatches" style="margin-bottom:20px">${(o.list || PRESETS).map((c, i) => `<span class="sw ${i === on ? 'on' : ''}" style="background:${c}"></span>`).join('')}${o.custom ? `<span class="sw on" style="background:${o.custom}"></span>` : `<span class="sw custom" aria-label="Custom colour">${I('plus', 'xs')}</span>`}</div>`;
+const iconRow = (icons, on, o = {}) => `<label class="fl-l">Icon</label><div class="icg" style="margin-bottom:${o.mb ?? 24}px">${o.lead ? `<span class="ib ${on === -1 ? 'on' : ''}" style="font-size:13px;font-weight:600">${o.lead}</span>` : ''}${icons.map((ic, i) => `<span class="ib ${i === on ? 'on' : ''}">${I(ic, 's')}</span>`).join('')}<span class="ib" aria-label="More icons" style="background:transparent;border:1px dashed var(--hair)">${I('search', 's')}</span></div>`;
+
+/* ---- Accounts ---- */
+ms('Accounts', 'M11', 'Account detail', 'mobile/src/app/accounts/[id].tsx',
+  'Native balance first, base conversion second. Actions: add, transfer, edit; archive lives at the bottom.',
+  () => phone(`
+  ${navh('', `<span class="ib sm" style="background:transparent" aria-label="More">${I('more')}</span>`)}
+  <div class="col" style="align-items:center;text-align:center;gap:6px;margin-bottom:24px">${av(C.yellow, 'MM', 'lg')}<div class="sm mute" style="margin-top:10px">MTN MoMo · Mobile money</div><div class="d-md num">GHS 4,250.00</div><div class="sm stone num">≈ $291.13 · 1 GHS = $0.0685</div></div>
+  <div class="qa" style="grid-template-columns:repeat(3,1fr);margin-bottom:24px">${[['plus','Add'],['swap','Transfer'],['edit','Edit']].map(q => `<div><span class="ib">${I(q[0])}</span>${q[1]}</div>`).join('')}</div>
+  <div class="card" style="margin-bottom:8px"><div class="row" style="margin-bottom:10px"><span class="smb">Balance</span><span class="cap mute">Last 6 months</span></div>${line(310, 80, [60, 52, 66, 40, 46, 30, 22], true)}</div>
+  ${lbl('Activity')}${[TX[0], TX[3], TX[4], {n:'Kejetia Market', c:'food', acc:'MTN MoMo', amt:'−GHS 96.00', base:'≈ $6.58'}].map(txRow).join('')}
+  <div class="col" style="gap:12px;margin-top:20px">${btn('Show more', 's')}${btn('Archive account', 'danger', 'archive')}</div>`));
+
+ms('Accounts', 'M12', 'Add account', 'mobile/src/app/account-form.tsx',
+  'Sheet. Currency is fixed after creation; opening balance seeds the computed balance. Colour and icon set the account\'s avatar everywhere; the default icon is its initials.',
+  () => phone(`
+  ${field('Account name', 'e.g. MTN MoMo', {ph: true, focus: true})}
+  <label class="fl-l">Account type</label><div class="hs" style="margin-bottom:20px">${['Bank','Mobile money','Investment','Cash','Credit','Other'].map((t, i) => chip(t, i === 1)).join('')}</div>
+  ${field('Institution / provider', 'e.g. MTN Ghana', {ph: true})}
+  <div class="rs" style="gap:12px;align-items:flex-start"><div class="grow">${select('Currency', 'GHS')}</div><div class="grow">${field('Opening balance', '0.00', {ph: true})}</div></div>
+  ${colourRow(0)}
+  ${iconRow(['wallet','home','brief','coin','globe','lock','key','heart','bag','car'], -1, {lead: 'MM', mb: 20})}
+  <p class="cap mute" style="margin-bottom:24px">Balances update automatically as you log transactions against this account.</p>
+  <div class="col" style="gap:12px;margin-top:auto">${btn('Add account')}${btn('Cancel', 'o')}</div>`, {sheet: 'Add account'}));
+
+ms('Accounts', 'M13', 'Edit account', 'mobile/src/app/account-form.tsx',
+  'Same sheet in edit mode. Currency is read-only once transactions exist. Shown with a custom colour (picked in M22a) and an icon instead of initials.',
+  () => phone(`
+  ${field('Account name', 'MTN MoMo')}
+  <label class="fl-l">Account type</label><div class="hs" style="margin-bottom:20px">${['Bank','Mobile money','Investment','Cash','Credit'].map((t, i) => chip(t, i === 1)).join('')}</div>
+  ${field('Institution / provider', 'MTN Ghana')}
+  <div class="rs" style="gap:12px;align-items:flex-start"><div class="grow">${field('Currency', 'GHS', {trail: I('lock', 's'), help: 'Locked: has transactions'})}</div><div class="grow">${field('Opening balance', '1,200.00')}</div></div>
+  ${colourRow(-1, {custom: '#2f8f6b'})}
+  ${iconRow(['wallet','home','brief','coin','globe','lock','key','heart','bag','car'], 0, {lead: 'MM'})}
+  <div class="col" style="gap:12px;margin-top:auto">${btn('Save changes')}${btn('Cancel', 'o')}</div>`, {sheet: 'Edit account'}));
+
+/* ---- Transactions ---- */
+const catRail = on => `<div class="hs" style="margin-bottom:20px">${['food','transport','shopping','bills','fun','health'].map(k => `<div class="catc ${k === on ? 'on' : ''}">${av(CAT[k].c, I(CAT[k].i))}<span>${CAT[k].n.split(' ')[0]}</span></div>`).join('')}</div>`;
+const accPick = (label, a, sub) => `<div class="field"><label class="fl-l">${label}</label><div class="in" style="height:64px">${av(a.c, a.ab, 'sm')}<div class="grow"><div class="smb">${a.n}</div><div class="cap stone">${sub || 'Balance ' + a.bal}</div></div>${I('cd', 's')}</div></div>`;
+
+/* M14: a short choice sheet over the current tab; each plate opens its own form. */
+const addMenu = `<div class="ph-sheet"><div class="sheetp"><div class="grab"></div><div class="sheeth" style="padding-left:0;padding-right:0"><span class="h-md">Add</span><span class="ib sm" aria-label="Close">${I('x', 's')}</span></div>
+  <div class="addm" style="padding:12px 0 8px">${[['up','Expense','neg-t'],['dl','Income','pos'],['swap','Transfer',''],['wallet','Account',''],['pie','Budget',''],['tag','Category','']].map(([ic, t, col]) => `<div><span class="ib" ${col ? `style="color:var(--${col})"` : ''}>${I(ic)}</span>${t}</div>`).join('')}</div></div></div>`;
+ms('Transactions', 'M14', 'Add menu', 'mobile/src/app/(tabs)/_layout.tsx',
+  'The dock\'s add button opens this sheet on every tab (it replaces Quick add and its keypad: amounts are typed with the system number pad). Transactions on the first row, things to set up on the second; each plate opens its own form: Expense / Income / Transfer open M15 / M16 / M17 on that type, Account M12, Budget M20 for this month, Category M22. With no accounts yet, the transaction plates open M12 first. The long-press app-icon shortcuts are Expense, Income and Transfer.',
+  () => phone(homeBody(), {tab: 'Home', overlay: addMenu}));
+
+ms('Transactions', 'M15', 'New transaction — expense', 'mobile/src/app/transaction.tsx',
+  'Full form. The live preview shows the budget and balance this write will move — one write updates both.',
+  () => phone(`
+  <div style="margin-bottom:8px">${seg(['Expense','Income','Transfer'], 0)}</div>
+  <div class="amount"><div class="d-md num">GHS 42.50</div><span class="badge" style="margin-top:6px">≈ $2.91 USD at today’s rate</span></div>
+  ${accPick('From account', ACC[3])}
+  <label class="fl-l">Category</label>${catRail('food')}
+  ${field('Note', 'Osu Night Market')}
+  ${field('Date', 'Today, Sep 14', {lead: I('cal', 's'), trail: I('cd', 's')})}
+  <div class="card inset" style="margin-bottom:24px"><div class="cap mute" style="margin-bottom:10px">Live sync preview</div><div class="row sm" style="margin-bottom:8px"><span>Food &amp; Dining</span><span class="num">GHS 1,542.50 → 1,585.00 / 2,000</span></div>${prog(79, C.warn)}<div class="row sm" style="margin-top:12px"><span>MTN MoMo</span><span class="num">GHS 4,250.00 → 4,207.50</span></div><p class="cap mute" style="margin-top:10px">Balances and budgets update straight away.</p></div>
+  ${btn('Save transaction')}`, {sheet: 'New transaction'}));
+
+ms('Transactions', 'M16', 'New transaction — income', 'mobile/src/app/transaction.tsx',
+  'Income uses income categories and a "To account".',
+  () => phone(`
+  <div style="margin-bottom:8px">${seg(['Expense','Income','Transfer'], 1)}</div>
+  <div class="amount"><div class="d-md num pos">+$450.00</div></div>
+  ${accPick('To account', ACC[0])}
+  <label class="fl-l">Category</label><div class="hs" style="margin-bottom:20px">${[['salary','Salary'],['income','Freelance'],['income','Gifts'],['income','Interest']].map((k, i) => `<div class="catc ${i === 1 ? 'on' : ''}">${av(CAT[k[0]].c, I(CAT[k[0]].i))}<span>${k[1]}</span></div>`).join('')}</div>
+  ${field('Note', 'Freelance payment — Sept invoice')}
+  ${field('Date', 'Today, Sep 14', {lead: I('cal', 's'), trail: I('cd', 's')})}
+  <div style="margin-top:auto">${btn('Save transaction')}</div>`, {sheet: 'New transaction'}));
+
+ms('Transactions', 'M17', 'New transaction — transfer', 'mobile/src/app/transaction.tsx',
+  'Cross-currency transfer: both amounts are explicit; the implied rate is shown and editable. Fee comes from the sending account.',
+  () => phone(`
+  <div style="margin-bottom:16px">${seg(['Expense','Income','Transfer'], 2)}</div>
+  ${accPick('From account', ACC[0])}
+  <div style="display:flex;justify-content:center;margin:-10px 0 6px"><span class="ib sm">${I('swap', 's')}</span></div>
+  ${accPick('To account', ACC[3])}
+  <div class="rs" style="gap:12px;align-items:flex-start"><div class="grow">${field('Amount sent', '$300.00')}</div><div class="grow">${field('Amount received', 'GHS 4,380.00')}</div></div>
+  ${field('Exchange rate', '1 USD = 14.60 GHS', {trail: '<span class="link cap">Edit</span>', help: 'Enter the rate used. Today’s market rate is 14.59.'})}
+  ${field('Fee (optional)', '$2.00', {help: 'Charged on top, from the sending account.'})}
+  ${field('Note', 'What was it for?', {ph: true})}
+  <div style="margin-top:auto">${btn('Save transfer')}</div>`, {sheet: 'New transaction'}));
+
+ms('Transactions', 'M18', 'Edit transaction', 'mobile/src/app/transaction.tsx',
+  'Tapping a row opens the same form, filled. Delete is a quiet destructive button at the end.',
+  () => phone(`
+  <div style="margin-bottom:8px">${seg(['Expense','Income','Transfer'], 0)}</div>
+  <div class="amount"><div class="d-md num">−$18.40</div></div>
+  ${accPick('From account', ACC[0])}
+  <label class="fl-l">Category</label>${catRail('transport')}
+  ${field('Note', 'Uber')}
+  ${field('Date', 'Yesterday, Sep 13', {lead: I('cal', 's'), trail: I('cd', 's')})}
+  <div class="col" style="gap:12px;margin-top:auto">${btn('Save changes')}${btn('Delete transaction', 'danger', 'trash')}</div>`, {sheet: 'Edit transaction'}));
+
+ms('Transactions', 'M19', 'Form — validation error', 'mobile/src/app/transaction.tsx',
+  'Errors sit under the field in danger text plus a danger hairline; the save button stays enabled.',
+  () => phone(`
+  <div style="margin-bottom:8px">${seg(['Expense','Income','Transfer'], 2)}</div>
+  ${accPick('From account', ACC[0])}
+  <div class="field"><label class="fl-l">To account</label><div class="in err pl">${I('wallet', 's')}<span class="grow">Choose where the money went</span>${I('cd', 's')}</div><div class="help err">Choose an account.</div></div>
+  <div class="rs" style="gap:12px;align-items:flex-start"><div class="grow">${field('Amount sent', '$300.00')}</div><div class="grow">${field('Amount received', '0.00', {err: true, help: 'Enter a positive number.'})}</div></div>
+  <div class="card inset" style="border:1px solid var(--neg);margin-bottom:20px"><div class="rs smb neg" style="gap:8px">${I('alert', 's')}Couldn’t save</div><p class="cap mute" style="margin-top:6px">Fix the highlighted fields and try again.</p></div>
+  <div style="margin-top:auto">${btn('Save transfer')}</div>`, {sheet: 'New transaction'}));
+
+/* ---- Budgets & categories ---- */
+ms('Budgets & categories', 'M20', 'Budget form', 'mobile/src/app/budget-form.tsx',
+  'One monthly limit per category, in any currency. Look: a budget uses its category\'s colour and icon until "Custom" is picked, which shows the same colour and icon rows as M22.',
+  () => phone(`
+  <label class="fl-l">Category</label>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px 0;margin-bottom:24px">${['food','transport','shopping','bills','fun','health'].map(k => `<div class="catc ${k === 'shopping' ? 'on' : ''}" style="width:auto">${av(CAT[k].c, I(CAT[k].i))}<span>${CAT[k].n.split(' ')[0]}</span></div>`).join('')}</div>
+  <div class="rs" style="gap:12px;align-items:flex-start"><div style="width:120px">${select('Currency', 'USD')}</div><div class="grow">${field('Monthly limit', '250.00', {focus: true})}</div></div>
+  <div class="card inset" style="margin-bottom:24px"><div class="cap mute" style="margin-bottom:8px">This month so far</div><div class="row sm" style="margin-bottom:8px"><span>Shopping</span><span class="num">$340 / $250</span></div>${prog(100, C.danger)}</div>
+  <label class="fl-l">Look</label><div class="rs" style="gap:8px;margin-bottom:24px">${chip('Same as category', true)}${chip('Custom')}</div>
+  <div class="col" style="gap:12px;margin-top:auto">${btn('Save budget')}${btn('Remove budget', 'danger')}${btn('Cancel', 'txt')}</div>`, {sheet: 'Edit budget'}));
+
+ms('Budgets & categories', 'M21', 'Categories', 'mobile/src/app/categories.tsx',
+  'Spending and income categories are shared reference data; archiving hides without deleting history.',
+  () => phone(`
+  ${navh('Categories', `<span class="ib sm brand" aria-label="Add category">${I('plus', 's')}</span>`)}
+  ${lbl('Spending', 'margin-top:8px')}<div class="group">${['food','transport','shopping','bills','fun','health'].map(k => `<div class="li">${catAv(k)}<span class="grow">${CAT[k].n}</span><span class="v cap">${['food','transport','bills','health'].includes(k) ? 'Essential' : 'Discretionary'} ${I('cr', 'xs')}</span></div>`).join('')}</div>
+  ${lbl('Income')}<div class="group">${[['salary','Salary'],['income','Freelance'],['income','Interest']].map(k => `<div class="li">${catAv(k[0])}<span class="grow">${k[1]}</span><span class="v">${I('cr', 'xs')}</span></div>`).join('')}</div>
+  ${lbl('Archived')}<div class="group"><div class="li" style="opacity:.75">${av(C.slate, I('heart', 's'), 'sm')}<span class="grow">Gym</span><span class="btn s sm auto">Restore</span></div></div>
+  <div style="margin-top:24px">${btn('Add category', 'o', 'plus')}</div>`));
+
+ms('Budgets & categories', 'M22', 'Category form', 'mobile/src/app/category-form.tsx',
+  'Name, kind, essential vs discretionary, colour and icon. The last swatch opens the custom colour picker (M22a); the last icon plate opens the full icon pack (M22b).',
+  () => phone(`
+  ${field('Category name', 'Groceries', {focus: true})}
+  <label class="fl-l">Kind</label><div style="margin-bottom:20px">${seg(['Spending','Income'], 0)}</div>
+  <label class="fl-l">Type of spending</label><div class="rs" style="gap:8px;margin-bottom:20px">${chip('Essential', true)}${chip('Discretionary')}</div>
+  ${colourRow(3, {list: [C.warn, C.lblue, C.pink, C.teal, C.yellow, C.brown, C.violet, C.cyan]})}
+  ${iconRow(['food','bag','car','bolt','play','heart','coin','brief','home','globe','tag'], 1)}
+  <div class="col" style="gap:12px;margin-top:auto">${btn('Save category')}${btn('Archive category', 'danger', 'archive')}</div>`, {sheet: 'New spending category'}));
+
+ms('Budgets & categories', 'M22a', 'Custom colour', 'mobile/src/components/look.tsx',
+  'Opened from the custom swatch on any colour row (accounts, categories, budgets, profile). The wheel sets hue (angle) and saturation (distance from the centre); the slider under it sets brightness. Drag either knob, or type a hex code. The preview is the real avatar with its icon. Custom colours are stored as #rrggbb and look the same in both modes, so the preview warns when white icons would be hard to read on it.',
+  () => phone(`
+  <div class="wheel"><span class="knob" style="left:71%;top:62%;background:#2f8f6b"></span></div>
+  <label class="fl-l">Brightness</label>
+  <div class="slider" style="background:linear-gradient(90deg,#000,#3cc48f)"><span class="knob" style="left:72%;background:#2f8f6b"></span></div>
+  <div class="rs" style="gap:16px;align-items:flex-start">${av('#2f8f6b', I('wallet'), 'lg')}<div class="grow">${field('Hex', '#2F8F6B', {mono: true})}</div></div>
+  <div class="col" style="gap:12px;margin-top:auto">${btn('Use colour')}${btn('Cancel', 'txt')}</div>`, {sheet: 'Custom colour'}));
+
+ms('Budgets & categories', 'M22b', 'Icon pack', 'mobile/src/components/look.tsx',
+  'Opened from the last plate of any icon row. The whole Lucide pack, searchable by name and keyword; with no query it opens on the picked icon\'s group. Tapping a plate picks it and closes the sheet. Pack icons are drawn at the artboard\'s stroke widths (.i sizes) so they sit with the built-in symbols.',
+  () => phone(`
+  ${field('', 'Search icons', {ph: true, lead: I('search', 's'), focus: true})}
+  <div class="hs" style="margin:-4px -20px 16px">${chip('All', true)}${chip('Money')}${chip('Food')}${chip('Travel')}${chip('Home')}${chip('Health')}</div>
+  <div class="icg">${['coin','wallet','brief','bag','tag','food','car','bolt','play','heart','home','globe','key','lock','mail','user','cal','cloud','sun','shield','file','eye','refresh','swap','pie','bar','list','gear','info','alert','copy','edit','archive','trash','up','dl'].map((ic, i) => `<span class="ib ${i === 0 ? 'on' : ''}">${I(ic, 's')}</span>`).join('')}</div>`, {sheet: 'Choose icon'}));
+
+/* ---- Settings & data ---- */
+const setRow = (ic, t, v = '', extra = '') => `<div class="li">${ic ? `<span class="ib sm">${I(ic, 's')}</span>` : ''}<span class="grow">${t}</span><span class="v">${v}${extra || I('cr', 'xs')}</span></div>`;
+ms('Settings & data', 'M23', 'Settings', 'mobile/src/app/settings.tsx',
+  'Grouped lists. The sync row carries its state; destructive actions sit last. The profile card opens M23b; Appearance opens M23a. There is no language setting: the app follows the phone\'s language (English or French, otherwise English).',
+  () => phone(`
+  ${navh('Settings')}
+  <div class="card rs" style="margin:8px 0 4px">${av(C.primary, 'A')}<div class="grow"><div class="bb">Ama Mensah</div><div class="cap stone">Stored on this phone</div></div>${I('cr', 's')}</div>
+  ${lbl('Preferences')}<div class="group">${setRow('user', 'Name', 'Ama')}${setRow('globe', 'Base currency', 'USD')}${setRow('tag', 'Categories', '14')}${setRow('swap', 'Exchange rates', 'Auto')}${setRow('mode', 'Appearance', 'System')}</div>
+  ${lbl('Sync')}<div class="group">${setRow('cloud', 'Sync', '<span class="rs" style="gap:6px"><span class="dot" style="background:var(--pos)"></span>2 min ago</span>')}</div>
+  <p class="cap stone" style="margin-top:8px">End-to-end encrypted. The server only ever sees ciphertext.</p>
+  ${lbl('Your data')}<div class="group">${setRow('upl', 'Export data')}${setRow('down', 'Import CSV')}</div>
+  ${lbl('Security')}<div class="group">${setRow('face', 'App lock (Face ID / passcode)', '', '<span class="tg on"></span>')}</div>
+  <div class="group" style="margin-top:24px"><div class="li"><span class="ib sm" style="color:var(--neg-t)">${I('trash', 's')}</span><span class="neg">Delete local data</span></div></div>
+  <p class="cap stone" style="text-align:center;margin-top:24px">Pernce · 2026.10.0</p>`));
+
+const pick = (rows, on) => `<div class="group">${rows.map(([t, sub], i) => `<div class="li"><div class="grow"><div>${t}</div>${sub ? `<div class="cap stone">${sub}</div>` : ''}</div>${i === on ? `<span class="v">${I('check', 's')}</span>` : ''}</div>`).join('')}</div>`;
+ms('Settings & data', 'M23a', 'Settings — appearance', 'mobile/src/app/settings.tsx',
+  'Choice sheet, same shape as Lock after. System follows the phone and is the default; the pick applies instantly and is stored on the device.',
+  () => phone(`${pick([['System', 'Match your phone'], ['Light'], ['Dark']], 0)}`, {sheet: 'Appearance'}));
+
+ms('Settings & data', 'M23b', 'Settings — profile', 'mobile/src/app/settings.tsx',
+  'Opened from the profile card. Name, then the avatar\'s colour and icon (initials by default); the avatar on Home and here follows it.',
+  () => phone(`
+  <div class="col" style="align-items:center;margin:4px 0 20px">${av('#2f8f6b', I('sun'), 'lg')}</div>
+  ${field('Your name', 'Ama Mensah')}
+  ${colourRow(-1, {custom: '#2f8f6b'})}
+  ${iconRow(['user','sun','heart','home','globe','coin','brief','key','bolt','play'], 1, {lead: 'A'})}
+  <div style="margin-top:auto">${btn('Save')}</div>`, {sheet: 'Profile'}));
+
+ms('Settings & data', 'M24', 'Exchange rates', 'mobile/src/app/rates.tsx',
+  'Rates are 1 unit → USD, refreshed daily. A manual override pins a rate until "Use automatic".',
+  () => phone(`
+  ${navh('Exchange rates', `<span class="ib sm" style="background:transparent" aria-label="Refresh now">${I('refresh', 's')}</span>`)}
+  <div class="card inset rs" style="margin:8px 0 8px;gap:10px">${I('info', 's')}<span class="cap mute">Updated today at 06:00 · base currency USD</span></div>
+  ${lbl('Your currencies')}
+  <div class="group">${[['GHS','Ghanaian cedi','$0.0685','Auto'],['XOF','West African CFA','$0.00178','Auto'],['CAD','Canadian dollar','$0.7321','Auto'],['XAF','Central African CFA','$0.00178','Auto']].map(r => `<div class="li"><span class="badge" style="width:52px;justify-content:center;font-weight:600">${r[0]}</span><div class="grow"><div style="font-size:15px">${r[1]}</div><div class="cap stone num">1 ${r[0]} = ${r[2]}</div></div><span class="v cap">${r[3]} ${I('cr', 'xs')}</span></div>`).join('')}</div>
+  ${lbl('Manual override')}
+  <div class="card"><div class="row" style="margin-bottom:14px"><span class="rs" style="gap:10px"><span class="badge" style="font-weight:600">EUR</span><span class="smb">Euro</span></span><span class="badge brand">Manual</span></div>
+  ${field('1 EUR in USD', '1.0912', {focus: true, help: 'Market rate today: 1.0907'})}
+  <div class="row" style="gap:10px">${btn('Use automatic', 's', '', 'sm')}${btn('Use this rate', 'p', '', 'sm')}</div></div>
+  <div style="margin-top:24px">${btn('Refresh now', 'o', 'refresh')}</div>`));
+
+ms('Settings & data', 'M25', 'Your data', 'mobile/src/app/data.tsx',
+  'Export and import in both directions; JSON is a full round-trippable backup, CSV is transactions only.',
+  () => phone(`
+  ${navh('Your data')}
+  ${lbl('Export', 'margin-top:8px')}
+  <div class="card" style="margin-bottom:12px"><div class="rs" style="margin-bottom:12px">${I('file')}<div><div class="bb">Full backup (JSON)</div><div class="cap mute">Accounts, transactions, budgets, categories and rates.</div></div></div>${btn('Export backup', 'p', 'upl')}</div>
+  <div class="card"><div class="rs" style="margin-bottom:12px">${I('list')}<div><div class="bb">Transactions (CSV)</div><div class="cap mute">For spreadsheets. 1,284 rows.</div></div></div>${btn('Export CSV', 'o', 'upl')}</div>
+  ${lbl('Import')}
+  <div class="group">${setRow('down', 'Import JSON backup')}${setRow('down', 'Import CSV')}</div>
+  <div class="note" style="margin-top:16px">${I('shield', 's')}<span>Files are created on this phone and shared only where you send them.</span></div>`));
+
+/* ---- Sync ---- */
+ms('Sync', 'M26', 'Sync — intro', 'mobile/src/app/sync.tsx',
+  'Signed-out state. Explains the trust model before asking for an account.',
+  () => phone(`
+  ${navh('Sync')}
+  <div class="ib" style="width:72px;height:72px;margin-top:16px">${I('cloud', 'xl')}</div>
+  <h1 class="h-lg" style="margin:24px 0 12px">Sync between your phones</h1>
+  <p class="b mute" style="margin-bottom:28px">Your data is encrypted on this phone before it leaves. The server stores ciphertext it can’t read.</p>
+  <div class="col" style="gap:16px">${[['lock','End-to-end encrypted','Only your password or recovery key unlocks it.'],['refresh','Works offline','Changes queue up and upload when you’re back online.'],['key','Recovery key','A backup key in case you forget your password.']].map(r => `<div class="rs" style="align-items:flex-start"><span class="ib sm">${I(r[0], 's')}</span><div><div class="smb">${r[1]}</div><div class="cap mute">${r[2]}</div></div></div>`).join('')}</div>
+  <div class="col" style="gap:12px;margin-top:auto">${btn('Create a sync account')}${btn('Sign in', 'o')}</div>`));
+
+ms('Sync', 'M27', 'Sync — sign in', 'mobile/src/components/SyncAuthFlow.tsx',
+  'Server address is collapsed by default; self-hosters can change it.',
+  () => phone(`
+  <h1 class="h-lg" style="margin:8px 0 8px">Sign in to sync</h1><p class="sm mute" style="margin-bottom:24px">Use the account you created on your other phone.</p>
+  ${field('Email', 'ama@example.com', {lead: I('mail', 's')})}
+  ${field('Password', '••••••••••••', {lead: I('lock', 's'), trail: I('eye', 's'), focus: true})}
+  <div style="text-align:right;margin:-8px 0 20px"><span class="link sm">Forgot password?</span></div>
+  ${field('Sync server', 'https://sync.pernce.app', {lead: I('globe', 's'), trail: '<span class="link cap">Change</span>'})}
+  <div class="col" style="gap:12px;margin-top:auto">${btn('Sign in')}${btn('Create an account', 'txt')}</div>`, {sheet: 'Sync account'}));
+
+ms('Sync', 'M28', 'Sync — create account', 'mobile/src/components/SyncAuthFlow.tsx',
+  'Password strength stated plainly; mismatches inline.',
+  () => phone(`
+  <h1 class="h-lg" style="margin:8px 0 8px">Create a sync account</h1><p class="sm mute" style="margin-bottom:24px">Your password encrypts your data. We can’t reset what we can’t read — you’ll get a recovery key next.</p>
+  ${field('Email', 'ama@example.com', {lead: I('mail', 's')})}
+  ${field('Password', '••••••••••••', {lead: I('lock', 's'), help: 'At least 12 characters.'})}
+  ${field('Repeat password', '•••••••••', {lead: I('lock', 's'), err: true, help: 'The passwords don’t match.'})}
+  <div class="col" style="gap:12px;margin-top:auto">${btn('Create account')}${btn('I already have an account', 'txt')}</div>`, {sheet: 'Sync account'}));
+
+ms('Sync', 'M29', 'Sync — check your email', 'mobile/src/components/SyncAuthFlow.tsx',
+  'Six-digit code, one box per digit, with resend.',
+  () => phone(`
+  <div class="ib" style="width:64px;height:64px;margin:8px 0 20px">${I('mail', 'l')}</div>
+  <h1 class="h-lg" style="margin-bottom:8px">Check your email</h1><p class="sm mute" style="margin-bottom:28px">Finish signing up: we’ve emailed a code to <b style="color:var(--text)">ama@example.com</b>.</p>
+  <label class="fl-l">6-digit code</label><div class="code6" style="margin-bottom:20px"><span>4</span><span>8</span><span>2</span><span class="on">0</span><span></span><span></span></div>
+  <div class="cap mute">Didn’t get it? <span class="link">Send a new code</span></div>
+  <div class="col" style="gap:12px;margin-top:auto">${btn('Verify')}${btn('Back to sign in', 'txt')}</div>`, {sheet: 'Sync account'}));
+
+ms('Sync', 'M30', 'Sync — save recovery key', 'mobile/src/components/SyncAuthFlow.tsx',
+  'The one moment the key is shown. Continue stays secondary until it is saved or copied.',
+  () => phone(`
+  <div class="ib" style="width:64px;height:64px;margin:8px 0 20px">${I('key', 'l')}</div>
+  <h1 class="h-lg" style="margin-bottom:8px">Save your recovery key</h1><p class="sm mute" style="margin-bottom:24px">If you forget your password, this key is the only way back into your synced data.</p>
+  <div class="card" style="margin-bottom:16px"><div class="rkey">${['7KQ2','M9XD','4HTP','WB3R','Z8NC','2FJL','QV6E','R5UA','K1YS'].map(k => `<span>${k}</span>`).join('')}</div></div>
+  <div class="card inset rs" style="gap:10px;align-items:flex-start">${I('alert', 's')}<span class="cap mute">Store it somewhere safe and offline — a password manager or printed copy. We can’t recover it for you.</span></div>
+  <div class="col" style="gap:12px;margin-top:auto">${btn('Save or copy…', 'p', 'copy')}${btn('Continue', 'o')}</div>`, {sheet: 'Sync account'}));
+
+ms('Sync', 'M31', 'Sync — status', 'mobile/src/app/sync.tsx',
+  'Signed-in state with last sync, pending changes, recovery and account management.',
+  () => phone(`
+  ${navh('Sync')}
+  <div class="card" style="margin:8px 0 8px"><div class="rs" style="margin-bottom:16px"><span class="ib" style="background:var(--chip-on);color:var(--chip-on-t)">${I('check')}</span><div><div class="bb">Up to date</div><div class="cap mute">End-to-end encrypted</div></div></div>${btn('Sync now', 'p', 'refresh')}</div>
+  <div class="group">${setRow('', 'Last synced', 'Today, 9:39', ' ')}${setRow('', 'Changes waiting to upload', '0', ' ')}${setRow('', 'Devices', '2', ' ')}</div>
+  ${lbl('Account')}<div class="group">${setRow('mail', 'ama@example.com', '', ' ')}${setRow('globe', 'Server', 'sync.pernce.app', ' ')}</div>
+  ${lbl('Recovery key')}<div class="group">${setRow('key', 'Make a new recovery key')}</div>
+  <div class="col" style="gap:12px;margin-top:28px">${btn('Sign out', 'o', 'out')}${btn('Delete cloud account', 'danger', 'trash')}</div>`));
+
+ms('Sync', 'M32', 'Sync — unlock synced data', 'mobile/src/app/sync.tsx',
+  'Needed on a new device or after the key is dropped from the keychain. "Lost both?" leads to start over.',
+  () => phone(`
+  ${navh('Sync')}
+  <div class="ib" style="width:64px;height:64px;margin:16px 0 20px">${I('lock', 'l')}</div>
+  <h1 class="h-lg" style="margin-bottom:8px">Unlock your synced data</h1><p class="sm mute" style="margin-bottom:24px">Enter your password, or your recovery key if you’ve forgotten it.</p>
+  ${field('Password', '••••••••••••', {lead: I('lock', 's'), trail: I('eye', 's')})}
+  <div class="row cap stone" style="margin:-4px 0 16px"><span style="flex:1;height:1px;background:var(--hair)"></span>or<span style="flex:1;height:1px;background:var(--hair)"></span></div>
+  ${field('Recovery key', 'XXXX-XXXX-…', {ph: true, mono: true, lead: I('key', 's')})}
+  ${btn('Unlock')}
+  <div class="card inset" style="margin-top:auto"><div class="smb" style="margin-bottom:4px">Lost both?</div><p class="cap mute" style="margin-bottom:12px">Start over erases the cloud copy. Data on this phone stays.</p>${btn('Start over', 'danger', '', 'sm')}</div>`));
+
+/* =========================================================================
+   Web shell + screens: the personal build in a browser, 768px and wider.
+   Below 768 the web app is the mobile frames above, full width.
+   ========================================================================= */
+const WNAV = [['home','Home'],['wallet','Accounts'],['list','Activity'],['pie','Insights']];
+/* web(): the shell. 1440 wide with the 240px sidebar, or o.md: 768 wide
+   with the 72px rail. The profile at the bottom opens Settings (as the
+   avatar on M05 does); active 'Settings' rings it. o.narrow centres the
+   page at 720 (settings-style pages); o.overlay draws a dialog or popover. */
+function web(active, body, o = {}) {
+  const nav = o.md
+    ? `<aside class="rail"><div class="logo" style="padding:0"><span class="m">P</span></div><span class="add" aria-label="Add">${I('plus')}</span>${WNAV.map(([i, t]) => `<span class="tab ${t === active ? 'on' : ''}"><span class="ind">${I(i)}</span>${t}</span>`).join('')}<span class="who ${active === 'Settings' ? 'on' : ''}" aria-label="Settings">${av(C.primary, 'A', 'sm')}</span></aside>`
+    : `<aside class="side"><div class="logo"><span class="m">P</span>Pernce</div>${btn('Add', 'brand', 'plus')}${WNAV.map(([i, t]) => `<span class="sb ${t === active ? 'on' : ''}">${I(i)}${t}</span>`).join('')}<div class="who ${active === 'Settings' ? 'on' : ''}">${av(C.primary, 'A', 'sm')}<div class="grow"><div style="font-weight:600">Ama Mensah</div><div class="cap stone">Settings</div></div>${I('gear', 's')}</div></aside>`;
+  return `<div class="web ${o.md ? 'md' : ''}">${nav}<main class="wm">${o.narrow ? `<div class="wnarrow">${body}</div>` : body}</main>${o.overlay || ''}</div>`;
+}
+const wtop = (title, right = '', crumb = '') => `${crumb ? `<div class="crumb">${crumb}</div>` : ''}<div class="wtop">${title.startsWith('<') ? title : `<h1 class="h-lg">${title}</h1>`}<div class="rs" style="gap:10px">${right}</div></div>`;
+const hov = html => html.replace(/class="(tx|li)"/, 'class="$1 hov"');
+const kpis = (list, cls = 'h-md') => list.map(k => `<div class="card kpi"><div class="cap">${k[0]}</div><div class="${cls} num ${k[2] || ''}">${k[1]}</div></div>`).join('');
+const stepper = `<span class="rs" style="gap:4px"><span class="ib sm" aria-label="Previous month">${I('cl', 's')}</span><span class="smb" style="min-width:132px;text-align:center">September 2026</span><span class="ib sm" aria-label="Next month">${I('cr', 's')}</span></span>`;
+const tableTx = (list, hovAt = -1) => {
+  let d = '', rows = '';
+  list.forEach((t, i) => {
+    if (t.day && t.day !== d) { rows += `<tr class="dayrow"><td colspan="5">${t.day}</td></tr>`; d = t.day; }
+    const k = CAT[t.c];
+    rows += `<tr class="${i === hovAt ? 'hov' : ''}"><td><span class="rs">${catAv(t.c)}<span style="font-weight:500;font-size:15px">${t.n}</span></span></td><td><span class="badge"><span class="dot" style="background:${k.c}"></span>${k.n}</span></td><td class="mute">${t.c === 'transfer' ? 'Chase Checking → MTN MoMo' : t.acc}</td><td class="r stone num">${t.base || ''}</td><td class="r num" style="font-weight:600;font-size:15px"><span class="${t.pos ? 'pos' : ''}">${t.amt}</span></td></tr>`;
+  });
+  return `<table class="tbl"><thead><tr><th>Description</th><th>Category</th><th>Account</th><th class="r">Converted</th><th class="r">Amount</th></tr></thead><tbody>${rows}</tbody></table>`;
+};
+/* dlg(): a sheet as a centred dialog. Title and close on top, the body
+   scrolls, the footer keeps the actions in reach (primary last, on the
+   right; a destructive action alone on the left). */
+const dlg = (title, body, foot = '', o = {}) => `<div class="wdim"><div class="dlg ${o.sm ? 'sm' : ''}"><div class="dlg-h"><span class="h-md">${title}</span><span class="ib sm" aria-label="Close">${I('x', 's')}</span></div><div class="dlg-b">${body}</div>${foot ? `<div class="dlg-f">${foot}</div>` : ''}</div></div>`;
+const foot = (save, o = {}) => `${o.danger ? `<span style="margin-right:auto">${btn(o.danger, 'danger', o.dangerIcon || '', 'auto')}</span>` : ''}${btn('Cancel', 'o', '', 'auto')}${btn(save, 'p', '', 'auto')}`;
+const catWrap = on => `<div class="rs" style="flex-wrap:wrap;gap:12px 6px;margin-bottom:20px">${['food','transport','shopping','bills','fun','health'].map(k => `<div class="catc ${k === on ? 'on' : ''}">${av(CAT[k].c, I(CAT[k].i))}<span>${CAT[k].n.split(' ')[0]}</span></div>`).join('')}</div>`;
+
+const W = [];
+const wsx = (sec, id, name, src, notes, render) => W.push({sec, id, name, src, notes, render});
+
+/* ---- Shell ---- */
+const accCard = a => `<div class="card">${av(a.c, a.ab, 'sm')}<div class="cap mute" style="margin-top:16px">${a.n}</div><div class="bb num">${a.bal}</div>${a.cur !== 'USD' ? `<div class="cap stone num">≈ ${a.base}</div>` : ''}</div>`;
+const budBars = list => list.map(b => `<div style="margin-bottom:18px"><div class="row sm" style="margin-bottom:8px"><span class="rs" style="gap:8px"><span class="dot" style="background:${CAT[b.c].c}"></span>${CAT[b.c].n}</span><span class="num ${b.state === 'over' ? 'neg' : 'mute'}">${b.state === 'over' ? b.left : `${b.spent} / ${b.lim}`}</span></div>${prog(b.pct, budColor(b))}</div>`).join('');
+const homeWide = md => `
+  ${wtop('Ama')}
+  <div class="row" style="align-items:flex-end;flex-wrap:wrap;gap:24px">
+    <div><div class="cap mute">Total net worth</div><div class="d-lg num" style="margin:4px 0 8px">$18,444.82</div><div class="rs" style="gap:8px"><span class="rs pos smb" style="gap:4px">${I('up', 'xs')}+$482.10 (2.7%)</span><span class="cap mute">this month</span></div></div>
+    <div class="qa" style="width:${md ? '100%' : '340px'}">${[['plus','Add'],['swap','Transfer'],['pie','Budgets'],['bar','Trends']].map(q => `<div><span class="ib">${I(q[0])}</span>${q[1]}</div>`).join('')}</div></div>
+  <div class="chips" style="margin:24px 0 40px;flex-wrap:wrap">${CUR.map(c => chip(`<span class="stone">${c[0]}</span> ${c[1]}`)).join('')}</div>
+  <div class="row" style="margin-bottom:16px"><h2 class="h-sm">Accounts</h2><span class="link sm rs" style="gap:2px">See all${I('cr', 'xs')}</span></div>
+  <div class="${md ? 'g2' : 'g4'}" style="margin-bottom:32px">${[ACC[3], ACC[0], ACC[5], ACC[1]].map(accCard).join('')}</div>
+  <div class="${md ? 'col' : 'g-main'}" style="gap:24px;align-items:${md ? 'stretch' : 'start'}">
+    <div class="card p32"><div class="row" style="margin-bottom:8px"><h2 class="h-sm">Recent activity</h2><span class="link sm rs" style="gap:2px">See all${I('cr', 'xs')}</span></div>${TX.slice(0, md ? 4 : 6).map(txRow).join('')}</div>
+    <div class="card p32"><div class="row" style="margin-bottom:20px"><h2 class="h-sm">Budgets</h2>${status('over', '1 near limit · 1 over')}</div>${budBars(md ? [BUD[2], BUD[0]] : [BUD[2], BUD[0], BUD[1], BUD[3], BUD[4]])}</div>
+  </div>`;
+wsx('Shell', 'W01', 'Home — sidebar', 'mobile/src/app/(tabs)/index.tsx · (tabs)/_layout.tsx',
+  'From 1024 the dock becomes a 240px sidebar: logo, the Add button (opens W02), the four tabs, and the profile at the bottom, which opens Settings like the avatar on M05. Pages run up to 1200 wide, padded 48. Home is M05 reflowed: net worth with the quick actions beside it, on the canvas as on the phone (chips and plates vanish on a dark card), four account cards, then recent activity next to every budget this month (most urgent first).',
+  () => web('Home', homeWide()));
+wsx('Shell', 'W01a', 'Home — rail (768)', 'mobile/src/app/(tabs)/index.tsx · (tabs)/_layout.tsx',
+  'From 768 to 1023 the sidebar is a 72px rail: the dock\'s tabs stacked (same indicator and labels), the add button on top, the profile avatar at the bottom. Pages pad 32. Two-column rows stack once the page is under 880 wide; card grids drop to two across.',
+  () => web('Home', homeWide(true), {md: true}));
+
+const addPop = `<div class="pop" style="left:16px;top:146px"><div class="addm">${[['up','Expense','neg-t'],['dl','Income','pos-t'],['swap','Transfer',''],['wallet','Account',''],['pie','Budget',''],['tag','Category','']].map(([ic, t, col], i) => `<div><span class="ib ${i === 0 ? 'kf' : ''}" ${col ? `style="color:var(--${col})"` : ''}>${I(ic)}</span>${t}</div>`).join('')}</div></div>`;
+wsx('Shell', 'W02', 'Add menu — popover', 'mobile/src/app/(tabs)/_layout.tsx',
+  'M14 as a popover under the Add button (beside the rail\'s add button at 768): the same six plates, no title or dim. Esc or a click outside closes it. Opened from the keyboard, focus starts on Expense and the arrow keys move between plates. Each plate opens its form as a dialog (W09, W10).',
+  () => web('Home', homeWide(), {overlay: addPop}));
+
+/* ---- Tab pages ---- */
+wsx('Tab pages', 'W03', 'Accounts', 'mobile/src/app/(tabs)/accounts.tsx',
+  'M06 with the groups as cards in two columns. Rows keep the phone\'s shape and take the hover fill (Chase Checking here); a click opens W07.',
+  () => web('Accounts', `
+  ${wtop('Accounts', btn('Add account', 'p', 'plus', 'auto'))}
+  <div class="card p32" style="margin-bottom:24px"><div class="row"><div><div class="cap mute">Total across 6 accounts</div><div class="d-md num">$18,444.82</div></div>${chip('USD', true, I('cd', 'xs'))}</div></div>
+  <div class="g2" style="align-items:start">
+    <div class="col" style="gap:24px"><div class="card" style="padding:4px 24px 8px">${lbl('Bank accounts', 'margin-top:16px')}${hov(accRow(ACC[0]))}${ACC.slice(1, 3).map(accRow).join('')}</div><div class="card" style="padding:4px 24px 8px">${lbl('Investments', 'margin-top:16px')}${accRow(ACC[5])}</div></div>
+    <div class="col" style="gap:24px"><div class="card" style="padding:4px 24px 8px">${lbl('Mobile money', 'margin-top:16px')}${ACC.slice(3, 5).map(accRow).join('')}</div><div class="card" style="padding:4px 24px 8px">${lbl('Archived', 'margin-top:16px')}<div class="tx" style="opacity:.6">${av(C.brown, 'BB', 'sm')}<div class="grow"><div class="tx-n">Barclays (old)</div><div class="tx-s">Bank · GBP · Archived</div></div><div class="tx-a">£0.00</div></div></div></div>
+  </div>`));
+
+const activityWide = () => `
+  ${wtop('Activity', `<div class="search">${I('search', 's')}Search transactions</div><span class="ib sm" aria-label="Filters">${I('filter', 's')}</span>`)}
+  <div class="chips" style="margin-bottom:24px;flex-wrap:wrap">${chip('This month', true, I('cd', 'xs'))}${chip('All types')}${chip('Income')}${chip('Expenses')}${chip('Transfers')}</div>
+  <div class="g3" style="margin-bottom:24px">${kpis([['Money in','$2,140.00','pos'],['Money out','$1,486.72'],['Net','+$653.28','pos']])}</div>
+  <div class="card p32">${tableTx(TX, 3)}</div>`;
+wsx('Tab pages', 'W04', 'Activity', 'mobile/src/app/(tabs)/activity.tsx',
+  'M07 as a day-grouped table: description, category, account, converted value, amount. The search field stays open; the filter chips wrap instead of scrolling. Rows take the hover fill and open the transaction (W09) on click. Under 1024 the table falls back to M07\'s rows.',
+  () => web('Activity', activityWide()));
+wsx('Tab pages', 'W04a', 'Activity — empty', 'mobile/src/app/(tabs)/activity.tsx',
+  'M08 centred in the page.',
+  () => web('Activity', `${wtop('Activity')}<div class="card" style="padding:96px 32px"><div class="empty" style="padding:0"><div class="ring">${I('list', 'l')}</div><h2 class="h-sm">No transactions yet</h2><p class="sm mute" style="max-width:320px">Add an account first, then record transactions against it.</p><span class="btn p auto" style="margin-top:8px">${I('plus', 's')}Add account</span></div></div>`));
+
+const insw = (on, right = '') => wtop(`<div class="rs" style="gap:24px"><h1 class="h-lg">Insights</h1><div style="width:260px">${seg(['Budgets', 'Trends'], on)}</div></div>`, right);
+wsx('Tab pages', 'W05', 'Insights — Budgets', 'mobile/src/app/(tabs)/insights.tsx',
+  'M09: the segmented control moves up beside the title; the month stepper and New budget sit on the right. Budget cards run three across (two under 880). A card opens W08.',
+  () => web('Insights', `
+  ${insw(0, `${stepper}${btn('New budget', 'p', 'plus', 'auto')}`)}
+  <div class="card" style="margin-bottom:24px"><div class="row"><div><div class="bb">5 budgets</div><div class="cap mute">16 days left in this period</div></div>${status('over', '1 over budget')}</div></div>
+  <div class="g3">${BUD.map(budCard).join('')}</div>`));
+
+const trendsWide = (at, sel = null) => {
+    const last = MTD_NW.length - 1, net = MTD_IN[last] - MTD_OUT[last], chg = (MTD_NW[last] - MTD_NW[0]) / MTD_NW[0] * 100;
+    return web('Insights', `
+  ${insw(1)}
+  <div class="chips" style="margin-bottom:24px">${chip('This month', true)}${chip('Last 3 months')}${chip('Last 6 months')}${chip('This year')}</div>
+  <div class="g4" style="margin-bottom:24px">${kpis([['Money in','$2,140','pos'],['Money out','$1,487'],['Saved','30.5%']])}<div class="card kpi"><div class="cap">Monthly pace</div><div class="h-md num">$1,487 <span class="sm mute">/ month</span></div><div class="cap stone">Balance lasts 5+ years</div></div></div>
+  <div class="g2" style="margin-bottom:24px">
+    <div class="card p32"><div class="row"><h3 class="bb">Money in vs money out</h3><span class="smb num ${net >= 0 ? 'pos' : 'neg'}">${net >= 0 ? '+' : '−'}$${Math.round(Math.abs(net)).toLocaleString('en-US')} net</span></div><div class="cap mute" style="margin:2px 0 16px">Running total, 1–14 Sep</div>
+      ${trend(476, {series: [{n: 'In', c: C.primary, v: MTD_IN}, {n: 'Out', c: 'var(--stone)', v: MTD_OUT}], slots: 30, axis: SEP_AXIS, at, h: 180, title: i => `1–${i + 1} Sep`, extra: i => [[(MTD_IN[i] >= MTD_OUT[i] ? '+' : '') + money(MTD_IN[i] - MTD_OUT[i]), 'Net']]})}
+      <div class="rs cap mute" style="gap:16px;margin-top:8px"><span class="rs" style="gap:6px"><i class="lkey" style="background:${C.primary}"></i>In</span><span class="rs" style="gap:6px"><i class="lkey" style="background:var(--stone)"></i>Out</span></div></div>
+    <div class="card p32"><div class="row"><h3 class="bb">Net worth</h3><span class="smb num ${chg >= 0 ? 'pos' : 'neg'}">${chg >= 0 ? '+' : '−'}${Math.abs(chg).toFixed(1)}%</span></div><div class="cap mute" style="margin:2px 0 16px">Daily, 1–14 Sep</div>
+      ${trend(476, {series: [{n: 'Net worth', c: C.primary, v: MTD_NW}], fit: true, slots: 30, axis: SEP_AXIS, h: 180, title: i => `${i + 1} Sep`})}</div></div>
+  <div class="g2" style="align-items:stretch">
+    <div class="card p32"><h3 class="bb" style="margin-bottom:4px">Where your money went</h3><div class="cap mute" style="margin-bottom:20px">Spending by category, this month</div><div class="rs" style="gap:32px">${donut(SPEND, 172, 20, sel)}${legend(null, sel)}</div></div>
+    <div class="card p32"><h3 class="bb" style="margin-bottom:4px">Currencies you hold</h3><div class="cap mute" style="margin-bottom:20px">Share of your net worth in each currency</div>${exposure()}</div>
+  </div>`);
+};
+wsx('Tab pages', 'W06', 'Insights — Trends, hovering', 'mobile/src/app/(tabs)/insights.tsx',
+  'M10 in three rows, grouped by kind: the figures (monthly pace joins money in, out and saved), then the two trends side by side at the same height and on the same days, then the two breakdowns (spending, currencies). Under 880 each row stacks in M10\'s order. With a mouse the readout (M10a) follows the pointer, no press needed, and hides when it leaves the plot. Arrow keys step through the points of a focused chart.',
+  () => trendsWide(9));
+wsx('Tab pages', 'W06a', 'Insights — Trends, hovering a slice', 'mobile/src/app/(tabs)/insights.tsx',
+  'M10b with a mouse: pointing at a slice or legend row picks it, no click needed, and leaving the donut and legend lets go. A click on the slice, row or hole opens its spending (W04 filtered like M07b). The donut takes keyboard focus: the arrow keys step through the slices, Enter opens the picked one, Esc or leaving lets go.',
+  () => trendsWide(undefined, 1));
+
+/* ---- Detail pages ---- */
+wsx('Detail pages', 'W07', 'Account detail', 'mobile/src/app/accounts/[id].tsx',
+  'M11 split: activity on the left, the balance card on the right (360). The crumb replaces the back button and returns to Accounts; M11\'s Add / Transfer / Edit plates become header buttons, and Archive sits under the balance card.',
+  () => web('Accounts', `
+  ${wtop(`<div class="rs" style="gap:16px">${av(C.yellow, 'MM', 'lg')}<div><h1 class="h-lg">MTN MoMo</h1><div class="sm mute">Mobile money · GHS</div></div></div>`, `${btn('Transfer', 'o', 'swap', 'auto')}${btn('Edit', 's', 'edit', 'auto')}${btn('Add', 'p', 'plus', 'auto')}`, `<span class="link" style="font-weight:500">Accounts</span>${I('cr', 'xs')}MTN MoMo`)}
+  <div class="g-side">
+    <div class="card p32"><h2 class="h-sm" style="margin-bottom:8px">Activity</h2>${[TX[0], TX[3], TX[4], {n:'Kejetia Market', c:'food', acc:'MTN MoMo', amt:'−GHS 96.00', base:'≈ $6.58'}, {n:'Airtime', c:'bills', acc:'MTN MoMo', amt:'−GHS 20.00', base:'≈ $1.37'}, {n:'Shoprite', c:'food', acc:'MTN MoMo', amt:'−GHS 184.30', base:'≈ $12.62'}].map(txRow).join('')}<div style="margin-top:20px">${btn('Show more', 'o', '', 'auto sm')}</div></div>
+    <div class="col" style="gap:16px"><div class="card p32"><div class="cap mute">Balance</div><div class="d-md num" style="margin:4px 0">GHS 4,250.00</div><div class="sm stone num">≈ $291.13 · 1 GHS = $0.0685</div><div style="margin-top:24px">${line(296, 96, [60, 52, 66, 40, 46, 30, 22])}</div><div class="cap mute" style="margin-top:8px">Last 6 months</div></div>${btn('Archive account', 'danger', 'archive')}</div>
+  </div>`));
+
+wsx('Detail pages', 'W08', 'Budget detail', 'mobile/src/app/budgets/[categoryId].tsx',
+  'M09a split the same way: the month\'s expenses on the left, the summary card on the right. Month stepper and Edit (opens M20 as a dialog) in the header.',
+  () => web('Insights', `
+  ${wtop(`<div class="rs" style="gap:16px">${catAv('shopping', 'lg')}<h1 class="h-lg">Shopping</h1></div>`, `${stepper}${btn('Edit', 's', 'edit', 'auto')}`, `<span class="link" style="font-weight:500">Insights</span>${I('cr', 'xs')}Shopping`)}
+  <div class="g-side">
+    <div class="card p32"><h2 class="h-sm" style="margin-bottom:8px">4 transactions</h2>${[{n:'Amazon', c:'shopping', acc:'Wise Multi-currency', amt:'−CAD 64.99', base:'≈ $47.58'}, {n:'Zara', c:'shopping', acc:'Chase Checking', amt:'−$129.00'}, {n:'Accra Mall', c:'shopping', acc:'MTN MoMo', amt:'−GHS 1,200.00', base:'≈ $82.20'}, {n:'Melcom', c:'shopping', acc:'Chase Checking', amt:'−$81.22'}].map(txRow).join('')}</div>
+    <div class="card p32" style="border-color:var(--neg)"><div class="col" style="align-items:center;text-align:center;gap:4px;margin-bottom:16px"><div class="d-md num">$340.00</div><div class="sm stone num">spent of $250.00</div></div>${prog(100, C.danger)}<div class="row" style="margin-top:10px">${status('over', 'Over by $90')}<span class="cap stone num">136%</span></div></div>
+  </div>`));
+
+/* ---- Dialogs ---- */
+wsx('Dialogs & popovers', 'W09', 'New transaction — expense', 'mobile/src/app/transaction.tsx',
+  'The modal routes (transaction, account, budget, category, sync account) open as 560 dialogs over the page they came from. M15\'s content, with the category rail wrapping and note and date side by side; Save and Cancel move to the footer. Esc, the close button or a click on the dim closes it; focus stays inside while it is open and returns to what opened it.',
+  () => web('Activity', activityWide(), {overlay: dlg('New transaction', `
+  <div style="margin-bottom:8px">${seg(['Expense','Income','Transfer'], 0)}</div>
+  <div class="amount"><div class="d-md num">GHS 42.50</div><span class="badge" style="margin-top:6px">≈ $2.91 USD at today’s rate</span></div>
+  ${accPick('From account', ACC[3])}
+  <label class="fl-l">Category</label>${catWrap('food')}
+  <div class="g2" style="gap:16px">${field('Note', 'Osu Night Market')}${field('Date', 'Today, Sep 14', {lead: I('cal', 's'), trail: I('cd', 's')})}</div>
+  <div class="card inset"><div class="cap mute" style="margin-bottom:10px">Live sync preview</div><div class="row sm" style="margin-bottom:8px"><span>Food &amp; Dining</span><span class="num">GHS 1,542.50 → 1,585.00 / 2,000</span></div>${prog(79, C.warn)}<div class="row sm" style="margin-top:12px"><span>MTN MoMo</span><span class="num">GHS 4,250.00 → 4,207.50</span></div></div>`, foot('Save transaction'))}));
+
+wsx('Dialogs & popovers', 'W09a', 'Edit transaction — transfer', 'mobile/src/app/transaction.tsx',
+  'M17 / M18 in the dialog: from and to stay stacked with the swap button between them, then the paired amounts, then rate and fee. Delete sits alone on the left of the footer, in place of Cancel.',
+  () => web('Activity', activityWide(), {overlay: dlg('Edit transaction', `
+  <div style="margin-bottom:20px">${seg(['Expense','Income','Transfer'], 2)}</div>
+  ${accPick('From account', ACC[0])}<div style="display:flex;justify-content:center;margin:-10px 0 6px"><span class="ib sm">${I('swap', 's')}</span></div>${accPick('To account', ACC[3])}
+  <div class="g2" style="gap:16px">${field('Amount sent', '$300.00')}${field('Amount received', 'GHS 4,380.00')}</div>
+  <div class="g2" style="gap:16px">${field('Exchange rate', '1 USD = 14.60 GHS', {help: 'Market rate on Sep 12: 14.59'})}${field('Fee (optional)', '$2.00', {help: 'From the sending account.'})}</div>
+  ${field('Note', 'Monthly top-up')}`, `<span style="margin-right:auto">${btn('Delete transaction', 'danger', 'trash', 'auto')}</span>${btn('Save changes', 'p', '', 'auto')}`)}));
+
+const accountForm = `
+  ${field('Account name', 'e.g. MTN MoMo', {ph: true, focus: true})}
+  <label class="fl-l">Account type</label><div class="chips" style="flex-wrap:wrap;margin-bottom:20px">${['Bank','Mobile money','Investment','Cash','Credit','Other'].map((t, i) => chip(t, i === 1)).join('')}</div>
+  ${field('Institution / provider', 'e.g. MTN Ghana', {ph: true})}
+  <div class="g2" style="gap:16px">${select('Currency', 'GHS')}${field('Opening balance', '0.00', {ph: true})}</div>
+  ${colourRow(0)}
+  ${iconRow(['wallet','home','brief','coin','globe','lock','key','heart','bag','car'], -1, {lead: 'MM', mb: 8})}`;
+wsx('Dialogs & popovers', 'W10', 'Add account', 'mobile/src/app/account-form.tsx',
+  'M12 in the dialog. Chip rows wrap; currency and opening balance stay paired.',
+  () => web('Accounts', `${wtop('Accounts', btn('Add account', 'p', 'plus', 'auto'))}`, {overlay: dlg('Add account', accountForm, foot('Add account'))}));
+
+wsx('Dialogs & popovers', 'W11', 'Choice dialog — currency', 'mobile/src/components/inputs.tsx',
+  'ChoiceSheet (currency, account, date, appearance, look pickers) as a 440 dialog. Opened from a form it stacks on top with its own dim; picking closes only it. Up and down move through the list, Enter picks; the hovered row takes the fill and the picked one keeps its check.',
+  () => web('Accounts', `${wtop('Accounts', btn('Add account', 'p', 'plus', 'auto'))}`, {overlay: dlg('Add account', accountForm, foot('Add account')) + dlg('Currency', `
+  ${field('', 'Search currencies', {ph: true, lead: I('search', 's'), focus: true})}
+  <div class="group">${[['GHS','Ghanaian cedi'],['USD','US dollar'],['EUR','Euro'],['XOF','West African CFA franc'],['XAF','Central African CFA franc'],['CAD','Canadian dollar']].map(([k, n], i) => `<div class="li ${i === 2 ? 'hov' : ''}"><span class="badge" style="width:52px;justify-content:center;font-weight:600">${k}</span><span class="grow">${n}</span>${i === 0 ? `<span class="v">${I('check', 's')}</span>` : ''}</div>`).join('')}</div>`, '', {sm: true})}));
+
+/* ---- Settings & sync ---- */
+const settingsWide = () => `
+  ${wtop('Settings')}
+  <div class="card rs" style="margin-bottom:4px">${av(C.primary, 'A')}<div class="grow"><div class="bb">Ama Mensah</div><div class="cap stone">Stored in this browser</div></div>${I('cr', 's')}</div>
+  ${lbl('Preferences')}<div class="group">${setRow('user', 'Name', 'Ama')}${hov(setRow('globe', 'Base currency', 'USD'))}${setRow('tag', 'Categories', '14')}${setRow('swap', 'Exchange rates', 'Auto')}${setRow('mode', 'Appearance', 'System').replace('class="li"', 'class="li kf"')}</div>
+  ${lbl('Sync')}<div class="group">${setRow('cloud', 'Sync', '<span class="rs" style="gap:6px"><span class="dot" style="background:var(--pos)"></span>2 min ago</span>')}</div>
+  <p class="cap stone" style="margin-top:8px">End-to-end encrypted. The server only ever sees ciphertext.</p>
+  ${lbl('Your data')}<div class="group">${setRow('upl', 'Export data')}${setRow('down', 'Import CSV')}</div>
+  <div class="group" style="margin-top:24px"><div class="li"><span class="ib sm" style="color:var(--neg-t)">${I('trash', 's')}</span><span class="neg">Delete local data</span></div></div>
+  <p class="cap stone" style="text-align:center;margin-top:24px">Pernce · 2026.10.0</p>`;
+wsx('Settings & sync pages', 'W12', 'Settings', 'mobile/src/app/settings.tsx',
+  'Settings, Categories, Exchange rates, Your data and Sync are centred pages, 720 at most. Settings is reached from the profile, so it has no back button; the pages under it show a crumb back to it. No Security group on the web (no app lock). Rows take the hover fill; a keyboard user sees the focus ring instead.',
+  () => web('Settings', settingsWide(), {narrow: true}));
+wsx('Settings & sync pages', 'W12a', 'Settings — rail (768)', 'mobile/src/app/settings.tsx',
+  'The same page beside the rail; the ringed avatar marks Settings as the current place.',
+  () => web('Settings', settingsWide(), {md: true, narrow: true}));
+
+wsx('Settings & sync pages', 'W13', 'Sync — sign in', 'mobile/src/components/SyncAuthFlow.tsx · mobile/src/app/sync.tsx',
+  'M26 as a centred page, with M27 in a dialog over it. The whole account flow (M27–M30) stays inside the one dialog, step by step, like the phone\'s sheet.',
+  () => web('Settings', `
+  ${wtop('Sync', '', `<span class="link" style="font-weight:500">Settings</span>${I('cr', 'xs')}Sync`)}
+  <div class="ib" style="width:72px;height:72px">${I('cloud', 'xl')}</div>
+  <h2 class="h-lg" style="margin:24px 0 12px">Sync between your phones</h2>
+  <p class="b mute" style="margin-bottom:28px">Your data is encrypted on this device before it leaves. The server stores ciphertext it can’t read.</p>
+  <div class="rs" style="gap:12px">${btn('Create a sync account', 'p', '', 'auto')}${btn('Sign in', 'o', '', 'auto')}</div>`, {narrow: true, overlay: dlg('Sync account', `
+  <h1 class="h-lg" style="margin-bottom:8px">Sign in to sync</h1><p class="sm mute" style="margin-bottom:24px">Use the account you created on your other phone.</p>
+  ${field('Email', 'ama@example.com', {lead: I('mail', 's')})}
+  ${field('Password', '••••••••••••', {lead: I('lock', 's'), trail: I('eye', 's'), focus: true})}
+  <div style="text-align:right;margin:-8px 0 20px"><span class="link sm">Forgot password?</span></div>
+  ${field('Sync server', 'https://sync.example.com', {lead: I('globe', 's'), trail: '<span class="link cap">Change</span>'})}`, `<span style="margin-right:auto">${btn('Create an account', 'txt', '', 'auto')}</span>${btn('Sign in', 'p', '', 'auto')}`)}));
+
+/* ---- First run ---- */
+wsx('First run', 'W14', 'Onboarding — welcome', 'mobile/src/app/onboarding.tsx',
+  'M01 split from 1024: the headline on an inset band, the form on the canvas at 400. No shell yet (no profile). Under 1024 it is M01 centred at 480.',
+  () => `<div class="wsplit"><div class="band"><div class="logo" style="padding:0"><span class="m">P</span>Pernce</div><div><h1 class="d-xl" style="margin-bottom:24px">Every account.<br>Every currency.</h1><p class="b-lg mute" style="max-width:480px">Pernce keeps your money in this browser. Syncing between devices is optional and end-to-end encrypted.</p></div><div></div></div>
+  <div class="formside"><div style="width:400px">${field('Your name (optional)', 'Ama', {ph: true})}${select('Base currency', 'USD — US dollar', `<span class="badge" style="padding:2px 8px">$</span>`)}<div class="help" style="margin:-12px 0 32px">Totals, budgets and analytics convert into this.</div><div class="col" style="gap:12px">${btn('Use offline')}${btn('Create a sync account', 'o')}${btn('Sign in to sync', 'txt')}</div></div></div></div>`);
+
+/* =========================================================================
+   Foundations
+   ========================================================================= */
+const F = [];
+const MAP = [
+  ['Canvas','--bg','#000000 canvas-dark','#ffffff canvas-light'],
+  ['Card','--card','#151a19 surface-elevated','#ffffff + hairline-light'],
+  ['Inset','--inset','#0a0c0c surface-deep','#f2f5f4 surface-soft'],
+  ['Text','--text','#ffffff on-dark','#161b1a ink'],
+  ['Secondary text','--mute','rgba(255,255,255,.72) on-dark-mute','#4e5957 mute'],
+  ['Metadata','--stone','#8b9694 stone','#5b6563 ash'],
+  ['Divider','--divider','rgba(255,255,255,.06) divider-soft','#dde3e1 hairline-light'],
+  ['Primary button','--btn','#ffffff canvas-light','#000000 canvas-dark'],
+  ['Outline button','--out','#ffffff on-dark','#161b1a ink'],
+  ['Chip / soft','--chip','rgba(255,255,255,.08) surface-tint','#f2f5f4 surface-soft'],
+  ['Chip selected','--chip-on','#ffffff','#161b1a'],
+  ['Input','--field','#151a19 + hairline-dark','#ffffff + hairline-light'],
+  ['Positive text','--pos-t','#5fb04a (light-green, lifted for AA)','#22661b green-text'],
+  ['Negative text','--neg-t','#ff6f6f (danger, lifted for AA)','#8f1b22 deep-red'],
+  ['Link','--link','#5c9df0 (light-blue, lifted for AA)','#2a63c7 blue-link'],
+  ['Brand stamp','--brand','#14a37f primary-bright','#0b7a62 primary'],
+  ['Hover (web)','--hover','rgba(255,255,255,.06) divider-soft','rgba(0,0,0,.04)']
+];
+const fdColor = () => `<div class="fd"><h1 class="d-lg" style="margin-bottom:8px">Color</h1><p class="b-lg mute" style="margin-bottom:40px;max-width:760px">Emerald is the only brand stamp — add actions, the logo, the active tab, brand badges and the primary chart series. Accents live inside category icons and charts, never on buttons.</p>
+  <h2 class="h-sm" style="margin-bottom:16px">Brand &amp; neutrals</h2><div class="swg" style="margin-bottom:40px">${[['primary','#0b7a62'],['primary-bright','#14a37f'],['primary-deep','#085c4a'],['canvas-dark','#000000'],['surface-elevated','#151a19'],['surface-deep','#0a0c0c'],['ink','#161b1a'],['mute','#4e5957'],['stone','#8b9694'],['faint','#c7cecc'],['surface-soft','#f2f5f4'],['canvas-light','#ffffff']].map(s => `<div class="swc"><div class="c" style="background:${s[1]}"></div><div class="m"><b>${s[0]}</b><span class="mono stone">${s[1]}</span></div></div>`).join('')}</div>
+  <h2 class="h-sm" style="margin-bottom:16px">Accents → categories</h2><div class="swg" style="margin-bottom:48px">${[['accent-warning','#df7a06','Food & Dining'],['accent-light-blue','#2b7fd4','Transport'],['accent-pink','#d6325f','Shopping'],['accent-teal','#0e8f8a','Bills'],['accent-yellow','#a68700','Entertainment'],['accent-brown','#8c6656','Health'],['accent-light-green','#3f8c2c','Income · positive'],['accent-danger','#d63a3a','Over budget · error'],['accent-slate','#5e6a7e','Transfer'],['accent-violet','#7046cc','User colour'],['accent-cyan','#0f7f9c','User colour'],['accent-blue-link','#2a63c7','Links (light)']].map(s => `<div class="swc"><div class="c" style="background:${s[1]}"></div><div class="m"><b>${s[0]}</b><span class="mono stone">${s[1]}</span><div class="cap mute">${s[2]}</div></div></div>`).join('')}</div>
+  <h2 class="h-sm" style="margin-bottom:8px">Mode mapping</h2><p class="sm mute" style="margin-bottom:16px">Every screen is drawn once against these semantic roles; the mode only swaps the values. Ported in <span class="mono">core/src/tokens.ts</span> and <span class="mono">mobile/src/lib/theme.ts</span>.</p>
+  <table class="tbl maptbl"><thead><tr><th>Role</th><th>Variable</th><th>Dark</th><th>Light</th></tr></thead><tbody>${MAP.map(r => `<tr><td style="font-weight:600">${r[0]}</td><td class="mono stone">${r[1]}</td><td><span class="sw2" style="background:${r[2].split(' ')[0]}"></span>${r[2]}</td><td><span class="sw2" style="background:${r[3].split(' ')[0]}"></span>${r[3]}</td></tr>`).join('')}</tbody></table></div>`;
+const fdType = () => `<div class="fd"><h1 class="d-lg" style="margin-bottom:8px">Type</h1><p class="b-lg mute" style="margin-bottom:32px;max-width:760px">Inter throughout: 500 with tight negative tracking for display sizes and headings, 400/600 for everything else. Never 500 for body. JetBrains Mono for keys and hex values.</p>
+  ${[['display-xl','80 / 1.0 / −0.8','d-xl','$18,444'],['display-lg','48 / 1.21 / −0.48','d-lg','Every currency.'],['display-md','40 / 1.2 / −0.4','d-md','GHS 4,250.00'],['heading-lg','32 / 1.19 / −0.32','h-lg','Accounts'],['heading-md','24 / 1.33','h-md','Add account'],['heading-sm','20 / 1.4','h-sm','Recent activity'],['body-lg','18 / 1.56 / −0.09','b-lg','Your money lives in more than one place.'],['body-md','16 / 1.5 / 0.24','b','Balances update as you log transactions.'],['body-md-bold','16 / 600 / 0.16','bb','Food &amp; Dining'],['body-sm','14 / 1.43','sm','Bank · USD'],['caption','13 / 1.4','cap','Updated today at 06:00']].map(r => `<div class="typerow"><span class="smb">${r[0]}</span><span class="${r[2]}" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r[3]}</span><span class="mono cap stone">${r[1]}</span></div>`).join('')}
+  <h2 class="h-sm" style="margin:48px 0 16px">Radius &amp; spacing</h2><div class="rs" style="gap:24px;align-items:flex-end;margin-bottom:24px">${[['sm',8],['md',12],['lg',20],['xl',28],['full',9999]].map(r => `<div class="col" style="gap:8px;align-items:center"><div style="width:88px;height:64px;background:var(--card);border:1px solid var(--hair);border-radius:${r[1]}px"></div><span class="cap mute">${r[0]} · ${r[1] > 100 ? '∞' : r[1]}</span></div>`).join('')}</div>
+  <div class="rs" style="gap:16px;align-items:flex-end">${[4,6,8,14,16,24,32,48,80].map(s => `<div class="col" style="gap:8px;align-items:center"><div style="width:${s}px;height:${s}px;background:var(--primary);border-radius:2px"></div><span class="cap mute">${s}</span></div>`).join('')}</div></div>`;
+const fdComp = () => `<div class="fd"><h1 class="d-lg" style="margin-bottom:8px">Components</h1><p class="b-lg mute" style="margin-bottom:40px;max-width:760px">Pills for every button, 20px cards, 12px inputs, no drop shadows — depth comes from surface steps only. Touch targets 44px minimum on mobile.</p>
+  <div class="g3" style="gap:40px">
+  <div class="col" style="gap:12px"><div class="lbl" style="margin-top:0">Buttons</div>${btn('Primary')}${btn('Outline', 'o')}${btn('Soft', 's')}${btn('Destructive', 'danger', 'trash')}${btn('With icon', 'p', 'plus')}<div class="rs">${btn('Small', 'p', '', 'sm auto')}${btn('Small soft', 's', '', 'sm auto')}</div></div>
+  <div class="col" style="gap:12px"><div class="lbl" style="margin-top:0">Selection</div><div class="chips" style="flex-wrap:wrap">${chip('Selected', true)}${chip('Chip')}${chip('With menu', false, I('cd', 'xs'))}</div>${seg(['Expense','Income','Transfer'], 0)}<div class="rs"><span class="tg on"></span><span class="tg"></span><span class="badge">Badge</span><span class="badge brand">New</span></div><div class="rs">${['food','transport','shopping'].map(k => `<div class="catc ${k === 'food' ? 'on' : ''}">${av(CAT[k].c, I(CAT[k].i))}<span>${CAT[k].n.split(' ')[0]}</span></div>`).join('')}</div><div class="swatches">${[C.yellow, C.lblue, C.pink, C.teal].map((c, i) => `<span class="sw ${i === 0 ? 'on' : ''}" style="background:${c}"></span>`).join('')}</div></div>
+  <div class="col"><div class="lbl" style="margin-top:0">Inputs</div>${field('Default', 'Placeholder', {ph: true})}${field('Focused', 'Osu Night Market', {focus: true})}${field('Error', '0.00', {err: true, help: 'Enter a positive number.'})}${select('Select', 'USD')}</div>
+  <div class="col" style="gap:12px"><div class="lbl" style="margin-top:0">Rows</div><div class="card" style="padding:4px 20px">${txRow(TX[0])}${txRow(TX[1])}${accRow(ACC[3])}</div><div class="group">${setRow('globe', 'Settings row', 'USD')}${setRow('face', 'Toggle row', '', '<span class="tg on"></span>')}</div></div>
+  <div class="col" style="gap:12px"><div class="lbl" style="margin-top:0">Cards &amp; status</div>${budCard(BUD[0])}${budCard(BUD[2])}<div class="card inset rs" style="gap:10px">${I('info', 's')}<span class="cap mute">Inset note card</span></div></div>
+  <div class="col" style="gap:12px"><div class="lbl" style="margin-top:0">Pointer &amp; keyboard (web)</div><div class="rs">${btn('Hover', 'p', '', 'auto')}<span style="opacity:.88">${btn('Hovered', 'p', '', 'auto')}</span></div><div class="rs">${btn('Soft', 's', '', 'auto')}<span class="btn auto hov" style="color:var(--text)">Hovered</span></div><div class="group">${setRow('globe', 'Row')}${hov(setRow('tag', 'Hovered row'))}</div><div class="rs">${btn('Focused', 'p', '', 'auto kf')}${chip('Focused chip', false).replace('class="chip ', 'class="chip kf ')}<span class="ib kf">${I('gear', 's')}</span></div><p class="cap mute">Filled buttons and plates fade to 88%; everything else takes the --hover fill. Keyboard focus draws a 2px --brand ring, 2px out.</p></div>
+  <div class="col" style="gap:12px"><div class="lbl" style="margin-top:0">Navigation</div><div style="position:relative;height:106px;border:1px solid var(--hair);border-radius:var(--r-md);overflow:hidden;background:var(--bg)">${tabbar('Home')}</div><div class="card" style="padding:12px">${WNAV.slice(0, 3).map(([i, t], n) => `<span class="sb ${n === 0 ? 'on' : ''}">${I(i)}${t}</span>`).join('')}</div><div class="rs"><span class="ib">${I('gear', 's')}</span><span class="ib brand">${I('plus', 's')}</span></div></div>
+  </div></div>`;
+F.push({sec:'Foundations', id:'F01', name:'Color', src:'docs/design/pernce_design.md · core/src/tokens.ts', notes:'Palette, category mapping and the dark/light semantic role table.', render:fdColor});
+F.push({sec:'Foundations', id:'F02', name:'Type, radius & spacing', src:'docs/design/pernce_design.md', notes:'Type scale with live samples, radius and spacing scales.', render:fdType});
+F.push({sec:'Foundations', id:'F03', name:'Components', src:'mobile/src/components', notes:'Every primitive the screens are built from, in the current mode.', render:fdComp});
+
+/* =========================================================================
+   Canvas
+   ========================================================================= */
+const PAGES = [
+  {id:'foundations', name:'Foundations', list:F, layout:'v'},
+  {id:'mobile', name:'Mobile', list:M, layout:'h'},
+  {id:'web', name:'Web', list:W, layout:'v'}
+];
+const world = document.getElementById('world'), vp = document.getElementById('vp');
+const byKey = {};
+const DESC = {
+  'Onboarding & security':'First run, app lock and destructive confirmations.',
+  'Tabs':'Four tabs in a floating dock; the add button beside it opens the add menu from every tab. Budget detail sits with its tab.',
+  'Accounts':'Account detail and the add / edit sheet.',
+  'Transactions':'The add menu, the full form for each type, editing and validation.',
+  'Budgets & categories':'Budget and category management, and the shared look pickers (custom colour, icon pack).',
+  'Settings & data':'Preferences, exchange rates, import / export.',
+  'Sync':'End-to-end encrypted sync: intro, auth flow, recovery key, status, unlock.',
+  'Shell':'The web app from 768 up. Under 768 it is the mobile frames, full width. 768–1023: the dock becomes a 72px rail. 1024 and up: a 240px sidebar.',
+  'Tab pages':'The four tabs on a wide page (up to 1200): grids instead of rails, tables instead of rows where there are columns to show.',
+  'Detail pages':'Account and budget detail: the list on the left, the summary on the right, a crumb back instead of a back button.',
+  'Dialogs & popovers':'Sheets become centred dialogs, the add menu a popover. Esc closes; focus is trapped inside and returned after.',
+  'Settings & sync pages':'Centred pages, 720 at most.',
+  'First run':'Onboarding before there is a shell.',
+  'Foundations':'Tokens and primitives, drawn in both modes.'
+};
+
+PAGES.forEach(pg => {
+  const el = document.createElement('div');
+  el.className = 'page'; el.id = 'pg-' + pg.id;
+  const secs = [...new Set(pg.list.map(s => s.sec))];
+  el.innerHTML = secs.map(sec => `<section class="sec"><div class="sec-t">${sec}</div><div class="sec-d">${DESC[sec] || ''}</div><div class="row-frames">${
+    pg.list.filter(s => s.sec === sec).map(s => `<div class="pair ${pg.layout === 'v' ? 'v' : ''}">${['dark', 'light'].map(m =>
+      `<div class="fw" data-key="${s.id}-${m}" data-mode="${m}"><div class="fl"><b>${s.id} ${s.name}</b><span>${m === 'dark' ? 'Dark' : 'Light'}</span></div><div class="frame t-${m}">${s.render()}</div></div>`).join('')}</div>`).join('')
+  }</div></section>`).join('');
+  world.appendChild(el);
+  pg.list.forEach(s => ['dark', 'light'].forEach(m => byKey[`${s.id}-${m}`] = {...s, mode: m, page: pg.id}));
+});
+
+/* ---- view state ---- */
+const store = {get(k){try{return JSON.parse(localStorage.getItem('pernce-artboard:' + k))}catch(e){return null}}, set(k, v){try{localStorage.setItem('pernce-artboard:' + k, JSON.stringify(v))}catch(e){}}};
+let view = {x:0, y:0, k:.2}, page = store.get('page') || 'mobile', sel = null;
+const views = store.get('views') || {};
+function apply() {
+  world.style.transform = `translate(${view.x}px,${view.y}px) scale(${view.k})`;
+  world.style.setProperty('--k', view.k);
+  document.getElementById('zlabel').textContent = Math.round(view.k * 100) + '%';
+  views[page] = view; store.set('views', views);
+}
+function zoomAt(f, cx, cy) {
+  const k = Math.min(4, Math.max(.02, view.k * f)); const r = k / view.k;
+  view = {x: cx - (cx - view.x) * r, y: cy - (cy - view.y) * r, k}; apply();
+}
+function offsetIn(el) { let x = 0, y = 0; while (el && el !== world) { x += el.offsetLeft; y += el.offsetTop; el = el.offsetParent; } return {x, y}; }
+function fitRect(x, y, w, h, pad = 80, max = 1) {
+  const W = vp.clientWidth, H = vp.clientHeight;
+  const k = Math.min(max, (W - pad * 2) / w, (H - pad * 2) / h);
+  view = {k, x: (W - w * k) / 2 - x * k, y: (H - h * k) / 2 - y * k}; apply();
+}
+function fitPage() {
+  const el = document.getElementById('pg-' + page);
+  const secs = [...el.querySelectorAll('.sec')];
+  let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+  secs.forEach(s => { const o = offsetIn(s); x0 = Math.min(x0, o.x); y0 = Math.min(y0, o.y - 60); x1 = Math.max(x1, o.x + s.offsetWidth); y1 = Math.max(y1, o.y + s.offsetHeight); });
+  fitRect(x0, y0, x1 - x0, y1 - y0, 40);
+}
+function zoomTo(key) {
+  const fw = document.querySelector(`.fw[data-key="${key}"]`); if (!fw || fw.offsetParent === null) return;
+  const o = offsetIn(fw); fitRect(o.x, o.y - 30, fw.offsetWidth, fw.offsetHeight + 30, 48, 1);
+}
+
+/* ---- panels ---- */
+function renderPages() {
+  document.getElementById('pages').innerHTML = PAGES.map((p, i) => `<button type="button" class="p-item" data-page="${p.id}" aria-current="${p.id === page}">${p.name}<span class="k">${p.list.length * 2}</span></button>`).join('');
+}
+function renderLayers() {
+  const pg = PAGES.find(p => p.id === page);
+  const secs = [...new Set(pg.list.map(s => s.sec))];
+  const show = document.body.classList.contains('hide-dark') ? ['light'] : document.body.classList.contains('hide-light') ? ['dark'] : ['dark', 'light'];
+  document.getElementById('layers').innerHTML = secs.map(sec => `<div class="p-group">${sec}</div>` + pg.list.filter(s => s.sec === sec).map(s => show.map(m =>
+    `<button type="button" class="p-item layer ${sel === `${s.id}-${m}` ? 'sel' : ''}" data-key="${s.id}-${m}"><span class="dotm" style="background:${m === 'dark' ? '#000' : '#fff'}"></span>${s.id} ${s.name}</button>`).join('')).join('')).join('');
+}
+function renderInsp() {
+  const el = document.getElementById('insp');
+  const hint = `<div class="hint"><b>Navigate</b><br>Drag or scroll to pan · <kbd>⌘</kbd>/<kbd>Ctrl</kbd>+scroll or pinch to zoom<br><kbd>⇧1</kbd> fit page · <kbd>⇧2</kbd> zoom to selection · <kbd>⇧0</kbd> 100%<br><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> pages · <kbd>D</kbd> <kbd>L</kbd> <kbd>B</kbd> dark / light / both<br>Click a frame to inspect, double-click to zoom.</div>`;
+  if (!sel || !byKey[sel]) {
+    const total = (M.length + W.length + F.length) * 2;
+    el.innerHTML = `<h3>Pernce artboard</h3><div class="sub">${total} frames · ${M.length} mobile + ${W.length} web screens, each in dark and light</div><p>Source of truth: <code class="mono">docs/design/pernce_design.md</code>. When code and this file disagree, the docs win.</p><p>Mobile frames are 390 wide (iPhone 15); web frames are 1440 wide. Frames show full scroll height.</p>${hint}`;
+    return;
+  }
+  const s = byKey[sel]; const fw = document.querySelector(`.fw[data-key="${sel}"]`);
+  el.innerHTML = `<h3>${s.id} ${s.name}</h3><div class="sub">${s.mode === 'dark' ? 'Dark' : 'Light'} · ${PAGES.find(p => p.id === s.page).name} / ${s.sec}</div>
+  <dl class="kv"><dt>Size</dt><dd>${fw.offsetWidth} × ${fw.querySelector('.frame').offsetHeight}</dd><dt>Mode</dt><dd><code>.t-${s.mode}</code></dd><dt>Source</dt><dd><code>${s.src}</code></dd></dl><p>${s.notes}</p>
+  <button type="button" class="tb-btn" id="other">Show ${s.mode === 'dark' ? 'light' : 'dark'} version</button><div style="height:20px"></div>${hint}`;
+  document.getElementById('other').onclick = () => selectFrame(`${s.id}-${s.mode === 'dark' ? 'light' : 'dark'}`, true);
+}
+function selectFrame(key, zoom) {
+  sel = key;
+  document.querySelectorAll('.fw.sel').forEach(e => e.classList.remove('sel'));
+  if (key) { const fw = document.querySelector(`.fw[data-key="${key}"]`); fw && fw.classList.add('sel'); }
+  renderLayers(); renderInsp();
+  if (zoom && key) zoomTo(key);
+}
+function setPage(id) {
+  page = id; store.set('page', id);
+  document.querySelectorAll('.page').forEach(p => p.classList.toggle('on', p.id === 'pg-' + id));
+  sel = null; renderPages(); renderLayers(); renderInsp();
+  if (views[id]) { view = views[id]; apply(); } else requestAnimationFrame(fitPage);
+}
+function setShow(m) {
+  document.body.classList.toggle('hide-dark', m === 'light');
+  document.body.classList.toggle('hide-light', m === 'dark');
+  document.querySelectorAll('[data-show]').forEach(b => b.setAttribute('aria-pressed', b.dataset.show === m));
+  if (sel && byKey[sel] && ((m === 'dark' && byKey[sel].mode === 'light') || (m === 'light' && byKey[sel].mode === 'dark'))) sel = null;
+  renderLayers(); renderInsp(); store.set('show', m);
+}
+
+/* ---- events ---- */
+document.getElementById('pages').addEventListener('click', e => { const b = e.target.closest('[data-page]'); b && setPage(b.dataset.page); });
+document.getElementById('layers').addEventListener('click', e => { const b = e.target.closest('[data-key]'); b && selectFrame(b.dataset.key, true); });
+document.querySelectorAll('[data-show]').forEach(b => b.onclick = () => setShow(b.dataset.show));
+const ctr = () => [vp.clientWidth / 2, vp.clientHeight / 2];
+document.getElementById('zin').onclick = () => zoomAt(1.25, ...ctr());
+document.getElementById('zout').onclick = () => zoomAt(.8, ...ctr());
+document.getElementById('zlabel').onclick = () => zoomAt(1 / view.k, ...ctr());
+document.getElementById('zfit').onclick = fitPage;
+document.getElementById('uitheme').onclick = () => {
+  const r = document.documentElement, dark = r.dataset.theme ? r.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  r.dataset.theme = dark ? 'light' : 'dark'; store.set('ui', r.dataset.theme);
+};
+vp.addEventListener('wheel', e => {
+  e.preventDefault();
+  const r = vp.getBoundingClientRect();
+  if (e.ctrlKey || e.metaKey) zoomAt(Math.exp(-e.deltaY * .01), e.clientX - r.left, e.clientY - r.top);
+  else { view.x -= e.deltaX; view.y -= e.deltaY; apply(); }
+}, {passive: false});
+let drag = null;
+vp.addEventListener('pointerdown', e => { if (e.button > 1) return; drag = {x: e.clientX, y: e.clientY, vx: view.x, vy: view.y, moved: false}; vp.setPointerCapture(e.pointerId); });
+vp.addEventListener('pointermove', e => {
+  if (!drag) return; const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+  if (!drag.moved && Math.hypot(dx, dy) < 4) return;
+  drag.moved = true; vp.classList.add('panning'); view.x = drag.vx + dx; view.y = drag.vy + dy; apply();
+});
+vp.addEventListener('pointerup', e => {
+  if (drag && !drag.moved) { const fw = document.elementsFromPoint(e.clientX, e.clientY).map(n => n.closest && n.closest('.fw')).find(Boolean); selectFrame(fw ? fw.dataset.key : null); }
+  drag = null; vp.classList.remove('panning');
+});
+vp.addEventListener('dblclick', e => { const fw = e.target.closest('.fw'); fw && selectFrame(fw.dataset.key, true); });
+addEventListener('keydown', e => {
+  if (e.target.closest && e.target.closest('input,textarea')) return;
+  if (e.shiftKey && e.code === 'Digit1') fitPage();
+  else if (e.shiftKey && e.code === 'Digit2') sel && zoomTo(sel);
+  else if (e.shiftKey && e.code === 'Digit0') zoomAt(1 / view.k, ...ctr());
+  else if (!e.shiftKey && ['1','2','3'].includes(e.key)) setPage(PAGES[+e.key - 1].id);
+  else if (e.key === '=' || e.key === '+') zoomAt(1.25, ...ctr());
+  else if (e.key === '-') zoomAt(.8, ...ctr());
+  else if (e.key === 'd' || e.key === 'D') setShow('dark');
+  else if (e.key === 'l' || e.key === 'L') setShow('light');
+  else if (e.key === 'b' || e.key === 'B') setShow('both');
+  else if (e.key === 'Escape') selectFrame(null);
+});
+addEventListener('resize', () => apply());
+
+const ui = store.get('ui'); if (ui) document.documentElement.dataset.theme = ui;
+setShow(store.get('show') || 'both');
+const startPage = PAGES.some(p => p.id === page) ? page : 'mobile';
+document.fonts && document.fonts.ready.then(() => { if (sel) zoomTo(sel); else if (!views[page]) fitPage(); });
+setPage(startPage);
+/* deep link: pernce-artboard.html#M05-light selects and zooms to that frame */
+function fromHash() {
+  const key = decodeURIComponent(location.hash.slice(1)); const s = byKey[key];
+  if (!s) return;
+  if (s.page !== page) setPage(s.page);
+  setShow('both'); requestAnimationFrame(() => selectFrame(key, true));
+}
+addEventListener('hashchange', fromHash); fromHash();
+</script>
+</body>
+</html>

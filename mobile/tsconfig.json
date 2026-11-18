@@ -1,0 +1,8 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "types": []
+  },
+  "exclude": ["node_modules", "**/*.test.ts", "src/data/test-utils.ts", "src/sync/test-server.ts", "drizzle.config.ts", "scripts"]
+}

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "hono",
+  "installCommand": "pnpm install --frozen-lockfile --prod && cd ../mobile && pnpm install --frozen-lockfile --prod",
+  "buildCommand": "pnpm --config.verify-deps-before-run=false run build:app && pnpm --config.verify-deps-before-run=false run build",
+  "functions": {
+    "web/server.mjs": { "includeFiles": "web/public/**" }
+  },
+  "headers": [
+    {
+      "source": "/((?!api/).*)",
+      "headers": [
+        { "key": "Cross-Origin-Embedder-Policy", "value": "require-corp" },
+        { "key": "Cross-Origin-Opener-Policy", "value": "same-origin" }
+      ]
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/fx-rates",
+      "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/cron/sync-prune",
+      "schedule": "30 6 * * *"
+    }
+  ]
+}

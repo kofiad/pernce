@@ -1,0 +1,56 @@
+name: Bug report
+description: Something in Pernce doesn't work as it should.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. **Security problems don't go here**: report them privately as described in [SECURITY.md](https://github.com/kofiad/pernce/blob/main/SECURITY.md).
+        Please don't paste real account names, balances or exported files; make up example data instead.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Add a GHS account with opening balance 100
+        2. Add an expense of 25.50
+        3. Open Accounts
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Where?
+      multiple: true
+      options:
+        - iOS app
+        - Android app
+        - Web app
+        - Sync server (self-hosted)
+        - "@pernce/core package"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Settings shows the app version; for the server or core, the release or commit.
+      placeholder: "2026.10.4"
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Device, OS and browser
+      placeholder: "Pixel 8, Android 16 / iPhone 15, iOS 26 / Firefox 140 on macOS"
+  - type: textarea
+    id: extra
+    attributes:
+      label: Screenshots, logs or anything else

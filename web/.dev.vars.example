@@ -1,0 +1,10 @@
+# Local secrets for `pnpm run dev:worker` (wrangler dev). Copy to .dev.vars
+# (git-ignored). Deployed Workers get these from `wrangler secret put`.
+SESSION_SECRET=replace-with-a-long-random-string
+# Without SMTP the API answers sign-up/reset with 503 (the Worker is never
+# "development", so codes aren't printed). Set NODE_ENV=development here to
+# print them to the dev log instead.
+NODE_ENV=development
+SMTP_USER=
+SMTP_PASSWORD=
+CRON_SECRET=local-cron-secret

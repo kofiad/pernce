@@ -1,0 +1,43 @@
+{
+  "expo": {
+    "name": "Pernce",
+    "slug": "pernce",
+    "version": "2026.10.4",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.pernce.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0B7A62",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "package": "com.pernce.app"
+    },
+    "web": {
+      "output": "single",
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-sqlite",
+      "expo-sharing",
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Pernce uses Face ID to unlock the app."
+        }
+      ],
+      "expo-quick-actions",
+      "expo-font"
+    ],
+    "scheme": "pernce",
+    "owner": "kofad"
+  }
+}

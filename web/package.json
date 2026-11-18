@@ -1,0 +1,53 @@
+{
+  "name": "@pernce/web",
+  "version": "2026.10.4",
+  "type": "module",
+  "private": true,
+  "license": "Apache-2.0",
+  "scripts": {
+    "dev": "NODE_ENV=development tsx watch src/node.ts",
+    "start": "NODE_ENV=production tsx src/node.ts",
+    "build": "tsc --noEmit && node scripts/bundle-server.mjs",
+    "build:app": "cd ../mobile && APP_VARIANT=personal pnpm exec expo export --platform web --output-dir ../web/public && node scripts/pwa.mjs ../web/public",
+    "build:store-app": "node scripts/build-store-app.mjs",
+    "dev:store-app": "wrangler dev -c wrangler.app.jsonc --port 8788",
+    "deploy:store-app": "wrangler deploy -c wrangler.app.jsonc",
+    "dev:worker": "wrangler dev",
+    "build:worker": "wrangler deploy --dry-run --outdir dist-worker",
+    "deploy:worker": "wrangler deploy",
+    "lint": "eslint",
+    "test": "tsx --test --test-reporter=spec test/*.test.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "db:migrate:d1:local": "wrangler d1 migrations apply DB --local",
+    "db:seed": "tsx scripts/seed.ts",
+    "db:verify": "tsx scripts/verify-sync.ts",
+    "db:verify:d1": "tsx scripts/verify-d1.ts",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.tools.json"
+  },
+  "dependencies": {
+    "@libsql/client": "^0.18.0",
+    "@pernce/core": "workspace:*",
+    "@types/node": "^20",
+    "drizzle-orm": "^0.45.2",
+    "esbuild": "^0.28.2",
+    "hono": "^4.13.19",
+    "jose": "^6.2.12",
+    "nodemailer": "^10.0.13",
+    "typescript": "^5",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261117.1",
+    "@eslint/js": "^9.39.5",
+    "@hono/node-server": "^2.1.8",
+    "dotenv": "^17.4.2",
+    "drizzle-kit": "^0.31.10",
+    "eslint": "^9",
+    "tsx": "^4.23.13",
+    "typescript-eslint": "^8.73.0",
+    "wrangler": "^4.163.0"
+  }
+}

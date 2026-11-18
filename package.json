@@ -1,0 +1,29 @@
+{
+  "name": "pernce",
+  "version": "2026.10.4",
+  "private": true,
+  "license": "Apache-2.0",
+  "packageManager": "pnpm@12.15.0",
+  "scripts": {
+    "dev": "pnpm --filter @pernce/web run dev",
+    "dev:worker": "pnpm --filter @pernce/web run dev:worker",
+    "build": "pnpm --filter @pernce/web run build",
+    "start": "pnpm --filter @pernce/web run start",
+    "build:app": "pnpm --filter @pernce/web run build:app",
+    "build:store-app": "pnpm --filter @pernce/web run build:store-app",
+    "build:worker": "pnpm --filter @pernce/web run build:worker",
+    "lint": "pnpm --filter @pernce/web run lint",
+    "test:web": "pnpm --filter @pernce/web run test",
+    "db:generate": "pnpm --filter @pernce/web run db:generate",
+    "db:migrate": "pnpm --filter @pernce/web run db:migrate",
+    "db:push": "pnpm --filter @pernce/web run db:push",
+    "db:studio": "pnpm --filter @pernce/web run db:studio",
+    "db:seed": "pnpm --filter @pernce/web run db:seed",
+    "db:verify": "pnpm --filter @pernce/web run db:verify",
+    "db:verify:d1": "pnpm --filter @pernce/web run db:verify:d1",
+    "test": "pnpm --filter @pernce/core run test",
+    "core:build": "pnpm --filter @pernce/core run build",
+    "version:set": "node scripts/version.mjs set",
+    "version:check": "node scripts/version.mjs check"
+  }
+}
