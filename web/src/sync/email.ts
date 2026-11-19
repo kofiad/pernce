@@ -4,9 +4,17 @@ export type EmailMessage = { subject: string; text: string };
 export type Mailer = (to: string, message: EmailMessage) => Promise<void>;
 
 /** What the SMTP mailer reads from the environment. */
-export type MailEnv = { SMTP_USER?: string; SMTP_PASSWORD?: string; NODE_ENV?: string };
+export type MailEnv = {
+  SMTP_USER?: string;
+  SMTP_PASSWORD?: string;
+  /** Any SMTP server; defaults to Gmail. */
+  SMTP_HOST?: string;
+  /** Defaults to 465 (implicit TLS); 587 and other ports use STARTTLS. */
+  SMTP_PORT?: string;
+  NODE_ENV?: string;
+};
 
-/** Sends through Gmail's SMTP server with an app password
+/** Sends through an SMTP server (Gmail unless SMTP_HOST says otherwise) with an app password
  * (https://support.google.com/accounts/answer/185833), which needs 2-step
  * verification on the Google account. Gmail allows about 500 emails a day,
  * plenty for a few people. Without SMTP_USER and SMTP_PASSWORD, development
@@ -28,7 +36,13 @@ export function smtpMailer(env: MailEnv): Mailer {
     }
     try {
       const { createTransport } = await import("nodemailer");
-      const transport = createTransport({ host: "smtp.gmail.com", port: 465, secure: true, auth: { user, pass } });
+      const port = Number(env.SMTP_PORT) || 465;
+      const transport = createTransport({
+        host: env.SMTP_HOST || "smtp.gmail.com",
+        port,
+        secure: port === 465,
+        auth: { user, pass },
+      });
       // Gmail rewrites any other From address to the account's own.
       await transport.sendMail({ from: `Pernce <${user}>`, to, subject, text });
     } catch (err) {
