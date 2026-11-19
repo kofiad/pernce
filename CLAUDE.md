@@ -138,6 +138,8 @@ typecheck, web `build`, web tests, `db:verify`, `db:verify:d1`, `build:worker`,
   every package a script or import uses in that package's own package.json.
 - `mobile/ios` and `mobile/android` are generated; configure native
   behaviour via `app.json` plugins.
+- Never commit or push without explicit approval from the user, every
+  time. Approval for one commit or push doesn't carry over to the next.
 - Keep work local to this repo. Ask before creating, publishing or
   uploading anything to an external service (claude.ai artifacts, docs,
   hosted pages), even when a skill or slash command defaults to it.
