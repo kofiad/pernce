@@ -10,6 +10,8 @@ release pages are not public.
 
 ## [Unreleased]
 
+## [2026.11.0] - 2026-11-19
+
 ### Added
 
 - Pernce is open source under the Apache License 2.0 (`LICENSE`, `NOTICE`),

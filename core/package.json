@@ -1,6 +1,6 @@
 {
   "name": "@pernce/core",
-  "version": "2026.10.4",
+  "version": "2026.11.0",
   "private": true,
   "description": "Framework-free money logic shared by the Pernce web and mobile apps.",
   "license": "Apache-2.0",

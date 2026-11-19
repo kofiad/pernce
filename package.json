@@ -1,6 +1,6 @@
 {
   "name": "pernce",
-  "version": "2026.10.4",
+  "version": "2026.11.0",
   "private": true,
   "license": "Apache-2.0",
   "packageManager": "pnpm@12.15.0",
