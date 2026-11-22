@@ -26,8 +26,15 @@ runs entirely in your browser, your data stays in that browser, and you can
 export a backup at any time. It also installs as an app from the browser
 (on iPhone: Share, then Add to Home Screen).
 
-The iOS and Android apps come from the same Expo code; build a dev build as
-described in [`mobile/README.md`](mobile/README.md).
+**Android:** download the signed APK (`pernce-<version>-android.apk`) from
+the [latest release](https://github.com/kofiad/pernce/releases/latest) and
+open it on your phone. Android asks you to allow installs from your browser
+or file manager the first time, because it isn't from the Play Store. It's the
+same offline app as pernce.com, and your data stays on the phone.
+
+**iPhone:** there's no App Store build yet; use pernce.com and add it to your
+Home Screen. The iOS and Android apps come from the same Expo code, so you can
+also build your own as described in [`mobile/README.md`](mobile/README.md).
 
 ## Why I built this
 
