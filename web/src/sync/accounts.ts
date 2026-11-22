@@ -26,7 +26,7 @@ import {
 } from "./tokens";
 
 /** Sign-up, sign-in, sessions, password reset, wrapped keys and account
- * deletion for the sync server (docs/mobile-scope.md §5.3, §6). The client
+ * deletion for the sync server (docs/sync.md). The client
  * authenticates with an auth key derived from the password (core sync.ts),
  * so nothing here ever sees the password or anything that unwraps the data
  * key. */

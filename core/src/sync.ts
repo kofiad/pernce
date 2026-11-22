@@ -1,4 +1,4 @@
-/** The sync server's wire protocol (docs/mobile-scope.md §5–6), shared by the
+/** The sync server's wire protocol (docs/sync.md), shared by the
  * server (web/src/sync) and the mobile sync client so both agree on shapes
  * and limits.
  *

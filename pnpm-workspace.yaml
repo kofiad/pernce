@@ -5,10 +5,10 @@ packages:
 allowBuilds:
   esbuild: true
   workerd: true
-# README.md, "Keeping builds warning-free".
+# docs/development.md, "Keeping builds warning-free".
 overrides:
   esbuild: ^0.28.2
-# Advisories accepted on purpose (README.md, "Keeping builds warning-free").
+# Advisories accepted on purpose (docs/development.md, "Keeping builds warning-free").
 auditConfig:
   ignoreGhsas:
     - GHSA-fc5q-39xc-vjpf

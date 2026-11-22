@@ -11,8 +11,9 @@ export const REFRESH_TOKEN_TTL_MS = 60 * 24 * 60 * 60 * 1000; // 60 days, slidin
 const AUDIENCE = "pernce-sync";
 
 /** A key for one purpose, derived from SESSION_SECRET so the sync server
- * needs no extra secret. A different label gives an unrelated key, so a web
- * session cookie can never pass as a sync access token or the reverse. */
+ * needs no extra secret. Each label gives an unrelated key, so the access
+ * tokens ("sync-access-token"), email-code hashes ("sync-email-code") and the
+ * prelogin salt ("sync-prelogin-salt") can never stand in for one another. */
 export function deriveSecret(secret: string | undefined, label: string): Buffer {
   if (!secret) {
     throw new Error("SESSION_SECRET is not set. Add it to .env.local (any long random string).");

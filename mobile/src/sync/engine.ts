@@ -26,7 +26,7 @@ import {
 const CURRENCY_SIGNATURE = CURRENCIES.map((c) => c.code).join(",");
 
 /** One sync run: pull every change since the cursor and merge it, then
- * push this device's outbox (docs/mobile-scope.md §5.2). Pulling first
+ * push this device's outbox (docs/sync.md). Pulling first
  * means collisions are settled before anything is pushed, so the push
  * already carries the settled rows. */
 

@@ -5,7 +5,7 @@ import { prepareDatabase } from "../db/client";
 import { dropOrphanedSyncState } from "../sync/account";
 import { requestSync, syncContext } from "./sync";
 
-/** Best-effort background sync (docs/mobile-scope.md §5.2). The OS decides
+/** Best-effort background sync (docs/sync.md). The OS decides
  * when it runs (iOS may rarely run it at all), which is fine: the app also
  * syncs on start and on every return to the foreground. */
 

@@ -15,8 +15,7 @@ import {
 } from "./crypto";
 import { beginSession, clearSyncState, getKeyVersion, getSyncStatus, getSyncUser, setKeyVersion, setSyncState } from "./state";
 
-/** Sign-up, sign-in, password reset and key recovery (docs/mobile-scope.md
- * §5.3). The password never leaves the device: it derives an auth key
+/** Sign-up, sign-in, password reset and key recovery (docs/sync.md). The password never leaves the device: it derives an auth key
  * (sent) and a wrap key (kept), and the data key that encrypts records is
  * only ever stored on the server wrapped by the wrap key or by the
  * recovery key. */

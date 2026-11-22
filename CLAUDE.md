@@ -46,7 +46,7 @@ pnpm run db:generate                   # after editing web/src/db/schema.ts; com
 pnpm run core:build                    # tsup build of core (only for publishing)
 ```
 
-Single core test: `cd core && pnpm exec tsx --test --test-name-pattern "<name>" src/core.test.ts`.
+Single core test: `cd core && pnpm exec tsx --test --test-name-pattern "<name>" src/<file>.test.ts`.
 
 From `mobile/`:
 
@@ -85,7 +85,7 @@ typecheck, web `build`, web tests, `db:verify`, `db:verify:d1`, `build:worker`,
   stores only ciphertext and has its own `sync_users` and bearer tokens.
   Client `mobile/src/sync/` does pull/merge
   (last-writer-wins on HLC)/push. Wire types live in `core/src/sync.ts`.
-  Design: `docs/mobile-scope.md` §5–6. **The store app ships
+  Design: `docs/sync.md`. **The store app ships
   offline-only** (sync will be a paid add-on); sync is wired in only in the
   personal build (`APP_VARIANT=personal`, `mobile/app.config.ts`). The store
   build doesn't link sync's native modules, so app code reaches the wiring
@@ -97,19 +97,19 @@ typecheck, web `build`, web tests, `db:verify`, `db:verify:d1`, `build:worker`,
   Vercel server from the same origin, so it syncs with its own origin
   (`SYNC_URL` only overrides that, e.g. for `expo start --web`); and the
   store one (offline-only, no sync), exported into `web/public-store/` by
-  `build:store-app` and served at https://pernce.com by a Cloudflare Workers
-  static-assets Worker. There are no server-rendered pages. Web-specific
+  `build:store-app` and served at https://pernce.com by a Cloudflare
+  Workers static-assets Worker (`pernce-app`, live since 2026-11-22). There are no server-rendered pages. Web-specific
   behaviour and gotchas: `mobile/README.md`, "Web". Use `showAlert()`
   rather than `Alert.alert` so messages show on web.
 - **Deployment**: two hosts for the one Hono app (`web/`), all on free
   tiers. (1) Personal instance on Vercel Hobby: one project, `pernce`
   (https://pernce.vercel.app, Turso database), the API and the personal web
   app; install/build/headers/crons and the function's included files in `web/vercel.json`. (2)
-  Cloudflare, public: the store web app at https://pernce.com
-  (`web/wrangler.app.jsonc`) and the API Worker for https://api.pernce.com
-  (`web/wrangler.jsonc`: D1, Cron Triggers, CORS for pernce.com), built,
-  tested and measured against the Workers free plan but NOT deployed until
-  sync goes public. Status, measurements and the owner's checklist:
+  Cloudflare, public: the store web app, live at https://pernce.com
+  (`web/wrangler.app.jsonc`, deployed with `deploy:store-app`), and the API
+  Worker for https://api.pernce.com (`web/wrangler.jsonc`: D1, Cron
+  Triggers, CORS for pernce.com), built, tested and measured against the
+  Workers free plan but NOT deployed until sync goes public. Status, measurements and the owner's checklist:
   `docs/web-deployment.md`.
 - Keep `mobile/src/data/` and `mobile/src/sync/` free of React Native/Expo
   imports — their tests run in plain Node.
@@ -128,9 +128,9 @@ typecheck, web `build`, web tests, `db:verify`, `db:verify:d1`, `build:worker`,
   open to interpretation.
 - All packages share one CalVer version (`YYYY.MM.PATCH`); bump with
   `pnpm run version:set <ver>`, never by hand. Releases: see "Releases"
-  in README.md and `CHANGELOG.md` (tag push runs `release.yml`).
+  in CONTRIBUTING.md and `CHANGELOG.md` (tag push runs `release.yml`).
 - Builds must stay warning-free: see "Keeping builds warning-free" in
-  README.md. Vercel installs `web/` without devDependencies, so anything
+  `docs/development.md`. Vercel installs `web/` without devDependencies, so anything
   the server or `pnpm run build` needs (Hono, Drizzle, TypeScript) goes in
   `dependencies`. Packages with install scripts
   need `allowBuilds` approval, and dependency overrides go in `overrides`

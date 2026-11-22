@@ -87,8 +87,8 @@ function majorString(minor: number | null, currency: string | null) {
   return fromMinor(minor, currency).toFixed(currencyDecimals(currency));
 }
 
-/** Transactions CSV with the web app's columns, so either app can import
- * the other's export. Amounts are written in the currency's own
+/** Transactions CSV, in the same columns importTransactionsCsv reads back,
+ * so an export can be re-imported. Amounts are written in the currency's own
  * precision. */
 export function exportTransactionsCsv(db: DB) {
   const accs = new Map(db.select().from(accounts).all().map((a) => [a.id, a.name]));

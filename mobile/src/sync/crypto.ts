@@ -3,7 +3,7 @@ import { hmac } from "@noble/hashes/hmac.js";
 import { sha256 } from "@noble/hashes/sha2.js";
 import { DEFAULT_KDF_PARAMS, type SyncCollection, type SyncKdf } from "@pernce/core";
 
-/** End-to-end encryption for sync (docs/mobile-scope.md §5.3), following
+/** End-to-end encryption for sync (docs/sync.md), following
  * the key contract in core sync.ts:
  *
  *   master  = Argon2id(password, kdf)            native libsodium on the phone
@@ -41,6 +41,7 @@ const SALT_BYTES = 16;
 const WRAP_AAD = "pernce-data-key";
 
 // ---- UTF-8 (Hermes doesn't promise TextEncoder/TextDecoder) ----
+// (These and toBase64/fromBase64 are covered by sync.test.ts.)
 
 export function utf8Encode(s: string): Uint8Array {
   const out: number[] = [];

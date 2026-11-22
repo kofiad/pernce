@@ -38,8 +38,8 @@ import {
   text,
 } from "./ui";
 
-/** Sign up, sign in and reset password for sync (docs/mobile-scope.md §5.3,
- * §7; artboard M27–M30). Used inside onboarding and from Settings -> Sync.
+/** Sign up, sign in and reset password for sync (docs/sync.md,
+ * docs/mobile-scope.md §7; artboard M27–M30). Used inside onboarding and from Settings -> Sync.
  * Every path ends in `onDone`, after any recovery-key screen. */
 
 export type AuthMode = "signin" | "signup" | "reset";

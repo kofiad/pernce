@@ -26,14 +26,14 @@ touching `web/`; the repo-wide rules are in the root `CLAUDE.md`.
   plus `public/` through `src/web-app-files.ts` (files, then `index.html`
   for other GET/HEAD paths).
 - `src/routes/`, `src/middleware/`: the routes (`methods()` also gives the
-  405/OPTIONS answers Next gave), CORS, and the COOP/COEP app-shell headers.
+  405/OPTIONS answers), CORS, and the COOP/COEP app-shell headers.
 - `src/env.ts`: `readEnv(c)` reads `c.env` (Worker bindings, test
   bindings), then `process.env`. Always per request.
 - `src/db/`: `schema.ts`, `batch.ts` (`DbClient`, `runBatch`, `chunkRows`),
   `libsql.ts`, `d1.ts`. Both drivers are Drizzle async SQLite, so queries
   are written once.
 - `src/sync/`, `src/lib/`, `src/cron.ts`: the sync services (take a
-  `SyncContext`), scrypt and the in-memory rate limiters, the FX refresh,
+  `SyncContext`; the design is in `docs/sync.md`), scrypt and the in-memory rate limiters, the FX refresh,
   the two cron jobs.
 - `test/`: HTTP tests of the app (`app.request()` over in-memory libSQL) and
   of the Worker handlers over a local D1. `scripts/`: `db:verify` (sync
