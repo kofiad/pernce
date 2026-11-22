@@ -21,7 +21,19 @@ export default defineConfig([
   {
     // Plain Node scripts.
     files: ["**/*.mjs"],
-    languageOptions: { globals: { process: "readonly", console: "readonly" } },
+    languageOptions: { globals: { process: "readonly", console: "readonly", fetch: "readonly", setTimeout: "readonly" } },
+  },
+  {
+    // The landing page's browser scripts (site/site.js) and its retire
+    // service worker (site/sw.js).
+    files: ["site/*.js"],
+    languageOptions: {
+      globals: {
+        document: "readonly",
+        self: "readonly",
+        caches: "readonly",
+      },
+    },
   },
   globalIgnores([
     // The web app's export (pnpm run build:app) and the public store app's
@@ -31,6 +43,10 @@ export default defineConfig([
     // wrangler's local state and build output.
     ".wrangler/**",
     "dist-worker/**",
+    "dist-store-worker/**",
+    // Playwright output.
+    "test-results/**",
+    "playwright-report/**",
     // The Vercel function bundle (scripts/bundle-server.mjs).
     "server.mjs",
     // Test fixtures standing in for the web app's export.

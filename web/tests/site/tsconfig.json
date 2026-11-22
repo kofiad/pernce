@@ -1,0 +1,9 @@
+{
+  // The browser tests: they run in Node but their page.evaluate() callbacks
+  // run in the page, so this one has the DOM types (the tools config has the
+  // Workers types, which clash with them). Also checks playwright.config.ts.
+  "extends": "../../tsconfig.json",
+  "compilerOptions": { "lib": ["esnext", "dom", "dom.iterable"], "types": ["node"] },
+  "include": ["*.ts", "../../playwright.config.ts", "../../cloudflare/site-worker.ts"],
+  "exclude": ["node_modules"]
+}

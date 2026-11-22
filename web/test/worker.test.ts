@@ -139,8 +139,10 @@ describe("Worker scheduled() on D1", () => {
     const { join } = await import("node:path");
     const app = readFileSync(join(import.meta.dirname, "..", "wrangler.app.jsonc"), "utf8");
     assert.match(app, /^\s*"html_handling": "none"/m);
-    assert.match(app, /^\s*"not_found_handling": "single-page-application"/m);
+    // The site Worker (cloudflare/site-worker.ts) does the SPA fallback, for /app only.
+    assert.match(app, /^\s*"not_found_handling": "none"/m);
+    assert.match(app, /^\s*"main": "cloudflare\/site-worker.ts"/m);
     const pwa = readFileSync(join(import.meta.dirname, "..", "..", "mobile", "scripts", "pwa.mjs"), "utf8");
-    assert.ok(pwa.includes(`"/index.html"`), "the service worker still precaches /index.html");
+    assert.ok(pwa.includes(`/index.html`), "the service worker still precaches index.html");
   });
 });

@@ -57,9 +57,24 @@ const EAS_PROJECT_ID = checked("EAS_PROJECT_ID", /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a
 const PERSONAL = process.env.APP_VARIANT === "personal";
 const SYNC_URL = syncUrl(process.env.SYNC_URL);
 
+/** WEB_BASE_URL: the path the web export is served under, e.g. `/app` when
+ * the site's landing page owns `/` (web/scripts/build-store-app.mjs sets it).
+ * Unset, the app is served from `/`. Goes into `experiments.baseUrl`, which
+ * prefixes every URL the export makes; src/lib/webBase.ts reads it back. */
+function webBaseUrl(value: string | undefined): string | undefined {
+  const v = value?.trim();
+  if (!v || v === "/") return undefined;
+  if (!/^\/[A-Za-z0-9_-]+(\/[A-Za-z0-9_-]+)*$/.test(v)) {
+    throw new Error(`WEB_BASE_URL must look like /app (no trailing slash), got "${value}".`);
+  }
+  return v;
+}
+const WEB_BASE_URL = webBaseUrl(process.env.WEB_BASE_URL);
+
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...(config as ExpoConfig),
   ...(EAS_OWNER ? { owner: EAS_OWNER } : {}),
+  ...(WEB_BASE_URL ? { experiments: { ...config.experiments, baseUrl: WEB_BASE_URL } } : {}),
   ios: { ...config.ios, ...(APP_ID ? { bundleIdentifier: APP_ID } : {}) },
   android: { ...config.android, ...(APP_ID ? { package: APP_ID } : {}) },
   plugins: [

@@ -85,13 +85,15 @@ CLOUDFLARE_ACCOUNT_ID=<its id>` before any deploy). The step-by-step owner
 checklist, the free-plan measurements and the caveats are in
 `docs/web-deployment.md`.
 
-- **Public web app** (`web/wrangler.app.jsonc`, <https://pernce.com>): the
-  offline-only store build as Workers static assets, no script.
-  `pnpm --filter @pernce/web build:store-app` exports it into
+- **pernce.com** (`web/wrangler.app.jsonc`): the landing page (`web/site/`)
+  at `/` and the offline-only store build under `/app`, as Workers static
+  assets with a small Worker script (`web/cloudflare/site-worker.ts`) for
+  what no asset matches (`/`, `/app/` and its client-side routes, 301s for
+  old root-level app links).
+  `pnpm --filter @pernce/web build:store-app` builds both into
   `web/public-store/` (never `web/public/`, the personal export) and adds
-  `web/cloudflare/_headers` (the COOP/COEP headers); the config sets the
-  single-page-application fallback and attaches the `pernce.com` custom
-  domain. Deploy with `pnpm --filter @pernce/web deploy:store-app`.
+  `web/cloudflare/_headers` (COOP/COEP for `/app/*`); the config attaches
+  the `pernce.com` custom domain. Deploy with `pnpm --filter @pernce/web deploy:store-app`.
   `www.pernce.com` redirects to the apex with a Redirect Rule (an
   assets-only Worker can't redirect by hostname): `docs/web-deployment.md`.
 - **API Worker** (`web/wrangler.jsonc`, <https://api.pernce.com>): `src/worker.ts`,

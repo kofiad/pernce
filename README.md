@@ -21,7 +21,8 @@ A multi-currency, offline-first personal finance tracker. Free and open source (
 
 ## Try it
 
-Open **<https://pernce.com>** and choose "Get started". No sign-up: the app
+Open **<https://pernce.com/app>** (the site at <https://pernce.com> links to it)
+and choose "Get started". No sign-up: the app
 runs entirely in your browser, your data stays in that browser, and you can
 export a backup at any time. It also installs as an app from the browser
 (on iPhone: Share, then Add to Home Screen).
@@ -30,9 +31,9 @@ export a backup at any time. It also installs as an app from the browser
 the [latest release](https://github.com/kofiad/pernce/releases/latest) and
 open it on your phone. Android asks you to allow installs from your browser
 or file manager the first time, because it isn't from the Play Store. It's the
-same offline app as pernce.com, and your data stays on the phone.
+same offline app as pernce.com/app, and your data stays on the phone.
 
-**iPhone:** there's no App Store build yet; use pernce.com and add it to your
+**iPhone:** there's no App Store build yet; use pernce.com/app and add it to your
 Home Screen. The iOS and Android apps come from the same Expo code, so you can
 also build your own as described in [`mobile/README.md`](mobile/README.md).
 
@@ -74,7 +75,7 @@ flowchart LR
   app <-->|"encrypted records (optional)"| sync
   fx -->|"GET /api/fx"| app
   server -.- hosts["Hosts: Vercel + Turso (personal, live)<br/>Cloudflare Workers + D1 (built, not deployed)"]
-  site["pernce.com: the offline app<br/>as static files on Cloudflare"] -.->|"serves"| app
+  site["pernce.com: landing page, and the offline app at /app<br/>as static files on Cloudflare"] -.->|"serves"| app
 ```
 
 - `core/` (`@pernce/core`): framework-free money logic (currencies,

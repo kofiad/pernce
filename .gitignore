@@ -41,3 +41,6 @@ web/.dev.vars
 
 # Vercel function bundle (pnpm --filter @pernce/web build)
 /web/server.mjs
+/web/dist-store-worker/
+/web/test-results/
+/web/playwright-report/

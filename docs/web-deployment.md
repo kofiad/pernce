@@ -1,6 +1,6 @@
 # Web deployment status and Cloudflare plan
 
-_Last updated: 2026-11-22_
+_Last updated: 2026-11-22 (landing page at pernce.com/, app at /app: built and tested, not yet deployed)_
 
 ## Current status
 
@@ -11,9 +11,12 @@ _Last updated: 2026-11-22_
   `vercel.json` says `"framework": "hono"`. **The owner checks each deploy
   against "Vercel notes"** (the Production deployment of the Hono server
   hasn't been verified yet).
-- **Public web app, live: Cloudflare Workers static assets** at
-  <https://pernce.com> (Worker `pernce-app`, deployed 2026-11-22): the
-  offline-only store web build (`web/wrangler.app.jsonc`). The domain is
+- **Public site and web app, live: Cloudflare Workers static assets** at
+  <https://pernce.com> (Worker `pernce-app`, deployed 2026-11-22). The
+  deployed version still serves the offline-only store web build at `/`.
+  The next deploy (see "Landing page deploy" below) puts a landing page at
+  `/` and moves the app to `/app/` (`web/wrangler.app.jsonc`,
+  `web/cloudflare/site-worker.ts`). The domain is
   registered at Porkbun with its nameservers on Cloudflare. Redeploy with
   `pnpm run build:store-app` then `pnpm --filter @pernce/web
   deploy:store-app` (checklist below).
@@ -61,7 +64,7 @@ Everything has to run on free tiers.
 
 | | Vercel (personal) | Cloudflare (public) |
 |---|---|---|
-| Web app | personal build (sync), `web/public/` from `build:app`, served by the Vercel function itself (files bundled in via `vercel.json` `includeFiles`; SPA fallback in the app), COOP/COEP from `vercel.json` headers | store build (offline), `web/public-store/` from `build:store-app`, Workers static assets (`wrangler.app.jsonc`, `cloudflare/_headers`) at `pernce.com` |
+| Web app | personal build (sync), `web/public/` from `build:app`, app at the root, no landing page, served by the Vercel function itself (files bundled in via `vercel.json` `includeFiles`; SPA fallback in the app), COOP/COEP from `vercel.json` headers | store build (offline), `web/public-store/app/` from `build:store-app` (`WEB_BASE_URL=/app`), landing page at `web/public-store/`, Workers static assets plus the site Worker (`wrangler.app.jsonc`, `cloudflare/site-worker.ts`, `cloudflare/_headers`) at `pernce.com` (`/app/` is the app) |
 | API | `web/server.mjs`, esbuild bundle of `web/src/node-app.ts` (Node function), same origin | `web/src/worker.ts` (Worker), `api.pernce.com`, CORS for `https://pernce.com` |
 | Database | Turso/libSQL (`DATABASE_URL`, `DATABASE_AUTH_TOKEN`) | D1 binding `DB` |
 | Crons | Vercel Cron to `/api/cron/*` with `CRON_SECRET` | Cron Triggers to `scheduled()` (no secret) |
@@ -216,12 +219,8 @@ development` in `.dev.vars` to print codes to the dev log).
   function, never `index.html` (the service worker's `cache.addAll` would
   otherwise cache an HTML page as a script after a redeploy). Immutable
   caching is decided from the file that was found, not the requested path.
-  **Known difference on Cloudflare:** the public app Worker
-  (`not_found_handling: "single-page-application"`) answers every unknown
-  path, missing assets included, with `index.html` 200; assets-only Workers
-  have no option to exclude paths (only `404-page` or `none`, which break
-  deep links). Fixing it needs a small Worker script in front
-  (`run_worker_first` for `/_expo/*` and `/assets/*`); not done.
+  On Cloudflare the site Worker (`web/cloudflare/site-worker.ts`) does the
+  same for `/app`: a missing file is a plain 404, never `index.html`.
 - Verified on a preview deployment (2026-11-18, no app env vars): `/`,
   `/settings`, `/accounts/x`, `/sw.js` and `/favicon.ico` answer 200 with
   COOP and COEP (the HTML and `sw.js` with `max-age=0, must-revalidate`);
@@ -250,6 +249,73 @@ development` in `.dev.vars` to print codes to the dev log).
   authentication (not an HTML page); unexpected errors outside the sync
   routes are `{"error":"Internal server error"}` 500s.
 
+## pernce.com layout and the landing page
+
+`pnpm run build:store-app` builds `web/public-store/`; the Worker
+(`wrangler.app.jsonc`, `main: cloudflare/site-worker.ts`, assets binding
+`ASSETS`, `not_found_handling: "none"`, `html_handling: "none"`) tries static
+assets first and runs the script only on a miss, so asset hits stay free
+requests and the Worker handles only navigations.
+
+| Path | Served by | What |
+| --- | --- | --- |
+| `/` | Worker, then `/index.html` | landing page (no COOP/COEP) |
+| `/site/*`, `/favicon.*`, `/robots.txt`, `/sitemap.xml`, `/og.png`, `/apple-touch-icon.png` | assets | landing CSS, JS, images, fonts, metadata |
+| `/sw.js` | asset | the **retire worker** (below) |
+| `/app` | Worker | 301 to `/app/` (query kept) |
+| `/app/`, `/app/<route>` | Worker, then `/app/index.html` | the store app, 200, COOP/COEP set by the Worker |
+| `/app/<file>` | assets | app files, COOP/COEP from `_headers` (`/app/*`) |
+| `/api`, `/api/*` | Worker | 404, `text/plain` (the API is on `api.pernce.com`) |
+| other path without a file extension | Worker | 301 to `/app` + path + query (old links such as `/settings`) |
+| any missing file | Worker | 404, `text/plain` |
+
+**The retire worker.** Before this layout the app lived at `/` with a service
+worker at `/sw.js` (scope `/`) that answered every navigation with the cached
+app, so a returning browser would never see the landing page. `/sw.js` is now
+`web/site/sw.js`: a returning browser's update check finds it, it installs
+with `skipWaiting`, and on activation it deletes every cache named `pernce-*`
+except the new app's `pernce-app-*`, unregisters itself and reloads open
+pages (which then come from the network). It never touches IndexedDB or OPFS,
+so the user's data, which belongs to the origin, is still there at `/app/`.
+An installed home-screen app keeps `start_url: "/"` until its manifest
+refreshes; the landing page's first inline script sends a standalone window to
+`/app/`. `web/tests/site/migration.spec.ts` plays the upgrade (old root build
+with the previous `pwa.mjs`, then the new deploy on the same origin) and is the
+gate for this. The retire worker can be removed once nobody is expected to
+still have the old worker (a few months).
+
+The page's CSP is a `<meta>` tag: `default-src 'self'`, inline script only for
+that redirect (by hash, computed at build time), `style-src 'self'` (the page
+has no inline styles: bar widths are `<progress>` values and SVG attributes,
+colours are classes), no third-party requests, no analytics. `index.html`
+asks for `/site/site.css`, `site.js` and the images with `?v=<content hash>`
+(build-store-app.mjs), so `/site/*` is cached for a year and a new page never
+renders against an older stylesheet.
+
+### Landing page deploy (owner)
+
+Nothing here has been run. In this order, from `web/`:
+
+1. `pnpm run build:store-app` and `pnpm run test:site` (the same run as CI).
+2. `pnpm --filter @pernce/web build:store-worker` (dry run, no login).
+3. `pnpm --filter @pernce/web deploy:store-app` (one deploy replaces the old
+   root app, the Worker and the assets together).
+4. Check with `curl -I`: `/` is 200 with no COOP/COEP; `/app` is a 301 to
+   `/app/`; `/app/` and `/app/settings` are 200 with
+   `Cross-Origin-Embedder-Policy: require-corp` and
+   `Cross-Origin-Opener-Policy: same-origin`; `/settings?x=1` is a 301 to
+   `/app/settings?x=1`; `/app/nope.js` and `/_expo/x.js` are 404;
+   `/sw.js` contains `registration.unregister`; `/app/sw.js` has
+   `pernce-app-`.
+5. In a browser that used the old app (Chrome profile with the data): open
+   <https://pernce.com>; it may need one reload to show the landing page; then
+   <https://pernce.com/app/> must show the same accounts. In DevTools,
+   Application, Service Workers should list only `/app/`. An iPhone
+   home-screen copy opens into `/app/` (re-add it from `/app/` if it keeps
+   the old icon).
+6. Run Lighthouse on `/` (mobile and desktop) and check the social card
+   (`/og.png`) in a link preview.
+
 ## Owner checklist
 
 All external steps are yours; nothing here has been run. Do 1 to 6 now for
@@ -270,22 +336,21 @@ the public web app; 7 onwards only when sync goes public.
    account's id>` in the shell you deploy from (or add `"account_id"` to the
    wrangler configs yourself). No config sets it, so a deploy never silently
    picks another account. Do this before any `deploy` or `d1 create`.
-4. **Deploy the public app**: `pnpm run build:store-app`, then
+4. **Deploy pernce.com**: `pnpm run build:store-app`, then
    `pnpm --filter @pernce/web deploy:store-app` (`wrangler deploy -c
    wrangler.app.jsonc`). Its `routes` entry attaches `pernce.com` as a
    Custom Domain (it creates the DNS record and certificate; it fails if the
    apex already has a conflicting CNAME record: delete that record first).
-   Check <https://pernce.com>, a deep link such as `/settings`, and that the
-   response has the COOP/COEP headers.
+   Check it with "Landing page deploy" above.
 5. **`www` redirect.** In the zone's DNS add a proxied record for `www`
    (an `AAAA` to `100::`, proxy on) so the hostname reaches Cloudflare, then
    Rules → Redirect Rules → create: when Hostname equals `www.pernce.com`,
    Dynamic redirect to `concat("https://pernce.com", http.request.uri.path)`,
    status 301, preserve query string. (An assets-only Worker can't redirect
    by hostname, and `_redirects` can't match hosts.)
-6. **Install check**: open the site on an iPhone, Add to Home Screen. The
-   public app has its own origin, so its data is separate from the
-   `pernce.vercel.app` web app's.
+6. **Install check**: open <https://pernce.com/app/> on an iPhone, Add to
+   Home Screen. The public app has its own origin, so its data is separate
+   from the `pernce.vercel.app` web app's.
 
 Later, when sync goes public:
 

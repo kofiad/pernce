@@ -41,7 +41,9 @@ pnpm run db:verify                     # sync server checks on in-memory libSQL
 pnpm run db:verify:d1                  # the same checks on a local Cloudflare D1 (workerd)
 pnpm run build:worker                  # wrangler dry-run bundle of the API Worker (no login)
 pnpm run build:app                     # personal web export -> web/public/
-pnpm run build:store-app               # store (offline-only) web export -> web/public-store/
+pnpm run build:store-app               # pernce.com: landing page (web/site/) + store app under /app -> web/public-store/
+pnpm run test:site                     # Playwright tests of pernce.com on wrangler dev (build:store-app first)
+pnpm --filter @pernce/web site:screenshots   # regenerate the landing page screenshots (web/site/img/)
 pnpm run db:generate                   # after editing web/src/db/schema.ts; commit web/drizzle/
 pnpm run core:build                    # tsup build of core (only for publishing)
 ```
@@ -62,7 +64,8 @@ pnpm expo run:ios|android # dev build (Expo Go won't work: native quick-actions 
 
 CI (`.github/workflows/ci.yml`) runs: `pnpm audit`, `pnpm test`, lint, web
 typecheck, web `build`, web tests, `db:verify`, `db:verify:d1`, `build:worker`,
-`core:build`, then mobile typecheck/lint/test and both web exports.
+`core:build`, then mobile typecheck/lint/test and the personal web export, and a
+`site` job (build:store-app, the app Worker dry run, `test:site`).
 
 ## Architecture
 
@@ -95,10 +98,15 @@ typecheck, web `build`, web tests, `db:verify`, `db:verify:d1`, `build:worker`,
   the personal one (with sync, https://pernce.vercel.app), exported into
   `web/public/` by `pnpm --filter @pernce/web build:app` and served by the
   Vercel server from the same origin, so it syncs with its own origin
-  (`SYNC_URL` only overrides that, e.g. for `expo start --web`); and the
-  store one (offline-only, no sync), exported into `web/public-store/` by
-  `build:store-app` and served at https://pernce.com by a Cloudflare
-  Workers static-assets Worker (`pernce-app`, live since 2026-11-22). There are no server-rendered pages. Web-specific
+  (`SYNC_URL` only overrides that, e.g. for `expo start --web`), app at its
+  root, no landing page; and the store one (offline-only, no sync), built
+  with `WEB_BASE_URL=/app` into `web/public-store/app/` by `build:store-app`
+  and served at https://pernce.com/app by a Cloudflare Workers
+  static-assets Worker (`pernce-app`) with a script in front
+  (`web/cloudflare/site-worker.ts`). The landing page at https://pernce.com/
+  is plain HTML/CSS/JS in `web/site/` (design: `docs/design/`, frames
+  S01/S01a/S02), copied into the same `public-store/` root; tested in a
+  browser by `pnpm run test:site` (Playwright, after `build:store-app`). There are no server-rendered pages. Web-specific
   behaviour and gotchas: `mobile/README.md`, "Web". Use `showAlert()`
   rather than `Alert.alert` so messages show on web.
 - **Deployment**: two hosts for the one Hono app (`web/`), all on free
@@ -121,6 +129,12 @@ typecheck, web `build`, web tests, `db:verify`, `db:verify:d1`, `build:worker`,
 
 ## Rules
 
+- Always use Playwright for any test or check that needs a browser: the
+  web app (personal or store build), `docs/design/pernce-artboard.html`,
+  and anything else rendered in a page. Drive it headless with Playwright
+  (screenshots, console errors, interactions), not the Chrome extension,
+  manual browser checks or ad-hoc scripts, and say what it showed. A design
+  or UI change isn't verified until Playwright has rendered it.
 - Ask clarifying questions before starting any task whose answers aren't
   obvious from the prompt (scope, behaviour, UX, data/schema choices,
   delivery). Ask them all up front, in one batch, before writing code;

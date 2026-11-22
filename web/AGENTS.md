@@ -35,6 +35,13 @@ touching `web/`; the repo-wide rules are in the root `CLAUDE.md`.
 - `src/sync/`, `src/lib/`, `src/cron.ts`: the sync services (take a
   `SyncContext`; the design is in `docs/sync.md`), scrypt and the in-memory rate limiters, the FX refresh,
   the two cron jobs.
+- `site/`: the landing page for pernce.com (plain HTML, CSS, a little JS, the
+  retire `sw.js`, `img/`), copied into `public-store/` by `build:store-app`.
+  `cloudflare/`: `site-worker.ts` (the Worker in front of the static assets
+  on pernce.com: `/`, `/app/...`, old-link redirects; runs only on asset
+  misses) and `_headers`. `tests/site/`: Playwright tests (`pnpm run
+  test:site`, after `build:store-app`); `playwright.config.ts` starts
+  `wrangler dev -c wrangler.app.jsonc`.
 - `test/`: HTTP tests of the app (`app.request()` over in-memory libSQL) and
   of the Worker handlers over a local D1. `scripts/`: `db:verify` (sync
   checks on in-memory libSQL), `db:verify:d1` (the same on local D1),
@@ -91,5 +98,7 @@ pnpm run typecheck           # server (prod deps) + tools
 pnpm run build               # what Vercel runs after build:app: tsc --noEmit
 pnpm run build:worker        # wrangler deploy --dry-run: bundle size, no login
 pnpm run build:app           # personal web app export -> public/
-pnpm run build:store-app     # store web app export -> public-store/
+pnpm run build:store-app     # landing page + store app under /app -> public-store/
+pnpm run build:store-worker  # wrangler dry run of the pernce.com Worker
+pnpm run test:site           # Playwright, needs build:store-app first
 ```

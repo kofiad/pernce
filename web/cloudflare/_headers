@@ -1,12 +1,19 @@
-# Workers static assets headers for the public web app (pernce.com):
+# Workers static assets headers for pernce.com:
 # https://developers.cloudflare.com/workers/static-assets/headers/
 #
-# expo-sqlite's synchronous API on web needs SharedArrayBuffer, which
-# browsers only allow on cross-origin isolated pages. require-corp rather
-# than credentialless: Safari only supports require-corp. Same headers as
-# web/vercel.json and src/middleware/appShell.ts. This is a static-assets-only
-# Worker with no API paths, so every path gets them (index.html is also what
-# unknown paths are answered with, single-page-application fallback).
-/*
+# The store web app is under /app. expo-sqlite's synchronous API on web needs
+# SharedArrayBuffer, which browsers only allow on cross-origin isolated pages.
+# require-corp rather than credentialless: Safari only supports require-corp.
+# Same headers as web/vercel.json and src/middleware/appShell.ts. The landing
+# page at / and /site/* is not isolated (it doesn't need it). Pages the Worker
+# answers itself (/app/ and /app/<route>, cloudflare/site-worker.ts) get the
+# same pair from the Worker.
+/app/*
   Cross-Origin-Embedder-Policy: require-corp
   Cross-Origin-Opener-Policy: same-origin
+
+# Landing page files: index.html asks for them with ?v=<content hash>
+# (build-store-app.mjs) and the font files are versioned by name, so a URL
+# never changes meaning and can be cached for a year.
+/site/*
+  Cache-Control: public, max-age=31536000, immutable
