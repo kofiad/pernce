@@ -1,5 +1,29 @@
 # Pernce Mobile — Scope
 
+> **Status: historical planning document** (written Oct 2026, before the web
+> app moved onto the mobile codebase). It describes a Next.js/Postgres web app
+> that no longer exists. For how things work today see `README.md`,
+> `docs/sync.md` and `mobile/README.md`.
+>
+> **What exists today**
+>
+> - The web app is the Expo app's web build (`mobile/`), not a separate
+>   Next.js app. Two builds: the personal one (with sync) is exported into
+>   `web/public/` and served by the Vercel server; the store one (offline-only)
+>   is exported into `web/public-store/` and configured to be served at
+>   pernce.com by a Cloudflare Workers static-assets Worker, not deployed yet.
+> - `web/` is one Hono app (API only: sync, `/api/fx`, crons) on SQLite via
+>   Drizzle. It runs on Vercel with Turso/libSQL (the personal instance) and
+>   on Cloudflare Workers with D1 (built and tested, not deployed). There is no
+>   Postgres or Neon.
+> - Sync is end-to-end encrypted and exists only in the personal build
+>   (`APP_VARIANT=personal`); the store app ships offline-only. The design as
+>   built, including where it differs from §5–6 below, is in `docs/sync.md`.
+> - Money logic shared by the apps lives in `core/` (`@pernce/core`); the
+>   mobile data layer never stores balances (derived from the ledger).
+> - The "web app and encryption" question (§5.4) was settled in favor of
+>   option B: the Expo app runs in the browser and is a sync client.
+
 A native iOS + Android version of Pernce that works fully offline. An
 optional, end-to-end encrypted cloud sync is built but held back: it will
 be a paid add-on, released once people using the offline app want it

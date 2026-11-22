@@ -78,8 +78,8 @@ These come up most in review. The full list is in the package guides.
   never plain `pnpm add`. Declare every package a file imports in that
   package's own `package.json` (pnpm doesn't hoist). Anything the server
   needs at runtime or to build goes in `web`'s `dependencies`.
-- **Builds stay warning-free**; see "Keeping builds warning-free" in the
-  README.
+- **Builds stay warning-free**; see "Keeping builds warning-free" in
+  [`docs/development.md`](docs/development.md#keeping-builds-warning-free).
 - **Schema changes**: after editing a schema, run `pnpm run db:generate` in
   that package and commit the generated migrations.
 - **`mobile/ios` and `mobile/android` are generated**; configure native
@@ -100,6 +100,48 @@ These come up most in review. The full list is in the package guides.
 - UI changes: include screenshots in light and dark mode (and a wide web
   screenshot if the web layout changes).
 - Fill in the PR template's checklist.
+
+## Releases
+
+Versions are CalVer, `YYYY.MM.PATCH`, and web, core and mobile always share
+one version. Release notes live in `CHANGELOG.md`.
+
+To cut a release:
+
+```bash
+pnpm run version:set 2026.10.1   # bumps every package.json, app.json, lockfiles
+# add a "## [2026.10.1] - <date>" section to CHANGELOG.md, then commit and merge
+git tag v2026.10.1 && git push origin v2026.10.1
+```
+
+Pushing the tag runs `.github/workflows/release.yml`, which checks that
+every package is at the tagged version, runs the tests, lint, typecheck and
+`db:verify`, and then:
+
+- creates the GitHub Release from that version's CHANGELOG section,
+- publishes `@pernce/core` to GitHub Packages as `@kofiad/pernce-core`
+  and attaches the tarball to the release (see `core/README.md` for how to
+  install it),
+- builds the mobile app with EAS and attaches both builds to the release:
+  a signed Android APK (`production-apk` profile in `mobile/eas.json`, the
+  `production` build as an APK, with an auto-incremented versionCode) and an
+  iOS simulator build (`preview` profile).
+
+The web app isn't a release artifact: Vercel deploys `main` as usual.
+
+**One-time setup for mobile builds.** The mobile job is skipped with a
+warning until this is done:
+
+1. `cd mobile && pnpm dlx eas-cli@latest login && pnpm dlx eas-cli@latest init`,
+   then commit the `extra.eas.projectId` it adds to `app.json`.
+2. Create the Android signing key once, interactively:
+   `pnpm dlx eas-cli@latest credentials -p android` (let EAS generate a
+   keystore; all profiles share it). CI builds run
+   non-interactively and can't generate one.
+3. Create an access token at expo.dev (Account settings → Access tokens) and
+   add it as the `EXPO_TOKEN` repository secret on GitHub.
+4. Re-run the release for an existing tag from Actions → Release → Run
+   workflow.
 
 ## License
 

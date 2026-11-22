@@ -2,7 +2,7 @@
   "expo": {
     "name": "Pernce",
     "slug": "pernce",
-    "version": "2026.11.0",
+    "version": "2026.11.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",

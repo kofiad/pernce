@@ -12,7 +12,7 @@ import { chunkRows, runBatch } from "../db/batch";
 import type { SyncContext } from "./context";
 import { SyncHttpError, unauthorized } from "./errors";
 
-/** The encrypted record store (docs/mobile-scope.md §5.1–5.2). The server
+/** The encrypted record store (docs/sync.md). The server
  * can't read records, so all it does is keep the latest write per id and
  * hand out changes in order. Validation and merging happen on devices. */
 

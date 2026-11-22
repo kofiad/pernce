@@ -1,4 +1,4 @@
-/** Hybrid logical clock for last-writer-wins sync (docs/mobile-scope.md §5).
+/** Hybrid logical clock for last-writer-wins sync (docs/sync.md).
  *
  * A timestamp is a string that sorts in time order with a plain string
  * compare, so SQLite can ORDER BY / MAX() it and the sync server can compare

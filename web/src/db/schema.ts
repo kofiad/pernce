@@ -48,9 +48,8 @@ export const exchangeRates = sqliteTable("exchange_rates", {
 });
 
 // ---------------------------------------------------------------------------
-// Sync server (docs/mobile-scope.md §5–6). Separate from the web app's own
-// tables: a sync user is not a web user, and the server only ever holds
-// ciphertext for them.
+// Sync server (docs/sync.md). Sync users have their own accounts and
+// tokens, and the server only ever holds ciphertext for them.
 
 /** A mobile sync account. Self-serve sign-up; `authHash` is a hash of the
  * client's Argon2-derived auth key, never of the password itself, and the

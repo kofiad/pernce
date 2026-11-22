@@ -5,7 +5,7 @@ allowBuilds:
   esbuild: true
   react-native-libsodium: true
   unrs-resolver: true
-# README.md, "Keeping builds warning-free".
+# docs/development.md, "Keeping builds warning-free".
 overrides:
   esbuild: ^0.28.2
   expo-quick-actions>@expo/image-utils: ^0.12.5

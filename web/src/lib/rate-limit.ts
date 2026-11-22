@@ -4,12 +4,13 @@ declare global {
   var __pernce_login_attempts__: Map<string, Bucket> | undefined;
 }
 
-// Same warm-instance caching trick as src/db/index.ts - survives hot
-// reloads in dev / across warm serverless invocations, gone on a cold
-// start. That's a real limitation for a multi-instance deployment (each
-// instance throttles independently), but this app serves a handful of
-// people: a per-instance limiter still meaningfully raises the cost of a
-// brute-force run, with no extra infrastructure (Redis, etc.) required.
+// Used by src/sync/accounts.ts for the sign-in limiters. The store lives on
+// globalThis, so it survives hot reloads in dev and warm invocations of a
+// serverless instance, and is lost on a cold start. Each instance (or
+// Worker isolate) throttles independently, so this is a modest brake rather
+// than a hard limit: on Vercel it still raises the cost of a brute-force run
+// with no extra infrastructure, but on Workers it is weak (see
+// docs/web-deployment.md, "Rate limiting on Workers").
 const attempts = globalThis.__pernce_login_attempts__ ?? new Map<string, Bucket>();
 globalThis.__pernce_login_attempts__ = attempts;
 
@@ -48,22 +49,4 @@ export function createRateLimiter(name: string, { windowMs, max }: { windowMs: n
       attempts.delete(id(key));
     },
   };
-}
-
-const loginLimiter = createRateLimiter("login", { windowMs: 10 * 60 * 1000, max: 8 });
-
-/** Keyed by normalized email, not IP - keeps the check symmetric whether or
- * not the email actually exists, which is what preserves the anti-
- * enumeration property loginAction already relies on (a dummy-hash compare
- * that costs the same either way). */
-export function isRateLimited(key: string): boolean {
-  return loginLimiter.isLimited(key);
-}
-
-export function recordFailedAttempt(key: string) {
-  loginLimiter.hit(key);
-}
-
-export function clearAttempts(key: string) {
-  loginLimiter.clear(key);
 }

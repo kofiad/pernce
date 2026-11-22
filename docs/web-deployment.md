@@ -1,23 +1,27 @@
 # Web deployment status and Cloudflare plan
 
-_Last updated: 2026-11-18_
+_Last updated: 2026-11-22_
 
 ## Current status
 
 - **Personal instance, live: Vercel Hobby + Turso** at
   <https://pernce.vercel.app>: one project, `pernce`, serving the API and the
-  personal web app (with sync). Since the move off Next.js (this change) the
-  server is one Hono app (`web/src/node-app.ts`, bundled into `web/server.mjs`); the project's `vercel.json` now
-  says `"framework": "hono"`. **The first deploy of this change is the
-  owner's to check** (see "Vercel redeploy notes").
-- **Public web app, built, not deployed: Cloudflare Workers static assets**
-  for <https://pernce.com>: the offline-only store web build
-  (`web/wrangler.app.jsonc`). Ready to deploy; the checklist is below.
+  personal web app (with sync). The server is one Hono app
+  (`web/src/node-app.ts`, bundled into `web/server.mjs`), and the project's
+  `vercel.json` says `"framework": "hono"`. **The owner checks each deploy
+  against "Vercel notes"** (the Production deployment of the Hono server
+  hasn't been verified yet).
+- **Public web app, live: Cloudflare Workers static assets** at
+  <https://pernce.com> (Worker `pernce-app`, deployed 2026-11-22): the
+  offline-only store web build (`web/wrangler.app.jsonc`). The domain is
+  registered at Porkbun with its nameservers on Cloudflare. Redeploy with
+  `pnpm run build:store-app` then `pnpm --filter @pernce/web
+  deploy:store-app` (checklist below).
 - **Public API Worker, built, tested and measured, not deployed**: the same
   Hono app on Workers with D1 for <https://api.pernce.com>
   (`web/wrangler.jsonc`). Waits until sync goes public (the store app ships
   offline-only; sync is held back as a paid add-on; see `mobile/README.md`,
-  "Sync"). Two things must be settled first: scrypt over the free plan's CPU
+  "Sync", and `docs/sync.md`). Two things must be settled first: scrypt over the free plan's CPU
   limit and the rate limiters (below).
 
 The web app is installable as an iPhone PWA (Share, Add to Home Screen),
@@ -34,7 +38,7 @@ Everything has to run on free tiers.
 2. **Done: personal instance on Vercel Hobby + Turso,** at
    <https://pernce.vercel.app>. A private deployment used by its owner
    alone, with its own Turso (libSQL) database. Setup steps are in
-   README.md, "Deploying to Vercel".
+   `docs/deployment.md`, "Deploying to Vercel".
 3. **Done: personal mobile build with sync** pointed at that instance
    (`pnpm run ios:device:personal` in `mobile/`; see `mobile/README.md`,
    "Sync"). Sign-ups are capped at one account (`SYNC_MAX_USERS=1`). Its
@@ -44,8 +48,10 @@ Everything has to run on free tiers.
    framework-neutral Hono app (`web/AGENTS.md`). Vercel (personal) runs it
    as a Node function on libSQL; Cloudflare (public) runs it on Workers with
    D1. Same routes, paths, status codes and auth on both.
-5. **Done (not deployed): public Cloudflare deployment.** `pernce.com` was
-   purchased in 2026-11 (the rename to Pernce is done, GitHub issue #22).
+5. **Done for the web app: public Cloudflare deployment.** `pernce.com`
+   was bought in 2026-11 at Porkbun (the rename to Pernce is done, GitHub
+   issue #22), its nameservers moved to Cloudflare, and the store web app
+   has been served there since 2026-11-22.
    The split app/API layout: the static store web app at `pernce.com`, the
    API Worker at `api.pernce.com`, which the app will call cross-origin
    (CORS for `https://pernce.com`). The app is offline-only for now, so only
@@ -72,7 +78,8 @@ first, then `process.env`, per request, so nothing is read at import time
 The server holds no plaintext money data, only the sync store (ciphertext)
 and reference data. The sync design (own `sync_users` and bearer tokens,
 end-to-end encryption) doesn't depend on the host, and the client
-(`mobile/src/sync/`) only needs the server's URL (`SYNC_URL`).
+(`mobile/src/sync/`) only needs the server's URL (`SYNC_URL`). The design is
+in `docs/sync.md`.
 
 ## Free plan measurements (API Worker, 2026-11-18)
 
@@ -156,17 +163,17 @@ place it is chosen. Without `SMTP_USER`/`SMTP_PASSWORD` the Worker answers
 sign-up and reset with 503 (it is never "development"; set `NODE_ENV=
 development` in `.dev.vars` to print codes to the dev log).
 
-## Vercel redeploy notes
+## Vercel notes
 
 - `web/vercel.json` sets `"framework": "hono"`, which overrides the
-  project's Framework Preset (Next.js until now), so no dashboard change is
-  required. After the first deploy check Settings → Build & Deployment:
+  project's Framework Preset (the project was created as a Next.js one), so
+  no dashboard change is required. After a deploy check Settings → Build & Deployment:
   Framework Preset shows Hono (or Other), Output Directory is blank or
   `public`, and the Install and Build commands are the ones from
   `vercel.json` (they override the dashboard). Root Directory stays `web`,
   and keep "Include source files outside of the Root Directory" on.
-- **How Vercel's Hono preset actually builds this** (found with a local
-  `vercel build` and a first preview, which failed with
+- **How Vercel's Hono preset builds this** (found with a local `vercel
+  build`; without the bundle step below the function fails with
   `FUNCTION_INVOCATION_FAILED`):
   - It picks the entry after the build command, by name (`app`, `index`,
     `server`, then the same under `src/`) among files that import `hono`, and
@@ -222,8 +229,8 @@ development` in `.dev.vars` to print codes to the dev log).
   immutable` and are `x-vercel-cache: HIT` from the second request;
   `/api/fx` is a JSON 500 (no `DATABASE_URL` on previews), `/api/nope` a 404
   JSON, `/api/sync/pull` and `/api/cron/fx-rates` 401 JSON, all without
-  COOP/COEP or CORS headers. The Production deployment is still to be
-  checked after the merge.
+  COOP/COEP or CORS headers. The Production deployment has not been checked
+  this way yet; use the post-deploy check below.
 - After a deploy check (`curl -I`): `/`, a deep link such as `/settings`, and
   `/sw.js` return the app files with `Cross-Origin-Opener-Policy:
   same-origin` and `Cross-Origin-Embedder-Policy: require-corp`; `/api/fx`
@@ -232,13 +239,13 @@ development` in `.dev.vars` to print codes to the dev log).
   Crons tab lists the two jobs. Preview deployments have no database
   settings (they are Production-only), so database routes answer a JSON 500
   there: expected.
-- Environment variables do not change (`DATABASE_URL`,
+- Environment variables: `DATABASE_URL`,
   `DATABASE_AUTH_TOKEN`, `SESSION_SECRET`, `CRON_SECRET`, `SMTP_USER`,
-  `SMTP_PASSWORD`, `SYNC_MAX_USERS`); `NODE_ENV=production` is set by Vercel.
-  `WEB_APP_ORIGINS` is now `ALLOWED_ORIGINS` (the old name still works);
-  neither is set on Vercel.
-- Behaviour differences from the Next.js server: a trailing-slash path no
-  longer redirects (`/api/fx/` is a 404); `/api` itself is a JSON 404 like
+  `SMTP_PASSWORD`, `SYNC_MAX_USERS`; `NODE_ENV=production` is set by Vercel.
+  The CORS allow-list is `ALLOWED_ORIGINS` (the older name `WEB_APP_ORIGINS`
+  still works); neither is set on Vercel.
+- HTTP behaviour worth knowing: a trailing-slash path doesn't redirect
+  (`/api/fx/` is a 404); `/api` itself is a JSON 404 like
   other unknown API paths; unknown `/api/sync/*` paths are JSON 404s after
   authentication (not an HTML page); unexpected errors outside the sync
   routes are `{"error":"Internal server error"}` 500s.
@@ -248,10 +255,14 @@ development` in `.dev.vars` to print codes to the dev log).
 All external steps are yours; nothing here has been run. Do 1 to 6 now for
 the public web app; 7 onwards only when sync goes public.
 
-1. **Cloudflare account.** Use your *personal* Cloudflare account. Add
-   `pernce.com` to it as a zone (the domain is registered with Cloudflare, so
-   it may already be there) and wait until it is Active. The custom domain
-   below only attaches if the zone is in the same account you deploy to.
+1. **Cloudflare account and nameservers.** `pernce.com` is registered at
+   Porkbun, and nothing is serving it today. Use your *personal* Cloudflare
+   account: add the site to it (Free plan, "Add a domain"), let Cloudflare
+   scan or clear the DNS records, then in Porkbun (Domain Management →
+   Authoritative Nameservers) replace the nameservers with the two Cloudflare
+   gives you. Wait until the zone shows Active (propagation can take a few
+   hours). The custom domain below only attaches if the zone is in the same
+   account you deploy to.
 2. **Log in** from `web/`: `pnpm exec wrangler login`.
 3. **Pick the account.** Run `pnpm exec wrangler whoami`. Your login may be
    a member of several accounts: confirm the one marked as your personal
@@ -310,7 +321,36 @@ Later, when sync goes public:
     redeploy the static app. Without `SYNC_URL` a personal web build would
     call its own origin (`pernce.com`), which has no API.
 
-## Upgrading to the Pernce rename (owner procedure)
+## Takedown checklist
+
+1. **Back up production data.** Install the Turso CLI and log in
+   (`turso auth login`). Find `<db-name>` with `turso db list` (or take it
+   from the host in the Vercel project's `DATABASE_URL`:
+   `libsql://<db-name>-<org>.turso.io`). Then:
+
+   ```bash
+   turso db shell <db-name> .dump > ~/pernce-prod-backup.sql
+   ```
+
+   Keep a copy somewhere other than the laptop. (The server only holds
+   ciphertext and reference data; people's own data lives on their devices.)
+2. **Delete the Vercel project.** Settings → General → Delete Project. This
+   removes the deployments, the `*.vercel.app` URL, both crons, the env vars
+   and the GitHub link.
+3. **Delete the Turso database** (`turso db destroy <db-name>`). This is
+   permanent.
+4. **Clean up locally.** Remove the `DATABASE_URL` and `DATABASE_AUTH_TOKEN`
+   values from `web/.env` / `web/.env.local`.
+
+Not affected: the apps' local data (offline-first), and CI (`db:verify` runs
+on in-memory libSQL).
+
+## History
+
+Notes that only matter for installs and databases that predate the current
+setup.
+
+### Upgrading to the Pernce rename (owner procedure)
 
 The rename changes the sync key-derivation labels, so the old sync account
 can't sign in any more, and with `SYNC_MAX_USERS=1` the server refuses a new
@@ -349,7 +389,7 @@ steps in this order:
    import the web backup instead. Other devices: register or sign in the
    same way.
 
-## Takedown checklist
+### Takedown checklist while the database was on Neon (Postgres)
 
 1. **Back up production data.** `pg_dump` isn't installed by default.
    Install it with `brew install libpq`, then run this from `web/`

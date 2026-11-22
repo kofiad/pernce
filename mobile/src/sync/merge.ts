@@ -5,8 +5,7 @@ import type { DB } from "../data/db";
 import { observeHlc, stamp } from "../data/meta";
 import { COLLECTIONS, COLLECTION_BY_NAME, type CollectionDef } from "./collections";
 
-/** Merging pulled records into the local database (docs/mobile-scope.md
- * §5.2). The server can't read records, so every device merges on its own,
+/** Merging pulled records into the local database (docs/sync.md). The server can't read records, so every device merges on its own,
  * and the rules are deterministic so every device ends up with the same
  * rows:
  *
