@@ -2,11 +2,9 @@
 
 A multi-currency, offline-first personal finance tracker. Free and open source (Apache-2.0).
 
-<!-- badges: enable once CI is green (see docs/launch-checklist.md)
 [![CI](https://github.com/kofiad/pernce/actions/workflows/ci.yml/badge.svg)](https://github.com/kofiad/pernce/actions/workflows/ci.yml)
 [![License](https://img.shields.io/github/license/kofiad/pernce)](LICENSE)
 [![Release](https://img.shields.io/github/v/release/kofiad/pernce)](https://github.com/kofiad/pernce/releases)
--->
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/home-dark.png">
