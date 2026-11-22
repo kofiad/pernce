@@ -38,6 +38,11 @@
       "expo-font"
     ],
     "scheme": "pernce",
-    "owner": "kofad"
+    "owner": "kofad",
+    "extra": {
+      "eas": {
+        "projectId": "c13ea07f-182f-434e-b450-0716b8bc4c83"
+      }
+    }
   }
 }
