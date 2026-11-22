@@ -1,8 +1,6 @@
-<!-- DRAFT: not linked from README until the OWNER placeholders are filled. -->
-
 # Built with Claude Code
 
-Pernce was built with Claude Code as a main collaborator, and I'd rather say so than have you guess. <!-- OWNER: One or two sentences in your own words: why you built Pernce this way, and that learning Claude Code was part of the goal. e.g. "I wanted to learn Claude Code on something real, not a toy, so I picked a project I would use myself." -->
+Pernce was built with Claude Code as a main collaborator, and I'd rather say so than have you guess. I didn't want to spend hours on tutorials. I had a real need, a way to track money across several currencies while I travel for work, so the question became: how do I use the tools available to solve it? Pernce is the answer, and learning Claude Code was part of the point.
 
 The fair question is whether the result is AI slop. This page doesn't ask you to take my word for it: it lists what the repo itself shows about how the agent is steered and checked, so you can verify each claim.
 
@@ -21,7 +19,7 @@ The agent starts every session from instructions checked into the repo. You can 
 - **[`web/AGENTS.md`](../web/AGENTS.md)** (`web/CLAUDE.md` just includes it) holds the server rules: D1 compatibility (no interactive transactions, all-or-nothing writes through `runBatch()`, inserts under 100 bound parameters), no globals for config or the database, the same API on both hosts, and which dependencies must be production dependencies.
 - **[`mobile/AGENTS.md`](../mobile/AGENTS.md)** tells the agent not to trust its training data for Expo APIs and to read the versioned docs first, to use `pnpm expo install` rather than `pnpm add`, never to hand-edit the generated `ios/` and `android/` folders, and to run lint and typecheck before declaring a task done.
 
-<!-- OWNER: Which Claude Code features did you use (plan mode, subagents, skills, hooks, MCP servers, /code-review)? e.g. "Plan mode for anything touching the sync protocol; a skill for design work." -->
+The Claude Code features I leaned on most were plan mode, subagents, skills and MCP servers. Skills and `CLAUDE.md` together are what made Claude do what I needed, when and how I needed it.
 
 ## Guardrails
 
@@ -49,19 +47,21 @@ These are counts of test declarations, not a coverage figure.
 
 ## What I learned
 
-<!-- OWNER: What did you do yourself, and what did you delegate to Claude Code? e.g. "I made the product and data-model decisions; Claude wrote most of the first drafts of screens and tests." -->
+**Who did what.** I made most of the product decisions myself. Claude did most of the execution, and I reviewed the work it did.
 
-<!-- OWNER: Walk through one typical feature from idea to merged. e.g. "Idea, clarifying questions, plan, implementation, tests, my review of the diff, approved commit." -->
+**How a feature went.** Plan first, then build. Because I planned before executing, and `CLAUDE.md` makes Claude ask its clarifying questions up front, there was very little back and forth: three rounds at most.
 
-<!-- OWNER: What did Claude get wrong, what did you have to correct, and which CLAUDE.md or AGENTS.md rules grew out of those corrections? e.g. "The Expo warning in mobile/AGENTS.md exists because it suggested APIs that had been renamed." -->
+**What went wrong.** Sometimes Claude went off on a tangent and did things I hadn't asked for. That's why the guardrails exist: ask first, no commit or push without my approval each time, keep work local, and the architecture rules that lint enforces.
 
-<!-- OWNER: How do you verify AI-written code before trusting it? e.g. "Read every diff, run the full CI command list locally, test on a device." -->
+**How I check the work.** All of it: I read the diffs, the tests and CI run on every change, and I use the app myself every day. So far it hasn't cost me any money beyond registering the domain, and the guardrails kept my data safe.
 
-<!-- OWNER: What surprised you? -->
+**What surprised me.** How good the code Claude Code writes is. The quality impressed me.
 
-<!-- OWNER: What would you do differently? -->
+**What I'd do differently.** Plan in even more detail up front, to cut the back and forth further.
 
-<!-- OWNER: What advice would you give someone starting with Claude Code? -->
+**My advice.** Read the code and understand what's going on. Don't trust the AI blindly.
+
+**For the record.** The first release, 2026.10.0, shipped on 2026-09-30. I've used Pernce daily since September 2026, and the repo went public in November 2026. Hosting runs on free tiers (Vercel Hobby, Turso, Cloudflare), so the only cost has been the domain.
 
 ## Try it yourself
 

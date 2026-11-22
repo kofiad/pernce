@@ -74,5 +74,4 @@ Done: the CI, license and release badges are on.
 
 ## 5. Built with Claude Code
 
-Fill in `docs/built-with-claude-code.md`, then uncomment its link in the
-"Built with Claude Code" section of `README.md`.
+Done: `docs/built-with-claude-code.md` is filled in and linked from the README.
