@@ -110,7 +110,8 @@ I built Pernce while learning Claude Code. The repo's
 [`CLAUDE.md`](CLAUDE.md), [`web/AGENTS.md`](web/AGENTS.md) and
 [`mobile/AGENTS.md`](mobile/AGENTS.md) are the instructions the agent worked from, so they double as a record of the
 project's conventions and rules.
-<!-- link docs/built-with-claude-code.md once the owner fills it in -->
+How that went, what went wrong and what I'd do differently:
+[`docs/built-with-claude-code.md`](docs/built-with-claude-code.md).
 
 ## Contributing
 

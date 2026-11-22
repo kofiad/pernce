@@ -74,5 +74,4 @@ Once CI is green, uncomment the badges block at the top of `README.md`.
 
 ## 5. Built with Claude Code
 
-Fill in `docs/built-with-claude-code.md`, then uncomment its link in the
-"Built with Claude Code" section of `README.md`.
+Done: `docs/built-with-claude-code.md` is filled in and linked from the README.
