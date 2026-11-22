@@ -45,8 +45,10 @@ Follow the full checklist and caveats in
    pnpm run build:store-app && pnpm --filter @pernce/web deploy:store-app
    ```
 
-5. Verify the cross-origin isolation headers and a deep link (for example
-   `https://pernce.com/settings`).
+5. Verify the landing page at `/`, the app at `/app/` with its cross-origin
+   isolation headers, and a deep link (for example
+   `https://pernce.com/app/settings`; `https://pernce.com/settings` redirects
+   to it). Checklist: `docs/web-deployment.md`, "Landing page deploy".
 6. Add the `www` redirect to the apex as described in
    [web-deployment.md](web-deployment.md).
 7. Done: README, `CLAUDE.md` and the deployment docs point at pernce.com.

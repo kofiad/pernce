@@ -1,9 +1,11 @@
-// The public web app (https://pernce.com): the STORE build of mobile/'s web
-// export (offline-only, no sync), served as Workers static assets. No Worker
-// script: assets only. Build it with `pnpm run build:store-app` (into
-// public-store/), then `pnpm run deploy:store-app`. Not the API: that is
-// wrangler.jsonc (api.pernce.com), not deployed yet. See docs/web-deployment.md,
-// "Owner checklist".
+// pernce.com: the landing page at / and the STORE build of mobile/'s web
+// export (offline-only, no sync) under /app, served as Workers static assets
+// with a small Worker script (cloudflare/site-worker.ts) in front for what no
+// asset matches: / and /app/ (index.html), client-side routes under /app, and
+// 301s for links from before the landing page existed. Build with
+// `pnpm run build:store-app` (into public-store/), then `pnpm run
+// deploy:store-app`. Not the API: that is wrangler.jsonc (api.pernce.com), not
+// deployed yet. See docs/web-deployment.md, "Owner checklist".
 //
 // There is deliberately NO "account_id" here: a login can see several
 // Cloudflare accounts, and a deploy must never silently pick the wrong one.
@@ -15,19 +17,25 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "pernce-app",
   "compatibility_date": "2026-11-01",
+  "main": "cloudflare/site-worker.ts",
   "assets": {
     "directory": "./public-store",
-    // Unknown paths get index.html with 200: deep links like /settings are
-    // client-side routes (expo-router).
-    "not_found_handling": "single-page-application",
+    "binding": "ASSETS",
+    // Assets are tried first and the Worker only runs on a miss (the default,
+    // run_worker_first false), so hits are free requests. No single-page
+    // fallback here: the Worker does it, for /app only.
+    "not_found_handling": "none",
     // Serve /index.html as is. The default, "auto-trailing-slash", answers it
-    // with a 307 to /, and the service worker precaches /index.html for
-    // navigations (mobile/scripts/pwa.mjs): browsers refuse a redirected
-    // response for a navigation ("Response served by service worker has
-    // redirections" in Safari). Vercel and the Node server answer 200 too.
+    // with a 307 to /, and the app's service worker precaches
+    // /app/index.html for navigations (mobile/scripts/pwa.mjs): browsers
+    // refuse a redirected response for a navigation ("Response served by
+    // service worker has redirections" in Safari). With "none" the paths /
+    // and /app/ are not assets, so they reach the Worker, which serves the
+    // two index.html files itself with a 200.
     "html_handling": "none"
-    // The cross-origin isolation headers come from public-store/_headers
-    // (cloudflare/_headers, copied in by build:store-app).
+    // The cross-origin isolation headers for /app/* come from
+    // public-store/_headers (cloudflare/_headers, copied in by
+    // build:store-app) and from the Worker for the pages it answers.
   },
   // Attaches pernce.com as a Custom Domain on deploy (creates the DNS record
   // and certificate). Needs the zone in your Cloudflare account and no

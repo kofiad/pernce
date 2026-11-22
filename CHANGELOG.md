@@ -10,6 +10,33 @@ release pages are not public.
 
 ## [Unreleased]
 
+### Added
+
+- A landing page at https://pernce.com/ (plain HTML, CSS and a little
+  JavaScript in `web/site/`; design frames S01, S01a and S02), with real app
+  screenshots, a features section (tabs and accordion), the privacy and
+  open-source sections, and "Coming soon" store badges.
+- Playwright tests for the site (`pnpm run test:site`, in CI): the landing
+  page, layout at four widths, keyboard and ARIA, the routing table, the app
+  at `/app/` (data kept, offline) and the upgrade from the old root-level
+  install.
+- `WEB_BASE_URL` for the web export (the path it is served under), and a
+  base path argument for `mobile/scripts/pwa.mjs`.
+
+### Changed
+
+- **The store web app moved from https://pernce.com/ to
+  https://pernce.com/app/.** Old links such as `pernce.com/settings` redirect
+  (301) to `/app/settings`. Installed home-screen copies keep working: the
+  landing page sends an installed app straight to `/app/`, and a retiring
+  service worker at `/sw.js` clears the old root-scoped caches on the first
+  visit. Data stays in the browser (same origin). The personal instance
+  (pernce.vercel.app) is unchanged.
+- `web/wrangler.app.jsonc` now has a small Worker script in front of the
+  assets (`web/cloudflare/site-worker.ts`); missing files under `/app` are a
+  plain 404 instead of `index.html` (fixes the known difference noted in
+  `docs/web-deployment.md`).
+
 ## [2026.11.2] - 2026-11-22
 
 ### Added

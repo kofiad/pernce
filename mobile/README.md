@@ -165,12 +165,27 @@ with `SYNC_URL`, and the server allows its origin with `ALLOWED_ORIGINS`
 both, and the production-like check.
 
 The **store** build's web export is the public web app at
-<https://pernce.com> (see `docs/web-deployment.md`): `pnpm --filter @pernce/web build:store-app` (no `APP_VARIANT`, so
+<https://pernce.com/app> (see `docs/web-deployment.md`; the landing page is
+at `/`): `pnpm --filter @pernce/web build:store-app` (no `APP_VARIANT`, so
 `extra.variant` is `"store"`, `syncEnabled` is false, `syncApp()` is never
 called, and the sync routes just redirect to Settings) writes it into
-`web/public-store/` with the same PWA files, plus `_headers` with the
+`web/public-store/app/` with the same PWA files, plus `_headers` with the
 headers below. A Cloudflare Workers static-assets Worker serves it
-(`web/wrangler.app.jsonc`, SPA fallback). The sync wiring is still in the
+(`web/wrangler.app.jsonc`; `web/cloudflare/site-worker.ts` does the SPA
+fallback for `/app/*`).
+
+**`WEB_BASE_URL`** (build time, like `APP_VARIANT`; read in `app.config.ts`)
+is the path the web export is served under. Unset, the app is at `/` (the
+personal build). `build:store-app` sets it to `/app`, which becomes
+`experiments.baseUrl`: Expo prefixes the bundle, font, wasm and worker URLs
+with it, and exposes it as `process.env.EXPO_BASE_URL` (`src/lib/webBase.ts`
+reads it for the service worker). `scripts/pwa.mjs <dir> /app` does the same
+for what it adds: the manifest (`start_url` and `scope` `/app/`, icons), the
+precache list and navigation key (`/app/index.html`), and the cache name
+(`pernce-app-<hash>`, so the retire worker at the site root can tell it from
+the old root-scoped `pernce-<hash>` caches). The worker is registered at
+`/app/sw.js` with scope `/app/`. IndexedDB belongs to the origin, so data
+saved before the move to `/app` is still there. The sync wiring is still in the
 JavaScript bundle (Metro can't drop a `require` behind a runtime flag) but
 never runs. It is offline-only: when sync goes public, build it with
 `APP_VARIANT=personal SYNC_URL=https://api.pernce.com` instead (the API

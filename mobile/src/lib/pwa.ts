@@ -1,4 +1,5 @@
 import { Platform } from "react-native";
+import { serviceWorkerPaths, webBase } from "./webBase";
 
 /** Web only: registers the service worker that lets the installed app
  * launch offline (scripts/pwa.mjs writes it into the export), and asks the
@@ -8,7 +9,9 @@ import { Platform } from "react-native";
 export function startPwa(): void {
   if (Platform.OS !== "web" || process.env.NODE_ENV !== "production") return;
   if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/sw.js").catch(() => {});
+    // Under a base path (pernce.com/app) the worker and its scope stay inside it.
+    const { url, scope } = serviceWorkerPaths(webBase());
+    navigator.serviceWorker.register(url, { scope }).catch(() => {});
   }
   navigator.storage?.persist?.().catch(() => {});
 }

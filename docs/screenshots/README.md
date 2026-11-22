@@ -16,9 +16,19 @@ contains nothing real) on the store web build (`pnpm run build:store-app`).
 | `mobile-home.png` | 780x1688 | Home in the phone layout (390x844 at 2x) |
 | `social-preview.png` | 1280x640 | GitHub social preview (upload in repo settings) |
 
+## Landing page shots
+
+`web/site/img/home-dark.png` and `budgets-light.png` (the two phones on
+pernce.com) are made by a script in the repo:
+`pnpm --filter @pernce/web build:store-app`, then
+`pnpm --filter @pernce/web site:screenshots` (`web/scripts/site-screenshots.mjs`).
+It serves the store build at `/app` with `wrangler dev`, imports the demo
+backup through Your data, fixes "today" to 2026-11-20, captures at 390x844
+and scale 2, and quantises to 8-bit PNG (about 40 KB each).
+
 ## Regenerating
 
-The Playwright script lives outside the repo; the steps are:
+The Playwright script for the images above lives outside the repo; the steps are:
 
 1. `cd mobile && node --experimental-sqlite --no-warnings=ExperimentalWarning --import tsx scripts/make-demo-backup.ts`
    rewrites the backup (deterministic; "now" is 2026-11-20).

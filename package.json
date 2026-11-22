@@ -14,6 +14,7 @@
     "build:worker": "pnpm --filter @pernce/web run build:worker",
     "lint": "pnpm --filter @pernce/web run lint",
     "test:web": "pnpm --filter @pernce/web run test",
+    "test:site": "pnpm --filter @pernce/web run test:site",
     "db:generate": "pnpm --filter @pernce/web run db:generate",
     "db:migrate": "pnpm --filter @pernce/web run db:migrate",
     "db:push": "pnpm --filter @pernce/web run db:push",

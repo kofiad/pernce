@@ -91,19 +91,79 @@ jobs:
       - run: pnpm run typecheck
       - run: pnpm run lint
       - run: pnpm test
-      # Both web exports build, and the store one (the public app at
-      # pernce.com) is the offline-only variant: no sync in its config.
-      - name: Web exports (personal and store)
+      # The personal web export builds (the store one, with the landing page,
+      # is built and checked by the site job).
+      - name: Web export (personal)
         run: |
           APP_VARIANT=personal pnpm exec expo export --platform web --output-dir ../web/public
           node scripts/pwa.mjs ../web/public
-          node ../web/scripts/build-store-app.mjs
-          if ! grep -rlq '\\"variant\\":\\"store\\"' ../web/public-store/_expo; then
+          if ! grep -rlq '\\"variant\\":\\"personal\\"' ../web/public/_expo; then
+            echo "personal export lacks the personal variant marker"; exit 1
+          fi
+          if [ ! -f ../web/public/index.html ] || [ -d ../web/public/app ]; then
+            echo "the personal export must be the app at its root"; exit 1
+          fi
+
+  # pernce.com: the landing page at / and the store (offline-only) app at /app,
+  # built into web/public-store/ and tested in a browser against the Cloudflare
+  # Worker that serves it (wrangler dev, no login, nothing deployed).
+  site:
+    runs-on: ubuntu-24.04
+    # The official Playwright image: its Chromium and fonts are what the
+    # Linux screenshot baselines (web/tests/site/__screenshots__/chromium-linux)
+    # were made with, so screenshots compare pixel for pixel. Keep the tag
+    # equal to @playwright/test in web/package.json (checked below).
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+      options: --ipc=host
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.tag || github.sha }}
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Install the app's dependencies
+        working-directory: mobile
+        run: pnpm install --frozen-lockfile
+      - name: Build pernce.com (landing page and store app)
+        run: pnpm run build:store-app
+      - name: The export is what the Worker expects
+        run: |
+          cd web/public-store
+          grep -q '<h1' index.html || { echo "index.html is not the landing page"; exit 1; }
+          grep -q 'Every currency' index.html || { echo "landing page copy missing"; exit 1; }
+          [ -f app/index.html ] || { echo "app/index.html missing"; exit 1; }
+          grep -q 'src="/app/_expo' app/index.html || { echo "the app does not load from /app"; exit 1; }
+          [ ! -e _expo ] || { echo "app files at the root"; exit 1; }
+          if ! grep -rlq '\\"variant\\":\\"store\\"' app/_expo; then
             echo "store export lacks the store variant marker"; exit 1
           fi
-          if grep -rlq '\\"variant\\":\\"personal\\"' ../web/public-store/_expo; then
+          if grep -rlq '\\"variant\\":\\"personal\\"' app/_expo; then
             echo "personal variant in store export"; exit 1
           fi
-          if [ ! -f ../web/public-store/_headers ]; then
-            echo "store export has no _headers"; exit 1
-          fi
+          [ -f _headers ] || { echo "store export has no _headers"; exit 1; }
+          grep -q '^/app/\*' _headers || { echo "_headers is not scoped to /app/*"; exit 1; }
+          if grep -q '^/\*' _headers; then echo "_headers still isolates every path"; exit 1; fi
+          grep -q 'registration.unregister' sw.js || { echo "/sw.js is not the retire worker"; exit 1; }
+      # The app Worker's bundle, as `wrangler deploy` would upload it.
+      - run: pnpm --filter @pernce/web run build:store-worker
+      - name: The Playwright image matches @playwright/test
+        run: |
+          want="Version $(node -p "require('./web/package.json').devDependencies['@playwright/test']")"
+          have="$(pnpm --filter @pernce/web exec playwright --version)"
+          [ "$have" = "$want" ] || { echo "image has $have, web/package.json wants $want: bump the container tag"; exit 1; }
+      - run: pnpm run test:site
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            web/playwright-report
+            web/test-results
+          retention-days: 7

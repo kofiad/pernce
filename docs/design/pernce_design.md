@@ -649,6 +649,17 @@ Native phones always use the phone layout. The breakpoints below apply only to t
 - Trend charts show their readout (M10a) on hover. It follows the pointer, needs no press, and hides when the pointer leaves the plot. The arrow keys step through a focused chart's points.
 - The spending donut picks a slice on hover (W06a) and opens its spending on click; see `donut`.
 
+### Landing page (pernce.com/)
+- The public site (S01 desktop, S02 phone, on the artboard's Site page). It lives at `pernce.com/`; the store web app moves to `pernce.com/app`, and every "Open the app" goes there.
+- A marketing page, not an app page: content is 1200 wide and **centred** (app pages start at the left), with 120 between sections (72 under 768) and the 20 gutter on phones. Same tokens, both modes, no shadows.
+- One primary action everywhere: "Open the app" (`btn` primary). "View on GitHub" is the outline secondary. No pricing, testimonials, sign-up forms or analytics.
+- Store badges are outlined pills with a generic phone icon and "Coming soon". No Apple or Google marks until there are store listings.
+- The logo is the real mark (`icons/pernce-favicon.svg`), not the "P" placeholder in the app frames.
+- The landing page has its own frames: S01 (desktop), S01a (features in another state) and S02 (phone).
+- The hero shot is two whole phones in device bezels on an `--inset` stage: M05 in dark in front, with M09 in light peeking out behind it. Each phone keeps its theme in either page mode, so the page always shows both. Don't crop text mid-word at the stage edges.
+- Features follow a GitHub-style tabs + accordion pattern. Pill tabs (`chip` at 44 high) pick an area: Accounts, Net worth, Budgets, Insights. Below them, an `--inset` panel holds an accordion on the left with one item open, marked by a 2px `--brand` bar, with its text and a link. Closed items sit on a `--hair` bar. On the right is the tab's visual, built from live components on a `--card`, not screenshots. Three plain points follow the panel. On the shipped page every figure in the visuals comes from the demo backup (`docs/demo/`), the same data as the hero screenshots, so the page never shows two different net worths. The artboard keeps its own sample data. The Insights legend isn't dimmed (dimmed rows fail 4.5:1); the selected slice is shown by the donut and the bold row. Accordion titles are 44px tap targets. On phones the tabs become a swipeable chip row and the visual sits under the accordion.
+- Copy must stay true to the build: offline, no account, Apache-2.0, 150+ currencies, English and French. Sync is described only as coming and end-to-end encrypted.
+
 ### Pointer and keyboard (web)
 - **Hover**: filled buttons, the add button and plates fade to 88%. Rows, sidebar items, chips and soft or outline buttons take `--hover` (`rgba(255,255,255,.06)` dark, `rgba(0,0,0,.04)` light), a tint laid over the element's own fill so it shows on every surface. Anything clickable shows the pointer cursor.
 - **Focus**: keyboard focus (`:focus-visible` only, never on click) draws a 2px `--brand` ring, 2px outside the element's own shape. Inputs keep their existing focused border.

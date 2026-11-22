@@ -16,7 +16,8 @@ config.watchFolders = [...config.watchFolders, path.resolve(__dirname, "../core"
 // The app config (app.config.ts) is baked into the bundle, and Metro's cache
 // doesn't notice when it changes: without this, switching APP_VARIANT or
 // SYNC_URL can reuse the other variant's config.
-config.cacheVersion = [config.cacheVersion, process.env.APP_VARIANT ?? "store", process.env.SYNC_URL ?? ""].join(":");
+// WEB_BASE_URL is appended only when set, so builds without it keep their hashes.
+config.cacheVersion = [config.cacheVersion, process.env.APP_VARIANT ?? "store", process.env.SYNC_URL ?? "", ...(process.env.WEB_BASE_URL ? [process.env.WEB_BASE_URL] : [])].join(":");
 
 // Web: expo-sqlite runs SQLite as WebAssembly, and its synchronous API
 // needs SharedArrayBuffer, which browsers only allow on cross-origin

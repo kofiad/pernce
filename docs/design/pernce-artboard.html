@@ -17,7 +17,7 @@
   between the two.
 
   Canvas: drag or scroll to pan, ⌘/Ctrl + scroll (or pinch) to zoom,
-  Shift+1 fit page, Shift+2 zoom to selection, Shift+0 100%, 1/2/3 switch
+  Shift+1 fit page, Shift+2 zoom to selection, Shift+0 100%, 1–4 switch
   pages, D / L / B show dark / light / both.
 -->
 <style>
@@ -353,6 +353,48 @@ body.hide-dark .fw[data-mode="dark"], body.hide-light .fw[data-mode="light"]{dis
 .maptbl td,.maptbl th{padding:10px 12px}
 .maptbl .sw2{display:inline-block;width:18px;height:18px;border-radius:5px;vertical-align:middle;margin-right:8px;border:1px solid rgba(128,128,128,.35)}
 .typerow{display:grid;grid-template-columns:180px 1fr 220px;gap:24px;align-items:baseline;padding:16px 0;border-bottom:1px solid var(--divider)}
+
+/* ---- site: the landing page at pernce.com/ (the app itself moves to /app) ---- */
+.lp{width:1440px}
+.lp.ph{width:390px;display:block;min-height:0}
+.lp-in{width:1200px;margin:0 auto}
+.lp.ph .lp-in{width:auto;margin:0 20px}
+.lp-nav{height:80px;display:flex;align-items:center;gap:32px}
+.lp.ph .lp-nav{height:64px;gap:12px}
+.lp-nav .logo,.lp-foot .logo{padding:0}
+.lp-nav .ln{font-size:15px;font-weight:600;color:var(--mute);letter-spacing:0}
+.lp-sec{padding:120px 0 0}
+.lp.ph .lp-sec{padding-top:72px}
+.lp-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:64px;align-items:center;padding:56px 0 0}
+.lp.ph .lp-hero{display:block;padding-top:24px}
+.lp-kick{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--mute);letter-spacing:0}
+/* .stage: the product shot. Inset band, the web app in a browser window bleeding off the right, the phone in front (always dark) */
+.stage{position:relative;background:var(--inset);border-radius:var(--r-xl);height:640px;overflow:hidden}
+.lp.ph .stage{height:440px;border-radius:var(--r-lg);margin-top:40px}
+.shot{overflow:hidden;position:relative}
+.shot > div{transform-origin:0 0;position:absolute;left:0;top:0}
+.device{position:absolute;background:#161b1a;border-radius:48px;padding:9px}
+.device .shot{border-radius:39px}
+.store{display:inline-flex;align-items:center;gap:10px;height:52px;padding:0 20px 0 16px;border-radius:var(--r-full);border:1px solid var(--hair);color:var(--stone);letter-spacing:0}
+.store b{display:block;font-size:14px;font-weight:600;color:var(--mute);line-height:1.2}
+.store > span > span{display:block;font-size:11px;line-height:1.2;text-transform:uppercase;letter-spacing:.4px}
+.ftabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.lp.ph .ftabs{justify-content:flex-start;flex-wrap:nowrap;overflow:hidden;margin:0 -20px;padding:0 20px}
+.chip.lg{height:44px;padding:0 20px;font-size:15px;gap:8px}
+.fpanel{margin-top:32px;background:var(--inset);border-radius:var(--r-xl);padding:56px;display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:56px;align-items:center}
+.lp.ph .fpanel{display:flex;flex-direction:column;align-items:stretch;gap:28px;padding:24px 20px;border-radius:var(--r-lg);margin-top:20px}
+.acc{display:flex;flex-direction:column}
+.acc-i{padding:16px 0 16px 24px;border-left:2px solid var(--hair)}
+.acc-i.on{border-left-color:var(--brand);padding:24px 0 24px 24px}
+.lp.ph .acc-i{padding:12px 0 12px 16px}.lp.ph .acc-i.on{padding:16px 0 16px 16px}
+.pt{display:flex;gap:16px;align-items:flex-start}
+.pt .ib{width:44px;height:44px}
+.band2 .pt .ib{background:var(--card)}
+.band2{background:var(--inset);border-radius:var(--r-xl);padding:64px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:64px;align-items:center}
+.lp.ph .band2{display:block;padding:32px 24px;border-radius:var(--r-lg)}
+.repo .li{font-size:14px}
+.lp-foot{border-top:1px solid var(--divider);margin-top:120px;padding:32px 0 48px;display:flex;align-items:center;gap:32px}
+.lp.ph .lp-foot{margin-top:72px;flex-direction:column;align-items:flex-start;gap:20px}
 </style>
 </head>
 <body>
@@ -410,6 +452,10 @@ body.hide-dark .fw[data-mode="dark"], body.hide-light .fw[data-mode="light"]{dis
     <symbol id="i-fit" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></symbol>
     <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></symbol>
     <symbol id="i-mode" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24"><path d="M8.5 7 3.5 12l5 5M15.5 7l5 5-5 5M13.5 4.5l-3 15"/></symbol>
+    <symbol id="i-offline" viewBox="0 0 24 24"><path d="M7 18.5h10.5a4 4 0 0 0 1.8-.4M20.9 15a4 4 0 0 0-2.8-4.5 6 6 0 0 0-8.6-4.6M6.6 9.3a6 6 0 0 0-.1 2.8A3.3 3.3 0 0 0 7 18.5M3.5 3.5l17 17"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></symbol>
     <symbol id="i-lang" viewBox="0 0 24 24"><path d="M3.5 6h10M8.5 3.5V6M6 6c.8 3 2.8 5.4 5.5 6.6M11 6c-.8 3.2-3 5.8-6.5 7.2M12.5 20.5l4-9 4 9M13.8 17.5h5.4"/></symbol>
   </defs>
 </svg>
@@ -684,7 +730,7 @@ ms('Tabs', 'M05', 'Home', 'mobile/src/app/(tabs)/index.tsx',
   () => phone(homeBody(), {tab: 'Home'}));
 
 ms('Tabs', 'M06', 'Accounts', 'mobile/src/app/(tabs)/accounts.tsx',
-  'Grouped by account type. Non-base balances show their converted value underneath. Every tab header ends in a gear that opens Settings (M06, M07, M08, M09, M10); Home's avatar does the same job.',
+  'Grouped by account type. Non-base balances show their converted value underneath. Every tab header ends in a gear that opens Settings (M06, M07, M08, M09, M10); Home\'s avatar does the same job.',
   () => phone(`
   ${pageh('Accounts', `<span class="ib sm brand" aria-label="Add account">${I('plus', 's')}</span>`)}
   <div class="card" style="margin-bottom:8px"><div class="row"><div><div class="cap mute">Total across 6 accounts</div><div class="h-md num">$18,444.82</div></div>${chip('USD', true, I('cd', 'xs'))}</div></div>
@@ -1270,6 +1316,131 @@ wsx('First run', 'W14', 'Onboarding — welcome', 'mobile/src/app/onboarding.tsx
   <div class="formside"><div style="width:400px">${field('Your name (optional)', 'Ama', {ph: true})}${select('Base currency', 'USD — US dollar', `<span class="badge" style="padding:2px 8px">$</span>`)}<div class="help" style="margin:-12px 0 32px">Totals, budgets and analytics convert into this.</div><div class="col" style="gap:12px">${btn('Use offline')}${btn('Create a sync account', 'o')}${btn('Sign in to sync', 'txt')}</div></div></div></div>`);
 
 /* =========================================================================
+   Site: the landing page at pernce.com/. The store web app moves to
+   pernce.com/app; every "Open the app" goes there. Store apps aren't out,
+   so their badges are outlined and marked "Coming soon" (no brand marks).
+   ========================================================================= */
+const S = [];
+const ss = (sec, id, name, src, notes, render) => S.push({sec, id, name, src, notes, render});
+/* the real mark (docs/design/icons/pernce-favicon.svg), not the "P" placeholder the app frames use */
+const mark = (s = 32) => `<svg width="${s}" height="${s}" viewBox="0 0 1024 1024" aria-hidden="true" style="display:block;flex-shrink:0"><rect width="1024" height="1024" rx="224" fill="#0b7a62"/><path fill="#fff" fill-opacity=".4" fill-rule="evenodd" d="M592 352a180 180 0 1 1 0 360a180 180 0 1 1 0-360zM592 456a76 76 0 1 0 0 152a76 76 0 1 0 0-152z"/><circle cx="452" cy="432" r="228" fill="#0b7a62"/><rect x="224" y="232" width="172" height="588" fill="#0b7a62"/><g fill="#fff"><rect x="252" y="232" width="116" height="560"/><path fill-rule="evenodd" d="M452 232a200 200 0 1 1 0 400a200 200 0 1 1 0-400zM452 348a84 84 0 1 0 0 168a84 84 0 1 0 0-168z"/></g></svg>`;
+const lpLogo = (s = 32) => `<div class="logo">${mark(s)}Pernce</div>`;
+/* shot(): a frame template drawn at full size and scaled down into a w × h window */
+const shot = (html, fullW, scale, h, cls = '') => `<div class="shot" style="width:${Math.round(fullW * scale)}px;height:${h}px"><div class="${cls}" style="width:${fullW}px;transform:scale(${scale});background:var(--bg);color:var(--text)">${html}</div></div>`;
+/* devPh(): a phone frame template inside a device bezel; mode fixes its theme regardless of the page's */
+const devPh = (html, scale, style, mode = 't-dark') => `<div class="device" style="${style}">${shot(html, 390, scale, Math.round(844 * scale), mode)}</div>`;
+/* heroStage(): M05 dark in front, M09 light peeking behind it, both whole (nothing cropped mid-word) */
+const heroStage = () => `<div class="stage" style="height:680px">${devPh(M.find(m => m.id === 'M09').render(), .6, 'left:56px;top:120px', 't-light')}${devPh(phone(homeBody(), {tab: 'Home'}), .7, 'right:64px;top:36px')}</div>`;
+const storeBadge = os => `<span class="store">${I('phone')}<span><span>Coming soon</span><b>${os}</b></span></span>`;
+const stores = (gap = 12) => `<div class="rs" style="gap:${gap}px;flex-wrap:wrap">${storeBadge('iPhone')}${storeBadge('Android')}</div>`;
+
+const LP = {
+  sub: 'Bank accounts, mobile money, cards and cash, each in its own currency. Pernce adds them up into one net worth, and keeps your data on your device.',
+  more: [
+    ['down', 'Import & export', 'A full JSON backup you can restore, and every transaction as CSV.'],
+    ['lang', 'English & French', 'The whole app in either language.'],
+    ['mode', 'Light and dark', 'Follows your system, or pick one in Settings.']
+  ],
+  priv: [
+    ['offline', 'Works offline', 'No connection needed. Install it from your browser and it opens like an app.'],
+    ['user', 'No account', 'Open it and start. There\'s nothing to sign up for and no server holding your money.'],
+    ['face', 'App lock', 'Face ID, fingerprint or your passcode before Pernce opens on your phone.'],
+    ['shield', 'Encrypted sync, later', 'Syncing between devices is coming as an option, end-to-end encrypted: the server only sees ciphertext.']
+  ],
+  repo: [['core', 'Money logic, no dependencies'], ['mobile', 'The iOS, Android and web app'], ['web', 'Exchange rates and the sync server']]
+};
+/* Features: pill tabs pick an area; inside the panel an accordion (one item open, the brand bar beside it)
+   explains it and the visual on the right shows it with live components. */
+const FT = {
+  Accounts: {ic: 'wallet', items: [
+    ['Every account, in its own currency', 'Bank, mobile money, cash and investments, each kept in the currency it really holds. Nothing is rounded into another.'],
+    ['Transfers across currencies', 'Send dollars to a cedi wallet and record both sides: the amount out, the amount in, and the fee.'],
+    ['Archive what you closed', 'Old accounts leave your totals and keep their history.']],
+    vis: ph => `<div class="card" style="padding:24px 24px 8px"><div class="row"><div><div class="cap mute">Total across 6 accounts</div><div class="h-md num">$18,444.82</div></div>${chip('USD', true, I('cd', 'xs'))}</div>${(ph ? [['Bank', [0, 1]], ['Mobile money', [3]]] : [['Bank', [0, 1, 2]], ['Mobile money', [3, 4]], ['Investment', [5]]]).map(([g, ix]) => lbl(g.toUpperCase(), 'margin:20px 0 0') + ix.map(i => accRow(ACC[i])).join('')).join('')}</div>`},
+  'Net worth': {ic: 'globe', items: [
+    ['One total, in your base currency', 'Pick USD, EUR, GHS or any of 150+ currencies, and every balance converts into it.'],
+    ['Rates that keep up', 'Today\'s rates load when you\'re online and the last ones stay in use when you\'re not. Pin any rate by hand.'],
+    ['See your exposure', 'How much of your money sits in each currency, at a glance.']],
+    vis: ph => `<div class="card"><div class="cap mute">Total net worth</div><div class="d-md num" style="margin:4px 0 6px">$18,444.82</div><div class="rs pos smb" style="gap:4px;margin-bottom:16px">${I('up', 'xs')}+$482.10 (2.7%)</div>${line(ph ? 270 : 500, ph ? 90 : 120)}${lbl('BY CURRENCY')}${exposure()}</div>`},
+  Budgets: {ic: 'pie', items: [
+    ['Monthly limits, in any currency', 'Set a limit per category in the currency you spend it in.'],
+    ['Warned before you go over', 'Budgets close to their limit show up on Home, and the ones over it stand out.'],
+    ['Every transaction behind it', 'Open a budget to see the spending that makes it up.']],
+    vis: ph => `<div class="card"><div class="row" style="margin-bottom:20px"><span class="bb">September 2026</span>${status('over', ph ? '1 over' : '1 near limit · 1 over')}</div>${budBars(ph ? [BUD[2], BUD[1], BUD[4]] : BUD)}</div>`},
+  Insights: {ic: 'bar', items: [
+    ['Where your money goes', 'Spending by category for any month, in your base currency.'],
+    ['Net worth over time', 'Watch the total move, day by day or month by month.'],
+    ['Money in vs out', 'Income against spending, so the trend is plain.']],
+    vis: ph => `<div class="card ${ph ? 'col' : 'rs'}" style="gap:28px;align-items:center">${donut(SPEND, ph ? 180 : 188, 22, 0)}${legend(ph ? null : SPEND_AMT, 0).replace(/ dim"/g, '"')}</div>`}
+};
+const accordion = (items, open, ph) => `<div class="acc">${items.map(([t, d], i) => `<div class="acc-i ${i === open ? 'on' : ''}"><div class="${i === open ? (ph ? 'bb' : 'h-sm') : (ph ? 'sm mute' : 'b mute')}" style="${i === open ? '' : 'font-weight:600'}">${t}</div>${i === open ? `<p class="${ph ? 'sm' : 'b'} mute" style="margin-top:8px">${d}</p><span class="link sm rs" style="gap:4px;margin-top:16px">Try it in the app${I('arrow', 'xs')}</span>` : ''}</div>`).join('')}</div>`;
+const featSec = (on, open, ph) => {
+  const tabs = `<div class="ftabs">${Object.keys(FT).map(k => `<span class="chip lg ${k === on ? 'on' : ''}">${I(FT[k].ic, 's')}${k}</span>`).join('')}</div>`;
+  const head = ph
+    ? `<h2 class="h-lg" style="margin-bottom:12px">For money that lives in more than one place.</h2><p class="b mute" style="margin-bottom:24px">Salary in one currency, rent in another, savings in a third. Pernce keeps each where it is and shows you the whole.</p>`
+    : `<div style="max-width:760px;margin:0 auto 40px;text-align:center"><h2 class="d-lg" style="margin-bottom:16px">For money that lives in more than one place.</h2><p class="b-lg mute">Salary in one currency, rent in another, savings in a third. Pernce keeps each where it is and shows you the whole.</p></div>`;
+  return `<div class="lp-in lp-sec">${head}${tabs}<div class="fpanel">${accordion(FT[on].items, open, ph)}<div>${FT[on].vis(ph)}</div></div>
+    <div class="${ph ? 'col' : 'g3'}" style="margin-top:${ph ? 40 : 56}px;gap:${ph ? 28 : 48}px">${LP.more.map(m => pt(m, ph)).join('')}</div></div>`;
+};
+const lpNav = ph => `<div class="lp-in lp-nav">${lpLogo(ph ? 28 : 32)}${ph ? '' : `<span style="width:16px"></span>${['Features', 'Privacy', 'Open source'].map(t => `<span class="ln">${t}</span>`).join('')}`}<span style="margin-left:auto"></span>${ph ? '' : `<span class="ln rs" style="gap:8px">${I('code', 's')}GitHub</span>`}${btn(ph ? 'Open app' : 'Open the app', 'p', '', ph ? 'sm auto' : 'auto')}</div>`;
+const pt = ([ic, t, d], dense) => `<div class="pt"><span class="ib">${I(ic, 's')}</span><div><div class="${dense ? 'smb' : 'bb'}" style="margin-bottom:4px">${t}</div><p class="${dense ? 'cap' : 'sm'} mute">${d}</p></div></div>`;
+const repoCard = () => `<div class="card repo p32"><div class="rs" style="margin-bottom:12px"><span class="ib">${I('code', 's')}</span><div class="grow"><div class="bb">kofiad / pernce</div><div class="cap stone">github.com/kofiad/pernce</div></div></div>
+  <p class="sm mute" style="margin-bottom:16px">Personal multi-currency finance tracker for iOS, Android and the web.</p>
+  <div>${LP.repo.map(([d, t]) => `<div class="li"><span class="mono smb" style="width:72px">${d}/</span><span class="mute">${t}</span></div>`).join('')}</div>
+  <div class="rs" style="gap:8px;margin-top:20px;flex-wrap:wrap"><span class="badge">TypeScript</span><span class="badge">Apache-2.0</span><span class="badge mono">v2026.11.2</span></div></div>`;
+const lpFoot = ph => `<div class="lp-in lp-foot">${lpLogo(24).replace('class="logo"', 'class="logo" style="font-size:16px"')}<span class="cap stone">© 2026 Pernce</span>${ph ? '' : '<span style="margin-left:auto"></span>'}<div class="rs" style="gap:24px;flex-wrap:wrap">${['Open the app', 'GitHub', 'Changelog'].map(t => `<span class="sm mute">${t}</span>`).join('')}</div></div>`;
+
+ss('Landing page', 'S01', 'Landing — desktop', 'web/public-store/ (pernce.com/) · app at pernce.com/app',
+  'pernce.com/ on a 1440 window; content runs 1200 wide, centred (a marketing page, unlike the app\'s left-aligned pages). One primary action everywhere: Open the app (→ /app, offline, no sign-up). GitHub is the secondary. Store badges are outlined, generic phone icon, "Coming soon", no Apple or Google marks until there are listings. The hero shot is two whole phones on an inset stage: M05 (dark) in front, M09 Budgets (light) peeking out behind it; both keep their theme in either page mode, so the page always shows both. Sections: hero → features (S01a) → privacy on an inset band → open source → closing call to action → footer. No pricing, no testimonials, no analytics.',
+  () => `<div class="lp">${lpNav()}
+  <div class="lp-in lp-hero">
+    <div>
+      <span class="lp-kick"><span class="dot" style="background:var(--brand)"></span>Free · Works offline · Open source</span>
+      <h1 class="d-xl" style="margin:20px 0 24px">Every currency.<br>One ledger.</h1>
+      <p class="b-lg mute" style="max-width:500px;margin-bottom:40px">${LP.sub}</p>
+      <div class="rs" style="gap:12px;margin-bottom:24px">${btn('Open the app', 'p', '', 'auto')}${btn('View on GitHub', 'o', 'code', 'auto')}</div>
+      ${stores()}
+      <p class="cap stone" style="margin-top:20px">Runs in your browser today. No sign-up.</p>
+    </div>
+    ${heroStage()}
+  </div>
+  ${featSec('Accounts', 0)}
+  <div class="lp-in lp-sec"><div class="band2">
+    <div><span class="ib" style="width:56px;height:56px;background:var(--card);margin-bottom:24px">${I('lock')}</span><h2 class="d-lg" style="margin-bottom:16px">Your money stays on your device.</h2><p class="b-lg mute">Pernce stores everything locally, in this browser or on your phone. Nobody else holds a copy, including us.</p></div>
+    <div class="g2" style="gap:40px 32px">${LP.priv.map(p => pt(p)).join('')}</div>
+  </div></div>
+  <div class="lp-in lp-sec"><div class="g2" style="gap:64px;align-items:center">
+    <div><h2 class="d-lg" style="margin-bottom:16px">Open source, top to bottom.</h2><p class="b-lg mute" style="margin-bottom:32px;max-width:520px">The apps, the server and the money logic are all on GitHub under Apache 2.0. Read how your numbers are worked out, run it yourself, or open an issue.</p><div class="rs" style="gap:12px">${btn('View on GitHub', 'o', 'code', 'auto')}${btn('Read the changelog', 'txt', '', 'auto')}</div></div>
+    ${repoCard()}
+  </div></div>
+  <div class="lp-in lp-sec" style="text-align:center"><div class="col" style="align-items:center;gap:24px"><h2 class="d-lg">Every currency. One ledger.</h2><p class="b-lg mute">Free. Runs in your browser, no sign-up.</p>${btn('Open the app', 'p', '', 'auto')}${stores()}</div></div>
+  ${lpFoot()}</div>`);
+
+ss('Landing page', 'S01a', 'Landing — features, Budgets tab', 'web/public-store/ (pernce.com/) · app at pernce.com/app',
+  'The features section on its own, another state: Budgets picked, its second item open. A GitHub-style hybrid of tabs and accordion. The pill tabs (chips, lg: 44 high) pick an area, Accounts first. Inside the --inset panel, the accordion on the left keeps one item open, marked by a 2px --brand bar (the active-tab stamp) with its text and a "Try it in the app" link; closed items are their titles in --mute on a --hair bar. The visual on the right belongs to the tab, built from live components on a --card. Clicking a tab opens its first item; keyboard: tabs are a tablist (arrow keys), accordion items are buttons with aria-expanded. Three plain points follow the panel.',
+  () => `<div class="lp" style="padding-bottom:120px">${featSec('Budgets', 1)}</div>`);
+
+ss('Landing page', 'S02', 'Landing — phone', 'web/public-store/ (pernce.com/) · app at pernce.com/app',
+  'S01 under 768: one column, 20 gutter, the nav down to the logo and a small Open app pill. The stage keeps only the front phone (M05, dark), cropped by the bottom edge of the stage. Features: the tabs become a row of chips (the fourth may run off the edge; it swipes), the accordion sits above its visual, and the visuals drop rows to fit 350; the privacy band and repo card follow. Store badges sit side by side and wrap if they must.',
+  () => `<div class="lp ph">${lpNav(true)}
+  <div class="lp-in lp-hero">
+    <span class="lp-kick"><span class="dot" style="background:var(--brand)"></span>Free · Offline · Open source</span>
+    <h1 class="d-lg" style="margin:16px 0 16px;line-height:1.05">Every currency.<br>One ledger.</h1>
+    <p class="b mute" style="margin-bottom:28px">${LP.sub}</p>
+    <div class="col" style="gap:12px;margin-bottom:20px">${btn('Open the app')}${btn('View on GitHub', 'o', 'code')}</div>
+    ${stores(8).replace(/class="store"/g, 'class="store" style="flex:1;padding:0 12px"')}
+    <div class="stage" style="height:460px">${devPh(phone(homeBody(), {tab: 'Home'}), .7, 'left:50%;top:40px;transform:translateX(-50%)')}</div>
+  </div>
+  ${featSec('Accounts', 0, true)}
+  <div class="lp-in lp-sec"><div class="band2">
+    <span class="ib" style="width:52px;height:52px;background:var(--card);margin-bottom:20px">${I('lock')}</span><h2 class="h-lg" style="margin-bottom:12px">Your money stays on your device.</h2><p class="b mute" style="margin-bottom:32px">Pernce stores everything locally, in this browser or on your phone. Nobody else holds a copy, including us.</p>
+    <div class="col" style="gap:24px">${LP.priv.map(p => pt(p, true)).join('')}</div>
+  </div></div>
+  <div class="lp-in lp-sec"><h2 class="h-lg" style="margin-bottom:12px">Open source, top to bottom.</h2><p class="b mute" style="margin-bottom:24px">The apps, the server and the money logic are all on GitHub under Apache 2.0.</p>${repoCard().replace('card repo p32', 'card repo')}<div style="margin-top:16px">${btn('View on GitHub', 'o', 'code')}</div></div>
+  <div class="lp-in lp-sec" style="text-align:center"><div class="col" style="align-items:center;gap:20px"><h2 class="h-lg">Every currency.<br>One ledger.</h2><p class="b mute">Free. Runs in your browser, no sign-up.</p>${btn('Open the app')}</div></div>
+  ${lpFoot(true)}</div>`);
+
+/* =========================================================================
    Foundations
    ========================================================================= */
 const F = [];
@@ -1321,7 +1492,8 @@ F.push({sec:'Foundations', id:'F03', name:'Components', src:'mobile/src/componen
 const PAGES = [
   {id:'foundations', name:'Foundations', list:F, layout:'v'},
   {id:'mobile', name:'Mobile', list:M, layout:'h'},
-  {id:'web', name:'Web', list:W, layout:'v'}
+  {id:'web', name:'Web', list:W, layout:'v'},
+  {id:'site', name:'Site', list:S, layout:'v'}
 ];
 const world = document.getElementById('world'), vp = document.getElementById('vp');
 const byKey = {};
@@ -1339,6 +1511,7 @@ const DESC = {
   'Dialogs & popovers':'Sheets become centred dialogs, the add menu a popover. Esc closes; focus is trapped inside and returned after.',
   'Settings & sync pages':'Centred pages, 720 at most.',
   'First run':'Onboarding before there is a shell.',
+  'Landing page':'pernce.com/, the public site. The store web app moves to pernce.com/app; every Open the app goes there.',
   'Foundations':'Tokens and primitives, drawn in both modes.'
 };
 
@@ -1399,7 +1572,7 @@ function renderLayers() {
 }
 function renderInsp() {
   const el = document.getElementById('insp');
-  const hint = `<div class="hint"><b>Navigate</b><br>Drag or scroll to pan · <kbd>⌘</kbd>/<kbd>Ctrl</kbd>+scroll or pinch to zoom<br><kbd>⇧1</kbd> fit page · <kbd>⇧2</kbd> zoom to selection · <kbd>⇧0</kbd> 100%<br><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> pages · <kbd>D</kbd> <kbd>L</kbd> <kbd>B</kbd> dark / light / both<br>Click a frame to inspect, double-click to zoom.</div>`;
+  const hint = `<div class="hint"><b>Navigate</b><br>Drag or scroll to pan · <kbd>⌘</kbd>/<kbd>Ctrl</kbd>+scroll or pinch to zoom<br><kbd>⇧1</kbd> fit page · <kbd>⇧2</kbd> zoom to selection · <kbd>⇧0</kbd> 100%<br><kbd>1</kbd>–<kbd>4</kbd> pages · <kbd>D</kbd> <kbd>L</kbd> <kbd>B</kbd> dark / light / both<br>Click a frame to inspect, double-click to zoom.</div>`;
   if (!sel || !byKey[sel]) {
     const total = (M.length + W.length + F.length) * 2;
     el.innerHTML = `<h3>Pernce artboard</h3><div class="sub">${total} frames · ${M.length} mobile + ${W.length} web screens, each in dark and light</div><p>Source of truth: <code class="mono">docs/design/pernce_design.md</code>. When code and this file disagree, the docs win.</p><p>Mobile frames are 390 wide (iPhone 15); web frames are 1440 wide. Frames show full scroll height.</p>${hint}`;
@@ -1468,7 +1641,7 @@ addEventListener('keydown', e => {
   if (e.shiftKey && e.code === 'Digit1') fitPage();
   else if (e.shiftKey && e.code === 'Digit2') sel && zoomTo(sel);
   else if (e.shiftKey && e.code === 'Digit0') zoomAt(1 / view.k, ...ctr());
-  else if (!e.shiftKey && ['1','2','3'].includes(e.key)) setPage(PAGES[+e.key - 1].id);
+  else if (!e.shiftKey && ['1','2','3','4'].includes(e.key)) setPage(PAGES[+e.key - 1].id);
   else if (e.key === '=' || e.key === '+') zoomAt(1.25, ...ctr());
   else if (e.key === '-') zoomAt(.8, ...ctr());
   else if (e.key === 'd' || e.key === 'D') setShow('dark');
