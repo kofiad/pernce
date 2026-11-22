@@ -25,6 +25,9 @@ release pages are not public.
 
 ### Changed
 
+- The app's logo is now the brand mark (the icon's P and coins) everywhere it
+  shows: onboarding, the lock screen, and the web sidebar and rail. It used
+  to be a green tile with a plain letter P.
 - **The store web app moved from https://pernce.com/ to
   https://pernce.com/app/.** Old links such as `pernce.com/settings` redirect
   (301) to `/app/settings`. Installed home-screen copies keep working: the

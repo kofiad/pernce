@@ -8,7 +8,7 @@ import { FONT, radius, useTheme } from "../lib/theme";
 import { AddMenu } from "./AddMenu";
 import { Icon } from "./Icon";
 import { ProfileAvatar } from "./look";
-import { Button, T, hoverTint, isHovered } from "./ui";
+import { BrandMark, Button, T, hoverTint, isHovered } from "./ui";
 
 type Section = "home" | "accounts" | "activity" | "insights" | "settings";
 
@@ -144,14 +144,9 @@ export function SideNav({ nav }: { nav: Exclude<Nav, "dock"> }) {
   );
 }
 
-/** The logo's P tile at 32px. */
+/** The brand mark at 32px, beside the wordmark on the sidebar. */
 function Mark() {
-  const { c } = useTheme();
-  return (
-    <View style={[s.mark, { backgroundColor: c.primary }]}>
-      <Text style={[s.markText, { color: c.onPrimary }]}>P</Text>
-    </View>
-  );
+  return <BrandMark size={32} />;
 }
 
 const s = StyleSheet.create({
@@ -159,8 +154,6 @@ const s = StyleSheet.create({
   rail: { width: 72, borderRightWidth: 1, paddingTop: 20, paddingBottom: 24, alignItems: "center", gap: 16 },
   logo: { flexDirection: "row", alignItems: "center", gap: 10, paddingHorizontal: 12, paddingBottom: 24 },
   wordmark: { fontFamily: FONT["600"], fontSize: 20, lineHeight: 28, letterSpacing: -0.2 },
-  mark: { width: 32, height: 32, borderRadius: 9, alignItems: "center", justifyContent: "center" },
-  markText: { fontFamily: FONT["700"], fontSize: 16, lineHeight: 20 },
   item: { flexDirection: "row", alignItems: "center", gap: 12, height: 44, paddingHorizontal: 14, borderRadius: radius.full },
   itemLabel: { fontFamily: FONT["600"], fontSize: 15, lineHeight: 20 },
   profile: { flexDirection: "row", alignItems: "center", gap: 10, height: 56, paddingHorizontal: 10, borderRadius: radius.full },

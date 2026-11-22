@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Platform, StyleSheet, Text, View } from "react-native";
 import { Icon } from "../components/Icon";
 import { ChoiceSheet, CurrencyPicker } from "../components/inputs";
-import { Actions, Button, Field, FieldMessage, Group, IconButton, ListRow, Logo, NavHeader, Note, Row, Screen, T, Toggle } from "../components/ui";
+import { Actions, BrandMark, Button, Field, FieldMessage, Group, IconButton, ListRow, Logo, NavHeader, Note, Row, Screen, T, Toggle } from "../components/ui";
 import { setupProfile } from "../data/profile";
 import { db } from "../db/client";
 import { translateError } from "../i18n";
@@ -129,9 +129,7 @@ export default function Onboarding() {
       <View style={[s.split, { backgroundColor: c.canvas }]}>
         <View style={[s.band, { backgroundColor: c.inset }]}>
           <View style={s.brand}>
-            <View style={[s.mark, { backgroundColor: c.primary }]}>
-              <Text style={[s.markText, { color: c.onPrimary }]}>P</Text>
-            </View>
+            <BrandMark size={32} />
             <T variant="heading" weight="600">
               Pernce
             </T>
@@ -171,8 +169,6 @@ const s = StyleSheet.create({
   split: { flex: 1, flexDirection: "row" },
   band: { flex: 1, padding: 64, justifyContent: "space-between" },
   brand: { flexDirection: "row", alignItems: "center", gap: 10 },
-  mark: { width: 32, height: 32, borderRadius: 9, alignItems: "center", justifyContent: "center" },
-  markText: { fontFamily: FONT["700"], fontSize: 16, lineHeight: 20 },
   /** display-xl: 80 / 1.0 / −0.8 */
   headline: { fontFamily: FONT["500"], fontSize: 80, lineHeight: 80, letterSpacing: -0.8, marginBottom: 24 },
   formSide: { flex: 1, alignItems: "center", justifyContent: "center", padding: 64 },

@@ -295,7 +295,6 @@ body.hide-dark .fw[data-mode="dark"], body.hide-light .fw[data-mode="light"]{dis
 .side{border-right:1px solid var(--hair);padding:24px 16px;display:flex;flex-direction:column;gap:4px}
 .side > .btn{margin-bottom:20px}
 .logo{display:flex;align-items:center;gap:10px;padding:0 12px 24px;font-size:20px;font-weight:600;letter-spacing:-.2px}
-.logo .m{width:32px;height:32px;border-radius:9px;background:var(--primary);color:#fff;display:grid;place-items:center;font-size:16px;font-weight:700}
 /* .sb: a sidebar item; .on is the dock's active tab stretched to a row (--brand at 18%, icon in --brand, label in --text) */
 .sb{display:flex;align-items:center;gap:12px;height:44px;padding:0 14px;border-radius:var(--r-full);color:var(--stone);font-size:15px;font-weight:600;letter-spacing:0}
 .sb.on{background:color-mix(in srgb,var(--brand) 18%,transparent);color:var(--text)}.sb.on .i{color:var(--brand)}
@@ -677,7 +676,7 @@ const ms = (sec, id, name, src, notes, render) => M.push({sec, id, name, src, no
 ms('Onboarding & security', 'M01', 'Onboarding — welcome', 'mobile/src/app/onboarding.tsx',
   'First run. Offline is the default path; sync is opt-in. Base currency drives every converted total.',
   () => phone(`
-  <div style="width:48px;height:48px;border-radius:14px;background:var(--primary);display:grid;place-items:center;color:#fff;font-size:24px;font-weight:700;margin-top:24px">P</div>
+  <div style="margin-top:24px">${mark(48)}</div>
   <h1 class="d-lg" style="margin:32px 0 12px;line-height:1.05">Every account.<br>Every currency.</h1>
   <p class="b-lg mute" style="margin-bottom:32px">Pernce keeps your money on this phone. Syncing between devices is optional and end-to-end encrypted.</p>
   ${field('Your name (optional)', 'Ama', {ph: true})}
@@ -700,7 +699,7 @@ ms('Onboarding & security', 'M03', 'Lock screen', 'mobile/src/components/LockGat
   'Shown over everything when app lock is on and the app returns from background.',
   () => phone(`
   <div class="col" style="flex:1;align-items:center;justify-content:center;text-align:center;gap:16px">
-    <div style="width:64px;height:64px;border-radius:18px;background:var(--primary);display:grid;place-items:center;color:#fff;font-size:30px;font-weight:700">P</div>
+    ${mark(64)}
     <h1 class="h-md" style="margin-top:16px">Pernce is locked</h1>
     <p class="sm mute">Unlock with Face ID to see your balances.</p>
   </div>
@@ -1113,8 +1112,8 @@ const WNAV = [['home','Home'],['wallet','Accounts'],['list','Activity'],['pie','
    page at 720 (settings-style pages); o.overlay draws a dialog or popover. */
 function web(active, body, o = {}) {
   const nav = o.md
-    ? `<aside class="rail"><div class="logo" style="padding:0"><span class="m">P</span></div><span class="add" aria-label="Add">${I('plus')}</span>${WNAV.map(([i, t]) => `<span class="tab ${t === active ? 'on' : ''}"><span class="ind">${I(i)}</span>${t}</span>`).join('')}<span class="who ${active === 'Settings' ? 'on' : ''}" aria-label="Settings">${av(C.primary, 'A', 'sm')}</span></aside>`
-    : `<aside class="side"><div class="logo"><span class="m">P</span>Pernce</div>${btn('Add', 'brand', 'plus')}${WNAV.map(([i, t]) => `<span class="sb ${t === active ? 'on' : ''}">${I(i)}${t}</span>`).join('')}<div class="who ${active === 'Settings' ? 'on' : ''}">${av(C.primary, 'A', 'sm')}<div class="grow"><div style="font-weight:600">Ama Mensah</div><div class="cap stone">Settings</div></div>${I('gear', 's')}</div></aside>`;
+    ? `<aside class="rail"><div class="logo" style="padding:0">${mark(32)}</div><span class="add" aria-label="Add">${I('plus')}</span>${WNAV.map(([i, t]) => `<span class="tab ${t === active ? 'on' : ''}"><span class="ind">${I(i)}</span>${t}</span>`).join('')}<span class="who ${active === 'Settings' ? 'on' : ''}" aria-label="Settings">${av(C.primary, 'A', 'sm')}</span></aside>`
+    : `<aside class="side"><div class="logo">${mark(32)}Pernce</div>${btn('Add', 'brand', 'plus')}${WNAV.map(([i, t]) => `<span class="sb ${t === active ? 'on' : ''}">${I(i)}${t}</span>`).join('')}<div class="who ${active === 'Settings' ? 'on' : ''}">${av(C.primary, 'A', 'sm')}<div class="grow"><div style="font-weight:600">Ama Mensah</div><div class="cap stone">Settings</div></div>${I('gear', 's')}</div></aside>`;
   return `<div class="web ${o.md ? 'md' : ''}">${nav}<main class="wm">${o.narrow ? `<div class="wnarrow">${body}</div>` : body}</main>${o.overlay || ''}</div>`;
 }
 const wtop = (title, right = '', crumb = '') => `${crumb ? `<div class="crumb">${crumb}</div>` : ''}<div class="wtop">${title.startsWith('<') ? title : `<h1 class="h-lg">${title}</h1>`}<div class="rs" style="gap:10px">${right}</div></div>`;
@@ -1312,7 +1311,7 @@ wsx('Settings & sync pages', 'W13', 'Sync — sign in', 'mobile/src/components/S
 /* ---- First run ---- */
 wsx('First run', 'W14', 'Onboarding — welcome', 'mobile/src/app/onboarding.tsx',
   'M01 split from 1024: the headline on an inset band, the form on the canvas at 400. No shell yet (no profile). Under 1024 it is M01 centred at 480.',
-  () => `<div class="wsplit"><div class="band"><div class="logo" style="padding:0"><span class="m">P</span>Pernce</div><div><h1 class="d-xl" style="margin-bottom:24px">Every account.<br>Every currency.</h1><p class="b-lg mute" style="max-width:480px">Pernce keeps your money in this browser. Syncing between devices is optional and end-to-end encrypted.</p></div><div></div></div>
+  () => `<div class="wsplit"><div class="band"><div class="logo" style="padding:0">${mark(32)}Pernce</div><div><h1 class="d-xl" style="margin-bottom:24px">Every account.<br>Every currency.</h1><p class="b-lg mute" style="max-width:480px">Pernce keeps your money in this browser. Syncing between devices is optional and end-to-end encrypted.</p></div><div></div></div>
   <div class="formside"><div style="width:400px">${field('Your name (optional)', 'Ama', {ph: true})}${select('Base currency', 'USD — US dollar', `<span class="badge" style="padding:2px 8px">$</span>`)}<div class="help" style="margin:-12px 0 32px">Totals, budgets and analytics convert into this.</div><div class="col" style="gap:12px">${btn('Use offline')}${btn('Create a sync account', 'o')}${btn('Sign in to sync', 'txt')}</div></div></div></div>`);
 
 /* =========================================================================
@@ -1322,7 +1321,7 @@ wsx('First run', 'W14', 'Onboarding — welcome', 'mobile/src/app/onboarding.tsx
    ========================================================================= */
 const S = [];
 const ss = (sec, id, name, src, notes, render) => S.push({sec, id, name, src, notes, render});
-/* the real mark (docs/design/icons/pernce-favicon.svg), not the "P" placeholder the app frames use */
+/* the brand mark (docs/design/icons/pernce-favicon.svg); every frame draws its logo with it, as the app does (BrandMark, mobile/src/components/ui/display.tsx) */
 const mark = (s = 32) => `<svg width="${s}" height="${s}" viewBox="0 0 1024 1024" aria-hidden="true" style="display:block;flex-shrink:0"><rect width="1024" height="1024" rx="224" fill="#0b7a62"/><path fill="#fff" fill-opacity=".4" fill-rule="evenodd" d="M592 352a180 180 0 1 1 0 360a180 180 0 1 1 0-360zM592 456a76 76 0 1 0 0 152a76 76 0 1 0 0-152z"/><circle cx="452" cy="432" r="228" fill="#0b7a62"/><rect x="224" y="232" width="172" height="588" fill="#0b7a62"/><g fill="#fff"><rect x="252" y="232" width="116" height="560"/><path fill-rule="evenodd" d="M452 232a200 200 0 1 1 0 400a200 200 0 1 1 0-400zM452 348a84 84 0 1 0 0 168a84 84 0 1 0 0-168z"/></g></svg>`;
 const lpLogo = (s = 32) => `<div class="logo">${mark(s)}Pernce</div>`;
 /* shot(): a frame template drawn at full size and scaled down into a w × h window */
