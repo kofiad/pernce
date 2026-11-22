@@ -10,6 +10,30 @@ release pages are not public.
 
 ## [Unreleased]
 
+## [2026.11.2] - 2026-11-22
+
+### Added
+
+- A signed Android APK is attached to each GitHub Release, built by EAS
+  (the EAS project is now linked in `mobile/app.json`).
+- `docs/built-with-claude-code.md`: how Pernce was built with Claude Code,
+  linked from the README; README badges for CI, license and release.
+
+### Fixed
+
+- https://pernce.com failed on every visit after the first ("Response served
+  by service worker has redirections" in Safari): Cloudflare redirected
+  `/index.html` to `/`, and the service worker serves its cached
+  `/index.html` for every page load. It's now served as is (`html_handling:
+  "none"` in `web/wrangler.app.jsonc`), with a test that keeps it that way.
+  Browsers that hit the broken version once need their site data for
+  pernce.com cleared.
+
+### Changed
+
+- CI and Release use `pnpm/action-setup` v6, which runs on Node 24 (v4
+  targeted the deprecated Node 20).
+
 ## [2026.11.1] - 2026-11-22
 
 The first public release. The offline store web app is live at
