@@ -19,7 +19,13 @@
     "directory": "./public-store",
     // Unknown paths get index.html with 200: deep links like /settings are
     // client-side routes (expo-router).
-    "not_found_handling": "single-page-application"
+    "not_found_handling": "single-page-application",
+    // Serve /index.html as is. The default, "auto-trailing-slash", answers it
+    // with a 307 to /, and the service worker precaches /index.html for
+    // navigations (mobile/scripts/pwa.mjs): browsers refuse a redirected
+    // response for a navigation ("Response served by service worker has
+    // redirections" in Safari). Vercel and the Node server answer 200 too.
+    "html_handling": "none"
     // The cross-origin isolation headers come from public-store/_headers
     // (cloudflare/_headers, copied in by build:store-app).
   },

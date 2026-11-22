@@ -129,4 +129,18 @@ describe("Worker scheduled() on D1", () => {
       [["/api/cron/fx-rates", FX_RATES_CRON], ["/api/cron/sync-prune", SYNC_PRUNE_CRON]],
     );
   });
+
+  test("wrangler.app.jsonc serves /index.html as is, never as a redirect", async () => {
+    // The service worker (mobile/scripts/pwa.mjs) precaches /index.html and
+    // answers every navigation with it. Cloudflare's default html_handling
+    // redirects /index.html to /, and browsers refuse a redirected response
+    // for a navigation, so every visit after the first one failed.
+    const { readFileSync } = await import("node:fs");
+    const { join } = await import("node:path");
+    const app = readFileSync(join(import.meta.dirname, "..", "wrangler.app.jsonc"), "utf8");
+    assert.match(app, /^\s*"html_handling": "none"/m);
+    assert.match(app, /^\s*"not_found_handling": "single-page-application"/m);
+    const pwa = readFileSync(join(import.meta.dirname, "..", "..", "mobile", "scripts", "pwa.mjs"), "utf8");
+    assert.ok(pwa.includes(`"/index.html"`), "the service worker still precaches /index.html");
+  });
 });
