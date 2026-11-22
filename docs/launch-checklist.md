@@ -68,9 +68,9 @@ gh repo edit kofiad/pernce \
   CI is green. Require status checks to pass (`verify`, `mobile`); don't
   require pull requests.
 
-## 4. Enable the README badges
+## 4. README badges
 
-Once CI is green, uncomment the badges block at the top of `README.md`.
+Done: the CI, license and release badges are on.
 
 ## 5. Built with Claude Code
 
