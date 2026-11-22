@@ -1,6 +1,7 @@
 import { initials, resolveColor } from "@pernce/core";
 import type { ReactNode } from "react";
 import { ActivityIndicator, Pressable, Text, View, type StyleProp, type TextStyle, type ViewStyle } from "react-native";
+import Svg, { Circle, G, Path, Rect } from "react-native-svg";
 import type { Health } from "../../lib/budgetHealth";
 import { FONT, radius, useTheme } from "../../lib/theme";
 import { Icon, type IconSize } from "../Icon";
@@ -406,13 +407,26 @@ export function Button({
   );
 }
 
-/** The brand tile ("P"), 48px on onboarding and 64px on the lock screen. */
-export function Logo({ size = 48 }: { size?: 48 | 64 }) {
+/** The brand mark: docs/design/icons/pernce-favicon.svg (the rounded-corner
+ * variant), drawn in {colors.primary}. Decorative: whatever sits beside it
+ * (the wordmark, a heading) names the app. */
+export function BrandMark({ size }: { size: number }) {
   const { c } = useTheme();
-  const big = size === 64;
   return (
-    <View style={[styles.logo, { width: size, height: size, borderRadius: big ? 18 : 14, backgroundColor: c.primary }]}>
-      <Text style={[text.logo, { fontSize: big ? 30 : 24, lineHeight: big ? 36 : 30, color: c.onPrimary }]}>P</Text>
-    </View>
+    <Svg width={size} height={size} viewBox="0 0 1024 1024" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" aria-hidden>
+      <Rect width={1024} height={1024} rx={224} fill={c.primary} />
+      <Path fill="#fff" fillOpacity={0.4} fillRule="evenodd" d="M592 352a180 180 0 1 1 0 360a180 180 0 1 1 0-360zM592 456a76 76 0 1 0 0 152a76 76 0 1 0 0-152z" />
+      <Circle cx={452} cy={432} r={228} fill={c.primary} />
+      <Rect x={224} y={232} width={172} height={588} fill={c.primary} />
+      <G fill="#fff">
+        <Rect x={252} y={232} width={116} height={560} />
+        <Path fillRule="evenodd" d="M452 232a200 200 0 1 1 0 400a200 200 0 1 1 0-400zM452 348a84 84 0 1 0 0 168a84 84 0 1 0 0-168z" />
+      </G>
+    </Svg>
   );
+}
+
+/** The brand mark on its own: 48px on onboarding, 64px on the lock screen. */
+export function Logo({ size = 48 }: { size?: 48 | 64 }) {
+  return <BrandMark size={size} />;
 }

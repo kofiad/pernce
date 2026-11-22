@@ -50,7 +50,6 @@ export const text = StyleSheet.create({
   input: { flex: 1, fontFamily: FONT["400"], fontSize: 16, letterSpacing: 0.24, padding: 0 },
   button: { fontFamily: FONT["600"], fontSize: 16, lineHeight: 24, letterSpacing: 0.24 },
   buttonSmall: { fontFamily: FONT["600"], fontSize: 14, lineHeight: 20, letterSpacing: 0 },
-  logo: { fontFamily: FONT["700"] },
 });
 
 export const styles = StyleSheet.create({
@@ -129,6 +128,5 @@ export const styles = StyleSheet.create({
   note: { flexDirection: "row", alignItems: "flex-start", gap: 10 },
   alertBackdrop: { flex: 1, backgroundColor: "rgba(0,0,0,0.5)", alignItems: "center", justifyContent: "center", padding: 40 },
   alertBox: { width: "100%", maxWidth: 400, borderRadius: radius.lg, borderWidth: 1, padding: 24 },
-  logo: { alignItems: "center", justifyContent: "center" },
 });
 
