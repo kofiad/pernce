@@ -47,10 +47,13 @@ export class FakeSyncServer {
   users = new Map<string, User>();
   /** The last code emailed to each address. */
   codes = new Map<string, string>();
-  /** refresh token -> user id; `used` remembers rotated-out tokens. */
+  /** refresh token -> user id; `used` maps a rotated-out token to the one
+   * that replaced it; `received` holds current tokens whose access token
+   * has been used (the device has them). */
   private refresh = new Map<string, string>();
   private used = new Map<string, string>();
-  private access = new Map<string, { userId: string; expiresAt: number }>();
+  private received = new Set<string>();
+  private access = new Map<string, { userId: string; expiresAt: number; refreshToken: string }>();
   now = Date.now();
   accessTtlMs = 15 * 60 * 1000;
   requests: string[] = [];
@@ -62,7 +65,7 @@ export class FakeSyncServer {
   private session(user: User) {
     const accessToken = randomUUID();
     const refreshToken = randomUUID();
-    this.access.set(accessToken, { userId: user.id, expiresAt: this.now + this.accessTtlMs });
+    this.access.set(accessToken, { userId: user.id, expiresAt: this.now + this.accessTtlMs, refreshToken });
     this.refresh.set(refreshToken, user.id);
     return { accessToken, accessTokenExpiresAt: this.now + this.accessTtlMs, refreshToken };
   }
@@ -82,6 +85,7 @@ export class FakeSyncServer {
     if (!a || a.expiresAt < this.now) throw new HttpError(401, "unauthorized");
     const user = this.users.get(a.userId);
     if (!user) throw new HttpError(401, "unauthorized");
+    this.received.add(a.refreshToken);
     return user;
   }
 
@@ -132,14 +136,22 @@ export class FakeSyncServer {
         return this.login(user);
       }
       case "POST refresh": {
-        const userId = this.refresh.get(body.refreshToken);
+        let userId = this.refresh.get(body.refreshToken);
+        let replaced = body.refreshToken;
         if (!userId) {
-          // Replay of a rotated token: end that session.
-          const replayed = this.used.get(body.refreshToken);
-          if (replayed) this.refresh.delete(replayed);
-          throw new HttpError(401, "unauthorized");
+          const current = this.used.get(body.refreshToken);
+          userId = current ? this.refresh.get(current) : undefined;
+          if (!current || !userId) throw new HttpError(401, "unauthorized");
+          if (this.received.has(current)) {
+            // Replay of a rotated token after the device got its successor:
+            // end that session.
+            this.refresh.delete(current);
+            throw new HttpError(401, "unauthorized");
+          }
+          // The reply never arrived: swap the old token again.
+          replaced = current;
         }
-        this.refresh.delete(body.refreshToken);
+        this.refresh.delete(replaced);
         const next = this.session(this.users.get(userId)!);
         this.used.set(body.refreshToken, next.refreshToken);
         return next;

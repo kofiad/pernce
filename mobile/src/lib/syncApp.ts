@@ -10,3 +10,4 @@ export { SyncAuthScreen } from "../components/SyncAuthScreen";
 export { SyncSettingsGroup, useSyncAccountEmail, signOutBeforeWipe } from "../components/SyncSettings";
 export { SyncOnboarding } from "../components/SyncOnboarding";
 export { useSyncRefresh } from "../components/useSyncRefresh";
+export { SyncBanner } from "../components/SyncBanner";

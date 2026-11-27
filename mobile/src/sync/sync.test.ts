@@ -44,9 +44,10 @@ import {
   utf8Encode,
   wrapDataKey,
 } from "./crypto";
+import { SyncApi } from "./api";
 import { runSync } from "./engine";
 import { collectOutbox, countOutbox, hasOutbox } from "./outbox";
-import { getCursor, getSyncStatus, recordSyncResult, repullIfCurrenciesChanged, setCursor, setSyncState } from "./state";
+import { getCursor, getSyncStatus, recordSyncResult, repullIfCurrenciesChanged, setCursor, setSyncState, syncNotice } from "./state";
 import { LEGACY_SECRET_KEYS, SECRET_KEYS } from "./secretKeys";
 import { FakeSyncServer, installTestCrypto, testDevice } from "./test-server";
 
@@ -395,6 +396,85 @@ test("expired access tokens refresh; a replayed refresh token ends the session",
   assert.equal(getSyncStatus(a.db).state, "signed_out");
   assert.equal(await a.secrets.getSession(), null);
   assert.ok(await a.secrets.getDataKey(), "keeps the data key so a later sign-in can re-wrap it");
+});
+
+test("a refresh whose reply is lost is retried with the old token, and the device stays signed in", async () => {
+  const server = new FakeSyncServer();
+  const a = await device(server, "A", "USD");
+  await signUp(server, a);
+  await sync(a);
+  server.now += 16 * 60 * 1000;
+  // The server rotates the token, but the reply never arrives (lost signal,
+  // the app suspended mid-request).
+  let drop = true;
+  const lossy: typeof fetch = async (input, init) => {
+    const res = await server.fetch(input, init);
+    if (drop && String(input).endsWith("/refresh")) {
+      drop = false;
+      throw new TypeError("Network request failed");
+    }
+    return res;
+  };
+  const phone = { ...a, api: new SyncApi({ baseUrl: () => "https://sync.test", sessions: a.secrets, fetch: lossy, now: () => server.now, onSessionEnded: () => setSyncState(a.db, "signed_out") }) };
+  const failed = await runSync(phone);
+  assert.equal(failed.ok, false);
+  assert.match(!failed.ok ? failed.error : "", /Offline/);
+  assert.equal(getSyncStatus(a.db).state, "on");
+  await sync(phone);
+  assert.equal(getSyncStatus(a.db).state, "on");
+  assert.ok(await a.secrets.getSession());
+});
+
+test("two browser tabs sharing one stored session refresh together and both stay signed in", async () => {
+  const server = new FakeSyncServer();
+  const a = await device(server, "A", "USD");
+  await signUp(server, a);
+  await sync(a);
+  // A Web Locks stand-in: one holder at a time.
+  let queue = Promise.resolve();
+  const lock = <T>(fn: () => Promise<T>): Promise<T> => {
+    const run = queue.then(fn);
+    queue = run.then(() => undefined, () => undefined);
+    return run;
+  };
+  const tab = () => ({ ...a, api: new SyncApi({ baseUrl: () => "https://sync.test", sessions: a.secrets, fetch: server.fetch, now: () => server.now, onSessionEnded: () => setSyncState(a.db, "signed_out"), lock }) });
+  const [one, two] = [tab(), tab()];
+  for (let round = 0; round < 3; round++) {
+    server.now += 16 * 60 * 1000;
+    const results = await Promise.all([runSync(one), runSync(two)]);
+    assert.ok(results.every((r) => r.ok), JSON.stringify(results));
+    assert.equal(getSyncStatus(a.db).state, "on");
+  }
+  // Without the lock both requests can carry the same token; the second is
+  // treated as a retry, so neither tab is signed out.
+  const bare = () => ({ ...a, api: new SyncApi({ baseUrl: () => "https://sync.test", sessions: a.secrets, fetch: server.fetch, now: () => server.now, onSessionEnded: () => setSyncState(a.db, "signed_out") }) });
+  server.now += 16 * 60 * 1000;
+  const results = await Promise.all([runSync(bare()), runSync(bare())]);
+  assert.ok(results.every((r) => r.ok), JSON.stringify(results));
+  assert.equal(getSyncStatus(a.db).state, "on");
+});
+
+test("Home's sync banner: shown when signed out, locked, or failing for a day; hidden while sync works or is off", async () => {
+  const db = await createTestDb();
+  const day = 24 * 60 * 60 * 1000;
+  const now = Date.parse("2026-11-27T12:00:00Z");
+  assert.equal(syncNotice(getSyncStatus(db), now), null);
+  setSyncState(db, "on");
+  recordSyncResult(db, { error: null, at: "2026-11-24T09:00:00Z" });
+  assert.equal(syncNotice(getSyncStatus(db), now), null);
+  recordSyncResult(db, { error: "Offline.", at: new Date(now - day + 60_000).toISOString() });
+  assert.equal(syncNotice(getSyncStatus(db), now), null, "under a day of failures is not worth a banner");
+  assert.deepEqual(syncNotice(getSyncStatus(db), now + 120_000), {
+    title: "Sync isn’t working",
+    body: "Last synced 24 Nov. Changes stay on this device.",
+    action: "Details",
+  });
+  recordSyncResult(db, { error: null });
+  assert.equal(syncNotice(getSyncStatus(db), now + 120_000), null);
+  setSyncState(db, "signed_out");
+  assert.equal(syncNotice(getSyncStatus(db), now)?.action, "Sign in");
+  setSyncState(db, "needs_key");
+  assert.equal(syncNotice(getSyncStatus(db), now)?.action, "Unlock");
 });
 
 test("forgot password with the recovery key: other phones sign in again with the new password", async () => {

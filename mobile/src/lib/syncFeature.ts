@@ -1,5 +1,5 @@
 import Constants from "expo-constants";
-import type { ReactElement } from "react";
+import { createElement, type ReactElement } from "react";
 import { Platform, type RefreshControlProps } from "react-native";
 
 /** Whether this build has sync. Only the personal build does
@@ -41,3 +41,8 @@ export function syncApp(): SyncApp {
 export const useSyncRefresh: () => ReactElement<RefreshControlProps> | undefined = syncEnabled
   ? () => syncApp().useSyncRefresh()
   : () => undefined;
+
+/** Home's sync-banner while sync has stopped (null without sync). */
+export const SyncBannerSlot: () => ReactElement | null = syncEnabled
+  ? () => createElement(syncApp().SyncBanner)
+  : () => null;

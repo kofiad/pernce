@@ -159,3 +159,27 @@ export function recordSyncResult(db: DB, result: { error: string | null; rejecte
   setMeta(db, K.lastError, result.error);
   if (result.rejected) setMeta(db, K.rejected, String(getSyncStatus(db).rejected + result.rejected));
 }
+
+/** Syncs failing for longer than this get a banner on Home. */
+const FAILING_NOTICE_MS = 24 * 60 * 60 * 1000;
+
+/** What Home's sync-banner says (docs/design, M05a/M05b), or null while
+ * sync is off or working. Sync stops without the owner noticing when the
+ * session ends or the data key is needed; that, or a day of failed syncs,
+ * is worth saying on Home rather than only on the Sync screen. */
+export type SyncNotice = { title: string; body: string; action: string };
+
+export function syncNotice(status: SyncStatus, now: number = Date.now()): SyncNotice | null {
+  if (status.state === "signed_out") {
+    return { title: "Sync stopped", body: "Sign in again to keep this device up to date.", action: "Sign in" };
+  }
+  if (status.state === "needs_key") {
+    return { title: "Sync stopped", body: "Unlock your synced data to keep this device up to date.", action: "Unlock" };
+  }
+  if (status.state !== "on" || !status.failingSince) return null;
+  if (now - new Date(status.failingSince).getTime() < FAILING_NOTICE_MS) return null;
+  const last = status.lastSyncAt
+    ? `Last synced ${new Date(status.lastSyncAt).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}.`
+    : "Never synced.";
+  return { title: "Sync isn’t working", body: `${last} Changes stay on this device.`, action: "Details" };
+}

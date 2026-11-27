@@ -55,7 +55,8 @@ const SESSION_SECRET = "verify-sync-secret";
 export async function runSyncChecks(db: DbClient): Promise<number> {
   const accounts = await import("../src/sync/accounts");
   const records = await import("../src/sync/records");
-  const { verifyAccessToken } = await import("../src/sync/tokens");
+  const tokens = await import("../src/sync/tokens");
+  const { verifyAccessToken } = tokens;
   const { pushSchema, signupSchema } = await import("../src/sync/schemas");
 
   const outbox: { to: string; message: EmailMessage }[] = [];
@@ -155,13 +156,23 @@ export async function runSyncChecks(db: DbClient): Promise<number> {
   const aliceLaptop = await accounts.login({ email: alice.email, authKey: alice.authKey, deviceName: "iPhone" }, ctx);
   check("The right auth key signs in", aliceLaptop.user.id === aliceId);
 
-  console.log("\nTest 5: refresh tokens rotate, and a replayed one ends the session");
+  console.log("\nTest 5: refresh tokens rotate, a lost reply can be retried, and a replayed one ends the session");
+  /** What the auth middleware does for every signed-in request. */
+  const use = async (accessToken: string) => {
+    const claims = await tokens.verifyAccessTokenClaims(SESSION_SECRET, accessToken);
+    if (claims?.session) await accounts.markTokenUsed(claims.session, ctx);
+  };
   const r1 = await accounts.refresh(aliceLaptop.refreshToken, ctx);
   check("Refreshing returns a new refresh token", r1.refreshToken !== aliceLaptop.refreshToken && !!r1.accessToken);
+  const lost = await accounts.refresh(r1.refreshToken, ctx);
   const r2 = await accounts.refresh(r1.refreshToken, ctx);
-  check("The new one works once", !!r2.refreshToken);
   check(
-    "Replaying an already-used token is refused",
+    "A reply that never arrived can be retried with the old token, and the lost token stops working",
+    r2.refreshToken !== lost.refreshToken && (await outcome(() => accounts.refresh(lost.refreshToken, ctx))) === "unauthorized",
+  );
+  await use(r2.accessToken);
+  check(
+    "Once its successor has been used, replaying the old token is refused",
     (await outcome(() => accounts.refresh(r1.refreshToken, ctx))) === "unauthorized",
   );
   check(

@@ -710,8 +710,10 @@ ms('Onboarding & security', 'M04', 'Delete local data — confirm', 'mobile/src/
   () => phone(`${pageh('Settings', '', false)}<div class="group">${['Name','Base currency','Categories','Exchange rates'].map(t => `<div class="li"><span>${t}</span><span class="v">${I('cr', 'xs')}</span></div>`).join('')}</div>`, {overlay: `<div class="ph-alert"><div class="alertbox"><div class="ib" style="margin:0 auto 16px;color:var(--neg-t)">${I('trash')}</div><h2 class="h-sm" style="margin-bottom:8px">Delete all local data?</h2><p class="sm mute" style="margin-bottom:24px">Accounts, transactions and budgets on this phone are erased. Your synced copy, if any, is untouched.</p><div class="col" style="gap:10px">${btn('Delete everything', 'danger')}${btn('Cancel', 's')}</div></div></div>`}));
 
 /* ---- Tabs ---- */
-const homeBody = () => `
-  <div class="row" style="margin:8px 0 24px"><div class="h-sm">Ama</div><span aria-label="Settings">${av(C.primary, 'A', 'sm')}</span></div>
+// sync-banner: sync has stopped on this device (pernce_design.md, Cards, lists & status).
+const syncBanner = (title, body, action) => `<div class="card rs" style="padding:16px;gap:12px;margin-bottom:24px" role="button"><span class="ib sm" style="color:var(--warning)">${I('alert', 's')}</span><div class="grow"><div class="smb">${title}</div><div class="cap mute">${body}</div></div>${btn(action, 'p', '', 'sm" style="width:auto')}</div>`;
+const homeBody = (banner = '') => `
+  <div class="row" style="margin:8px 0 24px"><div class="h-sm">Ama</div><span aria-label="Settings">${av(C.primary, 'A', 'sm')}</span></div>${banner}
   <div class="cap mute">Total net worth</div>
   <div class="d-md num" style="margin:4px 0 6px">$18,444.82</div>
   <div class="rs" style="gap:8px;margin-bottom:20px"><span class="rs pos smb" style="gap:4px">${I('up', 'xs')}+$482.10 (2.7%)</span><span class="cap mute">this month</span></div>
@@ -727,6 +729,13 @@ const homeBody = () => `
 ms('Tabs', 'M05', 'Home', 'mobile/src/app/(tabs)/index.tsx',
   'Net worth in base currency, holdings per currency, quick actions, accounts rail, budget health, recent activity. The header is the name alone (no greeting) with the profile avatar, which opens Settings in place of the gear the other tabs carry.',
   () => phone(homeBody(), {tab: 'Home'}));
+
+ms('Tabs', 'M05a', 'Home — sync stopped', 'mobile/src/components/SyncBanner.tsx',
+  'sync-banner, under the header, while sync can\'t run without the owner: signed out (the server ended the session) or the data key needs the recovery key ("Unlock synced data", action "Unlock"). Tapping the card or the button opens Sync (M31/M32/M27). Not dismissible: it goes away once sync works again.',
+  () => phone(homeBody(syncBanner('Sync stopped', 'Sign in again to keep this device up to date.', 'Sign in')), {tab: 'Home'}));
+ms('Tabs', 'M05b', 'Home — sync failing', 'mobile/src/components/SyncBanner.tsx',
+  'sync-banner when every sync has failed for over a day (offline for long, or a server problem): the caption gives the date of the last good sync. "Details" opens Sync (M31), which shows the error.',
+  () => phone(homeBody(syncBanner('Sync isn\'t working', 'Last synced 24 Nov. Changes stay on this phone.', 'Details')), {tab: 'Home'}));
 
 ms('Tabs', 'M06', 'Accounts', 'mobile/src/app/(tabs)/accounts.tsx',
   'Grouped by account type. Non-base balances show their converted value underneath. Every tab header ends in a gear that opens Settings (M06, M07, M08, M09, M10); Home\'s avatar does the same job.',
