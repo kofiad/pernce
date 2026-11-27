@@ -113,11 +113,22 @@ describe("sync API over HTTP", async () => {
     assert.equal(badQuery.status, 400);
   });
 
-  test("refresh rotates the token; replaying the old one is 401 and ends the session", async () => {
+  test("refresh rotates the token; a lost reply can be retried until the new pair is used, then a replay ends the session", async () => {
     const res = await t.json("POST", "/api/sync/refresh", { refreshToken });
     assert.equal(res.status, 200);
-    const next = await res.json();
-    assert.ok(next.accessToken && next.refreshToken && next.refreshToken !== refreshToken);
+    const lost = await res.json();
+    assert.ok(lost.accessToken && lost.refreshToken && lost.refreshToken !== refreshToken);
+
+    // The device never got that reply: the old token is swapped again, and
+    // the lost token stops working.
+    const again = await t.json("POST", "/api/sync/refresh", { refreshToken });
+    assert.equal(again.status, 200);
+    const next = await again.json();
+    assert.notEqual(next.refreshToken, lost.refreshToken);
+    assert.equal((await t.json("POST", "/api/sync/refresh", { refreshToken: lost.refreshToken })).status, 401);
+
+    // Once the new access token is used, the old refresh token is a replay.
+    assert.equal((await t.request("/api/sync/keys", { headers: bearer(next.accessToken) })).status, 200);
     const replay = await t.json("POST", "/api/sync/refresh", { refreshToken });
     assert.equal(replay.status, 401);
     const dead = await t.json("POST", "/api/sync/refresh", { refreshToken: next.refreshToken });
@@ -198,7 +209,7 @@ describe("sync API auth and routing errors", async () => {
   test("a token signed with another secret, or an expired one, is 401", async () => {
     const { createAccessToken, deriveSecret } = await import("../src/sync/tokens");
     const { SignJWT } = await import("jose");
-    const forged = (await createAccessToken("another-secret", randomUUID())).token;
+    const forged = (await createAccessToken("another-secret", randomUUID(), { sessionId: randomUUID(), tokenHash: "x" })).token;
     assert.equal((await t.request("/api/sync/keys", { headers: { authorization: `Bearer ${forged}` } })).status, 401);
     const expired = await new SignJWT({})
       .setSubject(randomUUID())
@@ -211,7 +222,7 @@ describe("sync API auth and routing errors", async () => {
 
   test("a valid token for an account that doesn't exist is 401", async () => {
     const { createAccessToken } = await import("../src/sync/tokens");
-    const { token } = await createAccessToken("test-session-secret", randomUUID());
+    const { token } = await createAccessToken("test-session-secret", randomUUID(), { sessionId: randomUUID(), tokenHash: "x" });
     const res = await t.request("/api/sync/keys", { headers: { authorization: `Bearer ${token}` } });
     assert.equal(res.status, 401);
   });
@@ -234,7 +245,7 @@ describe("sync API auth and routing errors", async () => {
 
   test("an unknown sync path is a JSON 404 once authenticated", async () => {
     const { createAccessToken } = await import("../src/sync/tokens");
-    const { token } = await createAccessToken("test-session-secret", randomUUID());
+    const { token } = await createAccessToken("test-session-secret", randomUUID(), { sessionId: randomUUID(), tokenHash: "x" });
     const res = await t.request("/api/sync/nope", { headers: { authorization: `Bearer ${token}` } });
     assert.equal(res.status, 404);
   });

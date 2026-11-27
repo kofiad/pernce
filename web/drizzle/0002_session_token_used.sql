@@ -1,0 +1,1 @@
+ALTER TABLE `sync_sessions` ADD `token_used` integer DEFAULT true NOT NULL;

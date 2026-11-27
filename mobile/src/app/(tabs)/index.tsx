@@ -35,7 +35,7 @@ import { useLayout } from "../../lib/layout";
 import { fmtBare, fmtMajor, fmtMinor, fmtShort } from "../../lib/money";
 import { useTheme } from "../../lib/theme";
 import { useAutoRates } from "../../lib/useAutoRates";
-import { useSyncRefresh } from "../../lib/syncFeature";
+import { SyncBannerSlot, useSyncRefresh } from "../../lib/syncFeature";
 
 /** M05 Home: net worth in the base currency, holdings per currency, quick
  * actions, accounts rail, budget health, recent activity. */
@@ -139,6 +139,7 @@ export default function Home() {
         <T variant="title" numberOfLines={1} style={{ marginBottom: 28 }}>
           {name || "Pernce"}
         </T>
+        <SyncBannerSlot />
         <View style={[s.hero, !twoColumns && { flexDirection: "column", alignItems: "stretch" }]}>
           <View>
             <T variant="caption" color={c.mute}>
@@ -202,6 +203,7 @@ export default function Home() {
           {profile ? <ProfileAvatar profile={profile} /> : null}
         </Pressable>
       </Between>
+      <SyncBannerSlot />
 
       <T variant="caption" color={c.mute}>
         {t.home.totalNetWorth}

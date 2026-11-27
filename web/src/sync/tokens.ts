@@ -21,9 +21,14 @@ export function deriveSecret(secret: string | undefined, label: string): Buffer 
   return createHmac("sha256", secret).update(`pernce:${label}`).digest();
 }
 
-export async function createAccessToken(secret: string, userId: string) {
+/** Which session and refresh token an access token was issued with, so
+ * the first request that uses it can mark that refresh token as received
+ * (sync_sessions.token_used). */
+export type AccessTokenSession = { sessionId: string; tokenHash: string };
+
+export async function createAccessToken(secret: string, userId: string, session: AccessTokenSession) {
   const expiresAt = Date.now() + ACCESS_TOKEN_TTL_SECONDS * 1000;
-  const token = await new SignJWT({})
+  const token = await new SignJWT({ sid: session.sessionId, rth: session.tokenHash })
     .setSubject(userId)
     .setAudience(AUDIENCE)
     .setProtectedHeader({ alg: "HS256" })
@@ -38,13 +43,25 @@ export async function verifyAccessToken(
   secret: string | undefined,
   token: string | null | undefined,
 ): Promise<string | null> {
+  return (await verifyAccessTokenClaims(secret, token))?.userId ?? null;
+}
+
+/** The user id and, for tokens issued since sessions were tied to them,
+ * the session it came from; null for an invalid token. */
+export async function verifyAccessTokenClaims(
+  secret: string | undefined,
+  token: string | null | undefined,
+): Promise<{ userId: string; session: AccessTokenSession | null } | null> {
   if (!token) return null;
   try {
     const { payload } = await jwtVerify(token, deriveSecret(secret, "sync-access-token"), {
       audience: AUDIENCE,
       algorithms: ["HS256"],
     });
-    return typeof payload.sub === "string" ? payload.sub : null;
+    if (typeof payload.sub !== "string") return null;
+    const { sid, rth } = payload;
+    const session = typeof sid === "string" && typeof rth === "string" ? { sessionId: sid, tokenHash: rth } : null;
+    return { userId: payload.sub, session };
   } catch {
     return null;
   }

@@ -108,8 +108,10 @@ export const syncRecords = sqliteTable(
 );
 
 /** A signed-in device. Only a SHA-256 of its refresh token is stored; the
- * token rotates on every refresh, and presenting the previous one again
- * (a replayed, likely stolen token) ends the session. */
+ * token rotates on every refresh. Presenting the previous token again is
+ * allowed only until the new pair has been used (the device never got the
+ * reply, e.g. it lost signal or was suspended): the server swaps it again.
+ * After that it is a replayed, likely stolen token, and ends the session. */
 export const syncSessions = sqliteTable(
   "sync_sessions",
   {
@@ -119,6 +121,10 @@ export const syncSessions = sqliteTable(
       .references(() => syncUsers.id, { onDelete: "cascade" }),
     tokenHash: text("token_hash").notNull(),
     previousTokenHash: text("previous_token_hash"),
+    /** An access token from the current refresh token has reached the
+     * server, so the device has the current token and the previous one
+     * may no longer be swapped. */
+    tokenUsed: integer("token_used", { mode: "boolean" }).notNull().default(true),
     deviceName: text("device_name"),
     createdAt: createdAt(),
     lastUsedAt: integer("last_used_at", { mode: "timestamp_ms" })

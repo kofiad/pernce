@@ -1,7 +1,7 @@
 import { Hono, type Context } from "hono";
 import { readEnv } from "../env";
 import type { SyncError } from "@pernce/core/sync";
-import { deleteAccount, getKeys, login, logout, prelogin, putKeys, refresh, requestPasswordReset, confirmPasswordReset, signup, verifyEmail } from "../sync/accounts";
+import { deleteAccount, getKeys, login, logout, markTokenUsed, prelogin, putKeys, refresh, requestPasswordReset, confirmPasswordReset, signup, verifyEmail } from "../sync/accounts";
 import { readBody, readQuery, requireUserId, syncRoute, type ClientIp } from "../sync/http";
 import { pull, push, wipeRecords } from "../sync/records";
 import {
@@ -17,7 +17,7 @@ import {
   signupSchema,
   verifySchema,
 } from "../sync/schemas";
-import { bearerToken, verifyAccessToken } from "../sync/tokens";
+import { bearerToken, verifyAccessTokenClaims } from "../sync/tokens";
 import type { HonoEnv } from "../types";
 import { methods } from "./methods";
 
@@ -36,11 +36,14 @@ export function syncRoutes(clientIp: ClientIp) {
   sync.use("*", async (c, next) => {
     // Only /api/sync/<something> is guarded; /api/sync itself is just unknown.
     if (PUBLIC.has(c.req.path) || !c.req.path.startsWith("/api/sync/")) return next();
-    const userId = await verifyAccessToken(
+    const claims = await verifyAccessTokenClaims(
       readEnv(c).SESSION_SECRET,
       bearerToken(c.req.header("authorization") ?? null),
     );
-    if (!userId) return c.json({ error: "unauthorized", message: "Sign in again." } satisfies SyncError, 401);
+    if (!claims) return c.json({ error: "unauthorized", message: "Sign in again." } satisfies SyncError, 401);
+    // The device has its current refresh token: from now on the previous one
+    // counts as a replay (accounts.ts refresh). An indexed no-op once marked.
+    if (claims.session) await markTokenUsed(claims.session, c.var.getCtx());
     return next();
   });
 

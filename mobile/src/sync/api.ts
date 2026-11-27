@@ -13,8 +13,10 @@ import {
 /** The sync server's HTTP API (web/src/app/api/sync, shapes in core
  * sync.ts). Access tokens last 15 minutes; this client refreshes them
  * before they expire and once more on a 401, and rotates the refresh token
- * every time (the server ends a session whose old refresh token is
- * replayed, so only one refresh may be in flight). */
+ * every time. The server ends a session whose old refresh token is
+ * replayed once its successor has been used, so only one refresh may be in
+ * flight: one per SyncApi, and across instances that share the stored
+ * session (browser tabs) through `lock`. */
 
 export class SyncApiError extends Error {
   constructor(
@@ -41,6 +43,10 @@ export type SyncApiOptions = {
   now?: () => number;
   /** The server refused the refresh token: the session is over. */
   onSessionEnded?: () => void;
+  /** Runs `fn` while no other holder of the stored session (another
+   * browser tab) is refreshing. Within one instance refreshes are already
+   * one at a time. */
+  lock?: <T>(fn: () => Promise<T>) => Promise<T>;
 };
 
 /** Refresh this long before the access token actually expires. */
@@ -112,25 +118,32 @@ export class SyncApi {
   }
 
   private refresh(stale: SyncSession): Promise<SyncSession> {
-    this.refreshing ??= (async () => {
+    const lock = this.opts.lock ?? ((fn) => fn());
+    this.refreshing ??= lock(async () => {
+      let sent: string | null = null;
       try {
-        // Another caller may have refreshed while this one waited.
+        // Another caller (or tab) may have refreshed while this one waited.
         const current = await this.opts.sessions.getSession();
         if (current && current.refreshToken !== stale.refreshToken) return current;
         if (!current) throw new SyncApiError(401, "unauthorized", "Sign in again.");
-        const next = await this.call<SyncSession>("POST", "refresh", { refreshToken: current.refreshToken });
+        sent = current.refreshToken;
+        const next = await this.call<SyncSession>("POST", "refresh", { refreshToken: sent });
         await this.opts.sessions.setSession(next);
         return next;
       } catch (e) {
         if (e instanceof SyncApiError && e.status === 401) {
+          // Refused, but a newer session may have been stored meanwhile
+          // (a tab without the lock): keep that one rather than sign out.
+          const latest = await this.opts.sessions.getSession();
+          if (latest && sent !== null && latest.refreshToken !== sent) return latest;
           await this.opts.sessions.setSession(null);
           this.opts.onSessionEnded?.();
         }
         throw e;
-      } finally {
-        this.refreshing = null;
       }
-    })();
+    }).finally(() => {
+      this.refreshing = null;
+    });
     return this.refreshing;
   }
 

@@ -67,6 +67,15 @@ const wrapKey = stored<Uint8Array>(SECRET_KEYS.wrapKey, toBase64, fromBase64);
 
 const LEGACY_CLEARED = "legacy_sync_secrets_cleared";
 
+/** Browser tabs share one stored session, and the server ends a session
+ * whose refresh token is replayed, so tabs take turns refreshing (Web
+ * Locks; every current browser has them in a secure context). Phones run
+ * one copy of the app, which SyncApi already serialises. */
+function refreshLock(): (<T>(fn: () => Promise<T>) => Promise<T>) | undefined {
+  if (Platform.OS !== "web" || typeof navigator === "undefined" || !navigator.locks) return undefined;
+  return (fn) => navigator.locks.request("pernce-sync-refresh", fn);
+}
+
 /** Once per install: deletes the keychain entries the sync secrets had
  * before the rename (their account is gone). Never touches the current
  * keys, and never throws. */
@@ -105,6 +114,7 @@ export const syncContext: SyncContext = {
       setSyncState(db, "signed_out");
       notifyChange();
     },
+    lock: refreshLock(),
   }),
   // The server keeps up to 100 characters.
   deviceName: (Constants.deviceName ?? (Platform.OS === "web" ? "Web browser" : undefined))?.slice(0, 100) || undefined,
@@ -135,13 +145,20 @@ export function requestSync(): Promise<SyncResult> | null {
 }
 
 /** Wait after the last local write before pushing, so a burst of edits
- * goes up together. */
-const DEBOUNCE_MS = 4000;
+ * (a form that saves several rows) goes up together. */
+const DEBOUNCE_MS = 1000;
 
-/** While the app is in the foreground, pull this often so edits from another
- * device show up without leaving and returning. A run with nothing new is
- * one cheap pull. */
-const POLL_MS = 20_000;
+/** While the app is in the foreground it pulls on a timer, so edits from
+ * another device show up without leaving and returning. A run with nothing
+ * new is one cheap pull. The timer slows down while nothing is happening:
+ * every 5 s for 2 minutes after the last activity (opening the app, a
+ * local edit, a sync that moved anything), then every 15 s, and every 30 s
+ * after 10 minutes. */
+export function pollDelay(idleMs: number): number {
+  if (idleMs < 2 * 60_000) return 5_000;
+  if (idleMs < 10 * 60_000) return 15_000;
+  return 30_000;
+}
 
 /** Sync on app start, on returning to the foreground, on a timer while in
  * the foreground, and shortly after local writes (§5.2). Mounted once at the root, which also registers the
@@ -149,21 +166,37 @@ const POLL_MS = 20_000;
 export function useSyncTriggers(state: string) {
   useEffect(() => {
     if (state !== "on") return;
-    requestSync();
-    const appState = AppState.addEventListener("change", (next) => {
-      if (next === "active") requestSync();
-    });
-    // requestSync is a no-op while a run is in progress, so a slow run never
+    let stopped = false;
+    let lastActivity = Date.now();
+    let poll: ReturnType<typeof setTimeout> | undefined;
+    const run = async () => {
+      const result = await requestSync();
+      if (result?.ok && result.pulled + result.pushed > 0) lastActivity = Date.now();
+    };
+    // One timer at a time, rescheduled after each run, so a slow run never
     // stacks up polls.
-    const poll = setInterval(() => {
-      if (AppState.currentState === "active") requestSync();
-    }, POLL_MS);
-    // Back online (or the window focused): catch up now rather than at the
-    // next poll. Browsers only; phones use AppState above.
-    const onWake = () => void requestSync();
+    const schedule = () => {
+      clearTimeout(poll);
+      poll = setTimeout(async () => {
+        if (AppState.currentState === "active") await run();
+        if (!stopped) schedule();
+      }, pollDelay(Date.now() - lastActivity));
+    };
+    // Opened, back in the foreground, focused or back online: catch up now
+    // and poll at the fast rate again.
+    const wake = () => {
+      lastActivity = Date.now();
+      void run();
+      schedule();
+    };
+    wake();
+    const appState = AppState.addEventListener("change", (next) => {
+      if (next === "active") wake();
+    });
+    // Browsers only; phones use AppState above.
     if (Platform.OS === "web") {
-      window.addEventListener("online", onWake);
-      window.addEventListener("focus", onWake);
+      window.addEventListener("online", wake);
+      window.addEventListener("focus", wake);
     }
     let timer: ReturnType<typeof setTimeout> | undefined;
     // Every change notifies, including sync's own merges; only an outbox
@@ -171,15 +204,18 @@ export function useSyncTriggers(state: string) {
     const unsubscribe = subscribeChanges(() => {
       clearTimeout(timer);
       timer = setTimeout(() => {
-        if (getSyncStatus(db).state === "on" && hasOutbox(db)) requestSync();
+        if (getSyncStatus(db).state !== "on" || !hasOutbox(db)) return;
+        lastActivity = Date.now();
+        void run();
       }, DEBOUNCE_MS);
     });
     return () => {
+      stopped = true;
       appState.remove();
-      clearInterval(poll);
+      clearTimeout(poll);
       if (Platform.OS === "web") {
-        window.removeEventListener("online", onWake);
-        window.removeEventListener("focus", onWake);
+        window.removeEventListener("online", wake);
+        window.removeEventListener("focus", wake);
       }
       unsubscribe();
       clearTimeout(timer);

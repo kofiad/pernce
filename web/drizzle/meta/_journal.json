@@ -15,6 +15,13 @@
       "when": 1792619937540,
       "tag": "0001_drop_web_pages",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1795757449668,
+      "tag": "0002_session_token_used",
+      "breakpoints": true
     }
   ]
 }

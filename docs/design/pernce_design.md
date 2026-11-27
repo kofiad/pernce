@@ -560,6 +560,7 @@ All buttons are 48px pills with 28px sides (`button-sm`: 36px, 16px sides), an o
 - **`avatar`**: a circle in an accent (or custom colour) holding a white icon or initials. Categories, accounts and the profile all use it.
 - **`badge`** / **`badge-brand`**: 13px caption pills; brand badges mark something new.
 - **Progress**: 8px pill track (`--track`); the fill is `--pos` under budget, `--warning` near the limit and `--neg` over it.
+- **`sync-banner`** (artboard M05a, M05b): sync has stopped on this device. A `card` with 16px padding at the top of Home, under the header, 24px above the net worth (on wide pages, the top of the page column, full width). One row, 12px gaps: a 36px soft icon plate with the `alert` glyph in `--warning` (the icon only: `--warning` is under 4.5:1 as text on light), a 15px / 600 title over a caption in `--mute`, and a small primary pill on the right. The whole card opens Sync. Shown while signed out ("Sync stopped" / "Sign in again to keep this device up to date." / "Sign in"), while the data key needs the recovery key ("Sync stopped" / "Unlock your synced data to keep this device up to date." / "Unlock"), and once syncs have failed for more than a day ("Sync isn't working" / "Last synced <date>. Changes stay on this phone." / "Details"). Never dismissible; it goes as soon as sync works.
 
 ### Navigation
 

@@ -17,6 +17,7 @@ import { alreadyRegisteredMessage, resetEmailMessage, verifyEmailMessage } from 
 import { SyncHttpError, invalidCode, invalidCredentials, rateLimited, unauthorized } from "./errors";
 import {
   REFRESH_TOKEN_TTL_MS,
+  type AccessTokenSession,
   createAccessToken,
   deriveSecret,
   hashEmailCode,
@@ -136,17 +137,24 @@ async function consumeCode(email: string, purpose: Purpose, code: string, ctx: S
  * callers that send it in a batch with other writes. */
 function newSession(userId: string, deviceName: string | undefined, ctx: SyncContext) {
   const refreshToken = newRefreshToken();
+  const session = { sessionId: crypto.randomUUID(), tokenHash: hashRefreshToken(refreshToken) };
   const insert = ctx.db.insert(syncSessions).values({
+    id: session.sessionId,
     userId,
-    tokenHash: hashRefreshToken(refreshToken),
+    tokenHash: session.tokenHash,
     deviceName: deviceName || null,
     expiresAt: new Date(ctx.now() + REFRESH_TOKEN_TTL_MS),
   });
-  return { refreshToken, insert };
+  return { refreshToken, session, insert };
 }
 
-async function loginResponse(user: SyncUser, refreshToken: string, ctx: SyncContext): Promise<SyncLoginResponse> {
-  const access = await createAccessToken(ctx.config.sessionSecret, user.id);
+async function loginResponse(
+  user: SyncUser,
+  refreshToken: string,
+  session: AccessTokenSession,
+  ctx: SyncContext,
+): Promise<SyncLoginResponse> {
+  const access = await createAccessToken(ctx.config.sessionSecret, user.id, session);
   return {
     accessToken: access.token,
     accessTokenExpiresAt: access.expiresAt,
@@ -157,9 +165,9 @@ async function loginResponse(user: SyncUser, refreshToken: string, ctx: SyncCont
 }
 
 async function startSession(user: SyncUser, deviceName: string | undefined, ctx: SyncContext): Promise<SyncLoginResponse> {
-  const { refreshToken, insert } = newSession(user.id, deviceName, ctx);
+  const { refreshToken, session, insert } = newSession(user.id, deviceName, ctx);
   await insert;
-  return loginResponse(user, refreshToken, ctx);
+  return loginResponse(user, refreshToken, session, ctx);
 }
 
 export type SignupInput = {
@@ -243,36 +251,79 @@ export async function login(
   return startSession(user, input.deviceName, ctx);
 }
 
-/** Swaps a refresh token for a new one plus a fresh access token. */
+/** Swaps a refresh token for a new one plus a fresh access token.
+ *
+ * The previous token is swapped again, rather than treated as a replay,
+ * while the token it was swapped for has never been used: the device sent
+ * it, but the reply never arrived (lost signal, the app suspended or
+ * killed mid-request). Without that, a dropped reply signed the device out.
+ * Once an access token from the new token reaches the server
+ * (markTokenUsed), the device evidently has it, and the previous token
+ * showing up again means someone else has a copy: the session ends, so
+ * neither copy works. */
 export async function refresh(refreshToken: string, ctx: SyncContext): Promise<SyncSession> {
   const hash = hashRefreshToken(refreshToken);
-  const [session] = await ctx.db.select().from(syncSessions).where(eq(syncSessions.tokenHash, hash)).limit(1);
-  if (!session) {
-    // A token that was already swapped for a newer one is being replayed:
-    // someone else has a copy. End the session so neither copy works.
-    await ctx.db.delete(syncSessions).where(eq(syncSessions.previousTokenHash, hash));
-    throw unauthorized();
-  }
   const now = ctx.now();
+  let [session] = await ctx.db.select().from(syncSessions).where(eq(syncSessions.tokenHash, hash)).limit(1);
+  let retry = false;
+  if (!session) {
+    const [previous] = await ctx.db.select().from(syncSessions).where(eq(syncSessions.previousTokenHash, hash)).limit(1);
+    if (!previous) throw unauthorized();
+    if (previous.tokenUsed) {
+      await ctx.db.delete(syncSessions).where(eq(syncSessions.id, previous.id));
+      throw unauthorized();
+    }
+    session = previous;
+    retry = true;
+  }
   if (session.expiresAt.getTime() < now) {
     await ctx.db.delete(syncSessions).where(eq(syncSessions.id, session.id));
     throw unauthorized();
   }
   const next = newRefreshToken();
+  const nextHash = hashRefreshToken(next);
   const [rotated] = await ctx.db
     .update(syncSessions)
     .set({
-      tokenHash: hashRefreshToken(next),
+      tokenHash: nextHash,
+      // A retry keeps the token it was retried with as the previous one,
+      // so the device can retry again if this reply is lost too.
       previousTokenHash: hash,
+      tokenUsed: false,
       lastUsedAt: new Date(now),
       expiresAt: new Date(now + REFRESH_TOKEN_TTL_MS),
     })
-    .where(and(eq(syncSessions.id, session.id), eq(syncSessions.tokenHash, hash)))
+    .where(
+      and(
+        eq(syncSessions.id, session.id),
+        eq(syncSessions.tokenHash, session.tokenHash),
+        retry ? eq(syncSessions.tokenUsed, false) : undefined,
+      ),
+    )
     .returning();
-  // A concurrent refresh with the same token got there first.
+  // A concurrent refresh got there first.
   if (!rotated) throw unauthorized();
-  const access = await createAccessToken(ctx.config.sessionSecret, session.userId);
+  const access = await createAccessToken(ctx.config.sessionSecret, session.userId, {
+    sessionId: session.id,
+    tokenHash: nextHash,
+  });
   return { accessToken: access.token, accessTokenExpiresAt: access.expiresAt, refreshToken: next };
+}
+
+/** An access token issued with the session's current refresh token reached
+ * the server: the device has that token, so the previous one may no longer
+ * be swapped (see refresh). A no-op for an older token or once marked. */
+export async function markTokenUsed(session: AccessTokenSession, ctx: SyncContext): Promise<void> {
+  await ctx.db
+    .update(syncSessions)
+    .set({ tokenUsed: true })
+    .where(
+      and(
+        eq(syncSessions.id, session.sessionId),
+        eq(syncSessions.tokenHash, session.tokenHash),
+        eq(syncSessions.tokenUsed, false),
+      ),
+    );
 }
 
 export async function logout(refreshToken: string, ctx: SyncContext): Promise<void> {
@@ -312,13 +363,13 @@ export async function confirmPasswordReset(input: ResetInput, ctx: SyncContext) 
     verifiedAt: user.verifiedAt ?? new Date(ctx.now()),
   };
   // Signs out every device and starts this one's session, all or nothing.
-  const { refreshToken, insert } = newSession(user.id, input.deviceName, ctx);
+  const { refreshToken, session, insert } = newSession(user.id, input.deviceName, ctx);
   await runBatch(ctx.db, [
     ctx.db.update(syncUsers).set(fields).where(eq(syncUsers.id, user.id)),
     ctx.db.delete(syncSessions).where(eq(syncSessions.userId, user.id)),
     insert,
   ]);
-  const result = await loginResponse({ ...user, ...fields }, refreshToken, ctx);
+  const result = await loginResponse({ ...user, ...fields }, refreshToken, session, ctx);
   loginLimiter.clear(input.email);
   return result;
 }

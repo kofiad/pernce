@@ -30,7 +30,8 @@ What the server stores (`web/src/db/schema.ts`):
   number, the key version, the ciphertext, its length, and a server-side
   `updated_at`.
 - Per signed-in device (`sync_sessions`): a SHA-256 of the refresh token,
-  the previous token's hash, an optional device name sent by the app,
+  the previous token's hash, whether the current token has been used yet
+  (`token_used`), an optional device name sent by the app,
   creation, last-used and expiry times.
 - Pending emailed codes (`email_tokens`): an HMAC of the code, attempt count,
   expiry.
@@ -159,9 +160,17 @@ Code: `web/src/sync/tokens.ts`, `accounts.ts`; table `sync_sessions`.
   server re-checks the user exists and is verified on every request.
 - **Refresh token:** 32 random bytes, stored only as a SHA-256, valid 60
   days **sliding** (`REFRESH_TOKEN_TTL_MS`: each refresh extends it). Every
-  refresh rotates it. Presenting the immediately previous token again (a
-  replay, so someone else has a copy) ends that session. The client refreshes
-  shortly before expiry and on a 401.
+  refresh rotates it. Access tokens carry the session id and the hash of
+  the refresh token they came with (`sid`, `rth`); the first signed-in
+  request with one marks that refresh token used (`markTokenUsed`, in the
+  sync auth middleware). Presenting the immediately previous token again
+  is then a replay (someone else has a copy) and ends that session. Before
+  that, it is a retry: the device sent it but never got the reply (lost
+  signal, the app suspended or killed mid-request), so the server swaps it
+  again rather than sign the device out, which used to stop sync on that
+  device until someone noticed. The client refreshes shortly before expiry
+  and on a 401, one refresh at a time (across browser tabs too, with Web
+  Locks), and re-reads the stored session before treating a 401 as the end.
 - `POST /api/sync/logout` ends one device's session. A password reset ends
   all of them.
 
@@ -253,8 +262,10 @@ collisions are settled before anything is pushed.
   as an error.
 
 **When sync runs** (`mobile/src/lib/sync.ts`): at app start, on return to the
-foreground, every 20 seconds while the app is in the foreground
-(`POLL_MS`), 4 seconds after the last local write when there is something
+foreground, on a timer while the app is in the foreground (`pollDelay`:
+every 5 seconds for 2 minutes after the last activity, then every 15, and
+every 30 after 10 minutes; opening the app, a local edit or a sync that
+moved anything counts as activity), 1 second after the last local write when there is something
 to push (`DEBOUNCE_MS`), on the browser's `online` and `focus` events, and as a
 best-effort background task on phones (`mobile/src/lib/backgroundSync.ts`; the
 OS decides when it runs). Writes go to the local database and an outbox
